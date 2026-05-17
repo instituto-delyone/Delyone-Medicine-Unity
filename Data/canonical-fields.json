@@ -1,0 +1,212 @@
+[
+  {
+    "id": "001",
+    "key": "paciente_nome",
+    "label": "Nome do paciente",
+    "group": "identificacao",
+    "type": "text"
+  },
+  {
+    "id": "002",
+    "key": "paciente_nome_mae",
+    "label": "Nome da mãe",
+    "group": "identificacao",
+    "type": "text"
+  },
+  {
+    "id": "003",
+    "key": "paciente_data_nascimento",
+    "label": "Data de nascimento",
+    "group": "identificacao",
+    "type": "date"
+  },
+  {
+    "id": "004",
+    "key": "paciente_idade",
+    "label": "Idade",
+    "group": "identificacao",
+    "type": "auto"
+  },
+  {
+    "id": "005",
+    "key": "paciente_cns_cpf",
+    "label": "CNS/CPF",
+    "group": "identificacao",
+    "type": "text"
+  },
+  {
+    "id": "006",
+    "key": "unidade_atendimento",
+    "label": "Unidade de atendimento",
+    "group": "identificacao",
+    "type": "text"
+  },
+  {
+    "id": "007",
+    "key": "queixa_principal",
+    "label": "Queixa principal / motivo do atendimento",
+    "group": "identificacao",
+    "type": "textarea"
+  },
+  {
+    "id": "008",
+    "key": "atendimento_clinico_inicial",
+    "label": "Atendimento clínico inicial",
+    "group": "clinico",
+    "type": "textarea"
+  },
+  {
+    "id": "008.1",
+    "key": "exame_fisico",
+    "label": "Exame físico",
+    "group": "clinico",
+    "type": "textarea"
+  },
+  {
+    "id": "008.2",
+    "key": "conduta_inicial",
+    "label": "Conduta inicial",
+    "group": "clinico",
+    "type": "textarea"
+  },
+  {
+    "id": "009.1",
+    "key": "exames_descricao_geral",
+    "label": "Descrição geral dos exames",
+    "group": "exames",
+    "type": "textarea"
+  },
+  {
+    "id": "009.2",
+    "key": "imagem_link_externo",
+    "label": "Imagem / link externo",
+    "group": "exames",
+    "type": "text"
+  },
+  {
+    "id": "009.3",
+    "key": "ecg",
+    "label": "ECG",
+    "group": "exames",
+    "type": "text"
+  },
+  {
+    "id": "009.4",
+    "key": "usg",
+    "label": "USG",
+    "group": "exames",
+    "type": "text"
+  },
+  {
+    "id": "009.5",
+    "key": "outros_exames",
+    "label": "Outros exames",
+    "group": "exames",
+    "type": "textarea"
+  },
+  {
+    "id": "010",
+    "key": "hipotese_diagnostica",
+    "label": "Hipótese diagnóstica",
+    "group": "diagnostico_conduta",
+    "type": "textarea"
+  },
+  {
+    "id": "011",
+    "key": "cid10",
+    "label": "CID-10",
+    "group": "diagnostico_conduta",
+    "type": "text"
+  },
+  {
+    "id": "012",
+    "key": "reavaliacao_conduta_subsequente",
+    "label": "Reavaliação / conduta subsequente",
+    "group": "diagnostico_conduta",
+    "type": "textarea"
+  },
+  {
+    "id": "013",
+    "key": "medicacoes_realizadas",
+    "label": "Medicações realizadas",
+    "group": "diagnostico_conduta",
+    "type": "textarea"
+  },
+  {
+    "id": "014",
+    "key": "plano_de_acao",
+    "label": "Plano de ação",
+    "group": "diagnostico_conduta",
+    "type": "textarea"
+  },
+  {
+    "id": "015",
+    "key": "quadro_transferencia",
+    "label": "Quadro clínico para transferência",
+    "group": "transferencia",
+    "type": "textarea"
+  },
+  {
+    "id": "016",
+    "key": "justificativa_transferencia",
+    "label": "Justificativa da transferência",
+    "group": "transferencia",
+    "type": "textarea"
+  },
+  {
+    "id": "016.1",
+    "key": "procedimento_solicitado",
+    "label": "Procedimento solicitado",
+    "group": "transferencia",
+    "type": "text"
+  },
+  {
+    "id": "016.2",
+    "key": "codigo_tuss",
+    "label": "Código TUSS",
+    "group": "transferencia",
+    "type": "text"
+  },
+  {
+    "id": "017",
+    "key": "hospital_destino",
+    "label": "Hospital de destino",
+    "group": "transferencia",
+    "type": "text"
+  },
+  {
+    "id": "018",
+    "key": "tipo_leito",
+    "label": "Tipo de leito",
+    "group": "transferencia",
+    "type": "text"
+  },
+  {
+    "id": "019",
+    "key": "medico_responsavel",
+    "label": "Médico responsável",
+    "group": "identificacao_medica",
+    "type": "text"
+  },
+  {
+    "id": "020",
+    "key": "crm",
+    "label": "CRM",
+    "group": "identificacao_medica",
+    "type": "text"
+  },
+  {
+    "id": "021",
+    "key": "data",
+    "label": "Data",
+    "group": "identificacao_medica",
+    "type": "auto_date"
+  },
+  {
+    "id": "022",
+    "key": "hora",
+    "label": "Hora",
+    "group": "identificacao_medica",
+    "type": "auto_time"
+  }
+]
