@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Delyone Med Unity — App v1</title>
+  <style>
+    :root{--bg:#07111f;--card:rgba(255,255,255,.075);--text:#f5f7fb;--muted:#aab4c5;--line:rgba(255,255,255,.14);--accent:#6ee7d8;--accent2:#8ab4ff;--danger:#ff7a7a;--ok:#9cf6b3;--shadow:0 20px 60px rgba(0,0,0,.28);--radius:22px}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at top left,rgba(110,231,216,.18),transparent 34rem),radial-gradient(circle at top right,rgba(138,180,255,.16),transparent 30rem),linear-gradient(180deg,#07111f 0%,#040813 100%);color:var(--text);min-height:100vh}.shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:28px 0 54px}.hero{padding:28px;border:1px solid var(--line);border-radius:30px;background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.045));box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:260px;height:260px;right:-90px;top:-90px;background:radial-gradient(circle,rgba(110,231,216,.22),transparent 70%);pointer-events:none}.eyebrow{letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-size:.78rem;font-weight:700;margin-bottom:12px}h1{font-size:clamp(2.15rem,6vw,4.8rem);line-height:.95;margin:0;letter-spacing:-.05em}.hero p{max-width:760px;color:var(--muted);font-size:1.05rem;line-height:1.65;margin:18px 0 0}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}.badge{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);background:rgba(255,255,255,.045);font-size:.88rem}.grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:18px;align-items:start}.card{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}.card-head{padding:18px 20px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.045);display:flex;align-items:center;justify-content:space-between;gap:12px}.card-head h2{margin:0;font-size:1.1rem}.card-head small{color:var(--muted);font-size:.82rem}.card-body{padding:18px}.section-title{margin:18px 0 10px;padding-top:12px;border-top:1px solid var(--line);color:var(--accent);font-size:.86rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.section-title:first-child{margin-top:0;padding-top:0;border-top:0}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field.full{grid-column:1/-1}label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:6px;font-weight:650}.field-code{color:var(--accent2);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.78rem;margin-right:5px}input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(2,8,20,.54);color:var(--text);border-radius:14px;padding:12px 13px;font:inherit;outline:none;transition:.18s}textarea{min-height:94px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:rgba(110,231,216,.75);box-shadow:0 0 0 4px rgba(110,231,216,.12);background:rgba(2,8,20,.68)}.controls{display:grid;gap:12px}.control-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}button{border:0;border-radius:15px;padding:12px 14px;font-weight:800;cursor:pointer;color:#051018;background:var(--accent);transition:.15s}button:hover{transform:translateY(-1px);filter:brightness(1.04)}button.secondary{color:var(--text);background:rgba(255,255,255,.11);border:1px solid var(--line)}button.danger{color:#250707;background:var(--danger)}button.ghost{color:var(--text);background:transparent;border:1px solid var(--line)}.note{border:1px solid rgba(110,231,216,.25);background:rgba(110,231,216,.07);color:var(--muted);padding:13px;border-radius:16px;line-height:1.55;font-size:.92rem}.preview{min-height:420px;padding:22px;border-radius:18px;background:#fbfbf8;color:#161616;line-height:1.55;white-space:pre-wrap;outline:none;border:1px solid rgba(0,0,0,.08)}.preview:empty:before{content:"O documento gerado aparecerá aqui. O texto é editável antes de copiar, imprimir ou baixar.";color:#7b7b7b}.preview h1,.preview h2,.preview h3{color:#111;letter-spacing:0;line-height:1.2}.preview h2{font-size:1.35rem;margin:0 0 18px;text-align:center;text-transform:uppercase}.preview .doc-meta{color:#555;font-size:.92rem;border-bottom:1px solid #ddd;padding-bottom:10px;margin-bottom:18px}.preview .signature{margin-top:42px;text-align:center}.preview .signature-line{width:min(420px,90%);border-top:1px solid #111;margin:48px auto 8px}.status{color:var(--muted);font-size:.86rem;min-height:20px}.status.ok{color:var(--ok)}.status.warn{color:#ffe08a}.toggle-line{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.92rem;user-select:none}.toggle-line input{width:auto;accent-color:#6ee7d8}footer{margin-top:18px;color:var(--muted);font-size:.86rem;text-align:center;line-height:1.55}@media(max-width:880px){.grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.control-row{grid-template-columns:1fr}.hero{padding:22px}}@media print{body{background:white}.hero,.form-card,.controls,footer{display:none!important}.shell{width:100%;padding:0}.grid{display:block}.card{border:0;box-shadow:none}.card-head{display:none}.card-body{padding:0}.preview{border:0;padding:0}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="eyebrow">Delyone Med Unity · App v1</div>
+      <h1>Mother Form<br>Document Generator</h1>
+      <p>Protótipo determinístico para geração expressa de documentos médicos a partir de campos canônicos, modelos institucionais e revisão humana obrigatória. Esta versão roda localmente no navegador e não usa IA.</p>
+      <div class="badges"><span class="badge">Sem IA gerativa clínica</span><span class="badge">Preenchimento permissivo</span><span class="badge">Preview editável</span><span class="badge">Dados apenas na sessão</span></div>
+    </header>
+
+    <section class="grid">
+      <article class="card form-card">
+        <div class="card-head"><div><h2>Mother Form</h2><small>Preencha apenas o que tiver. Campos vazios não travam.</small></div></div>
+        <div class="card-body">
+          <div class="section-title">Identificação</div>
+          <div class="fields">
+            <div class="field"><label for="f001"><span class="field-code">001</span>Nome do paciente</label><input id="f001" autocomplete="off"></div>
+            <div class="field"><label for="f002"><span class="field-code">002</span>Nome da mãe</label><input id="f002" autocomplete="off"></div>
+            <div class="field"><label for="f003"><span class="field-code">003</span>Data de nascimento</label><input id="f003" type="date"></div>
+            <div class="field"><label for="f004"><span class="field-code">004</span>Idade [auto]</label><input id="f004" placeholder="calculada automaticamente"></div>
+            <div class="field"><label for="f005"><span class="field-code">005</span>CNS/CPF</label><input id="f005" autocomplete="off"></div>
+            <div class="field"><label for="f006"><span class="field-code">006</span>Unidade de atendimento</label><input id="f006" autocomplete="off"></div>
+            <div class="field full"><label for="f007"><span class="field-code">007</span>Queixa principal / motivo do atendimento</label><textarea id="f007"></textarea></div>
+          </div>
+
+          <div class="section-title">Atendimento clínico inicial</div>
+          <div class="fields">
+            <div class="field full"><label for="f008"><span class="field-code">008</span>Atendimento clínico inicial</label><textarea id="f008"></textarea></div>
+            <div class="field full"><label for="f0081"><span class="field-code">008.1</span>Exame físico</label><textarea id="f0081"></textarea></div>
+            <div class="field full"><label for="f0082"><span class="field-code">008.2</span>Conduta inicial</label><textarea id="f0082"></textarea></div>
+          </div>
+
+          <div class="section-title">Exames complementares</div>
+          <div class="fields">
+            <div class="field full"><label for="f0091"><span class="field-code">009.1</span>Descrição geral dos exames</label><textarea id="f0091"></textarea></div>
+            <div class="field"><label for="f0092"><span class="field-code">009.2</span>Imagem / link externo</label><input id="f0092" autocomplete="off"></div>
+            <div class="field"><label for="f0093"><span class="field-code">009.3</span>ECG</label><input id="f0093" autocomplete="off"></div>
+            <div class="field"><label for="f0094"><span class="field-code">009.4</span>USG</label><input id="f0094" autocomplete="off"></div>
+            <div class="field full"><label for="f0095"><span class="field-code">009.5</span>Outros exames</label><textarea id="f0095"></textarea></div>
+          </div>
+
+          <div class="section-title">Diagnóstico e conduta</div>
+          <div class="fields">
+            <div class="field full"><label for="f010"><span class="field-code">010</span>Hipótese diagnóstica</label><textarea id="f010"></textarea></div>
+            <div class="field"><label for="f011"><span class="field-code">011</span>CID-10</label><input id="f011" autocomplete="off"></div>
+            <div class="field full"><label for="f012"><span class="field-code">012</span>Reavaliação / conduta subsequente</label><textarea id="f012"></textarea></div>
+            <div class="field full"><label for="f013"><span class="field-code">013</span>Medicações realizadas</label><textarea id="f013"></textarea></div>
+            <div class="field full"><label for="f014"><span class="field-code">014</span>Plano de ação</label><textarea id="f014"></textarea></div>
+          </div>
+
+          <div class="section-title">Transferência e regulação</div>
+          <div class="fields">
+            <div class="field full"><label for="f015"><span class="field-code">015</span>Quadro clínico para transferência</label><textarea id="f015"></textarea></div>
+            <div class="field full"><label for="f016"><span class="field-code">016</span>Justificativa da transferência</label><textarea id="f016"></textarea></div>
+            <div class="field"><label for="f0161"><span class="field-code">016.1</span>Procedimento solicitado</label><input id="f0161" autocomplete="off"></div>
+            <div class="field"><label for="f0162"><span class="field-code">016.2</span>Código TUSS</label><input id="f0162" autocomplete="off"></div>
+            <div class="field"><label for="f017"><span class="field-code">017</span>Hospital de destino</label><input id="f017" autocomplete="off"></div>
+            <div class="field"><label for="f018"><span class="field-code">018</span>Tipo de leito</label><input id="f018" autocomplete="off"></div>
+          </div>
+
+          <div class="section-title">Identificação médica</div>
+          <div class="fields">
+            <div class="field"><label for="f019"><span class="field-code">019</span>Médico responsável</label><input id="f019" autocomplete="off"></div>
+            <div class="field"><label for="f020"><span class="field-code">020</span>CRM</label><input id="f020" autocomplete="off"></div>
+            <div class="field"><label for="f021"><span class="field-code">021</span>Data [auto]</label><input id="f021" type="date"></div>
+            <div class="field"><label for="f022"><span class="field-code">022</span>Hora [auto]</label><input id="f022" type="time"></div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card">
+        <div class="card-head"><div><h2>Generate</h2><small>Escolha o documento e gere o preview.</small></div></div>
+        <div class="card-body controls">
+          <label for="templateSelect">Árvore de documentos</label>
+          <select id="templateSelect"><option value="relatorio">Relatório médico</option><option value="atestado">Atestado / declaração de atendimento</option><option value="encaminhamento">Encaminhamento</option><option value="transferencia">Solicitação de transferência</option></select>
+          <label class="toggle-line"><input id="includeEmpty" type="checkbox">Mostrar lacunas de campos vazios no documento</label>
+          <button id="generateBtn">Generate preview</button>
+          <div class="control-row"><button class="secondary" id="copyBtn">Copiar</button><button class="secondary" id="downloadBtn">Baixar .html</button></div>
+          <div class="control-row"><button class="ghost" id="printBtn">Imprimir</button><button class="danger" id="clearBtn">Limpar ficha</button></div>
+          <div id="status" class="status"></div>
+          <div class="note"><strong>Princípio v1:</strong> este protótipo não envia dados para servidor. Ele apenas transforma os campos preenchidos em documentos editáveis dentro do navegador. A validação final é sempre do médico responsável.</div>
+          <div class="card" style="box-shadow:none;background:rgba(255,255,255,.045)"><div class="card-head"><div><h2>Preview editável</h2><small>Você pode ajustar o texto antes de copiar ou imprimir.</small></div></div><div class="card-body"><div id="preview" class="preview" contenteditable="true" aria-label="Preview do documento"></div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>Delyone Med Unity · App v1 · Deterministic medical document generator · Created by Dr. Delyone de Paula Canedo Filho</footer>
+  </main>
+
+  <script>
+    const FIELD_IDS=["001","002","003","004","005","006","007","008","008.1","008.2","009.1","009.2","009.3","009.4","009.5","010","011","012","013","014","015","016","016.1","016.2","017","018","019","020","021","022"];
+    const DOM_MAP={"001":"f001","002":"f002","003":"f003","004":"f004","005":"f005","006":"f006","007":"f007","008":"f008","008.1":"f0081","008.2":"f0082","009.1":"f0091","009.2":"f0092","009.3":"f0093","009.4":"f0094","009.5":"f0095","010":"f010","011":"f011","012":"f012","013":"f013","014":"f014","015":"f015","016":"f016","016.1":"f0161","016.2":"f0162","017":"f017","018":"f018","019":"f019","020":"f020","021":"f021","022":"f022"};
+    const LABELS={"001":"Nome do paciente","002":"Nome da mãe","003":"Data de nascimento","004":"Idade","005":"CNS/CPF","006":"Unidade de atendimento","007":"Queixa principal / motivo do atendimento","008":"Atendimento clínico inicial","008.1":"Exame físico","008.2":"Conduta inicial","009.1":"Exames complementares","009.2":"Imagem / link externo","009.3":"ECG","009.4":"USG","009.5":"Outros exames","010":"Hipótese diagnóstica","011":"CID-10","012":"Reavaliação / conduta subsequente","013":"Medicações realizadas","014":"Plano de ação","015":"Quadro clínico para transferência","016":"Justificativa da transferência","016.1":"Procedimento solicitado","016.2":"Código TUSS","017":"Hospital de destino","018":"Tipo de leito","019":"Médico responsável","020":"CRM","021":"Data","022":"Hora"};
+    const $=id=>document.getElementById(id);const status=$("status");const preview=$("preview");
+    function escapeHTML(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function formatDateBR(v){if(!v)return"";const [y,m,d]=v.split("-");return y&&m&&d?`${d}/${m}/${y}`:v}
+    function todayISO(){return new Date().toISOString().slice(0,10)}
+    function timeNow(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+    function calculateAge(birthISO){if(!birthISO)return"";const birth=new Date(birthISO+"T00:00:00");if(Number.isNaN(birth.getTime()))return"";const now=new Date();let age=now.getFullYear()-birth.getFullYear();const m=now.getMonth()-birth.getMonth();if(m<0||(m===0&&now.getDate()<birth.getDate()))age--;return age>=0&&age<=130?String(age):""}
+    function getData(){const data={};FIELD_IDS.forEach(id=>{const el=$(DOM_MAP[id]);data[id]=el?el.value.trim():""});return data}
+    function hasAnyData(data){return Object.values(data).some(Boolean)}
+    function value(data,id){return escapeHTML(data[id]||"")}
+    function line(data,id,label=LABELS[id],includeEmpty=false){const v=value(data,id);if(!v&&!includeEmpty)return"";return `<p><strong>${escapeHTML(label)}:</strong> ${v||"____________________________"}</p>`}
+    function paragraph(data,id,label=LABELS[id],includeEmpty=false){const v=value(data,id);if(!v&&!includeEmpty)return"";return `<p><strong>${escapeHTML(label)}:</strong><br>${v||"____________________________"}</p>`}
+    function block(title,items){const content=items.filter(Boolean).join("\n");return content?`<h3>${escapeHTML(title)}</h3>\n${content}`:""}
+    function meta(data){const patient=value(data,"001")||"Paciente não informado";const unit=value(data,"006")||"Unidade não informada";const date=formatDateBR(data["021"])||"Data não informada";const hour=value(data,"022")||"Hora não informada";return `<div class="doc-meta">Paciente: ${patient}<br>Unidade: ${unit}<br>Data/Hora: ${date} ${hour}</div>`}
+    function signature(data){const doctor=value(data,"019")||"Médico responsável";const crm=value(data,"020")||"CRM";return `<div class="signature"><div class="signature-line"></div><div>${doctor}</div><div>${crm}</div></div>`}
+    function birthLine(data,includeEmpty){const raw=value(data,"003");const formatted=formatDateBR(data["003"]);if(!raw&&!includeEmpty)return"";return `<p><strong>Data de nascimento:</strong> ${formatted||"____/____/______"}</p>`}
+    function templateRelatorio(data,includeEmpty){return `<h2>Relatório Médico</h2>${meta(data)}${block("Identificação",[line(data,"001",undefined,includeEmpty),line(data,"002",undefined,includeEmpty),birthLine(data,includeEmpty),line(data,"004",undefined,includeEmpty),line(data,"005",undefined,includeEmpty)])}${block("Atendimento",[paragraph(data,"007",undefined,includeEmpty),paragraph(data,"008",undefined,includeEmpty),paragraph(data,"008.1",undefined,includeEmpty),paragraph(data,"008.2",undefined,includeEmpty)])}${block("Exames complementares",[paragraph(data,"009.1",undefined,includeEmpty),line(data,"009.2",undefined,includeEmpty),line(data,"009.3",undefined,includeEmpty),line(data,"009.4",undefined,includeEmpty),paragraph(data,"009.5",undefined,includeEmpty)])}${block("Diagnóstico e conduta",[paragraph(data,"010",undefined,includeEmpty),line(data,"011",undefined,includeEmpty),paragraph(data,"012",undefined,includeEmpty),paragraph(data,"013",undefined,includeEmpty),paragraph(data,"014",undefined,includeEmpty)])}${signature(data)}`}
+    function templateAtestado(data,includeEmpty){const patient=value(data,"001")||(includeEmpty?"____________________________":"paciente não informado");const date=formatDateBR(data["021"])||(includeEmpty?"____/____/______":"data não informada");const hour=value(data,"022")||(includeEmpty?"____:____":"hora não informada");const unit=value(data,"006")||(includeEmpty?"____________________________":"unidade não informada");return `<h2>Declaração de Atendimento</h2><p>Declaro, para os devidos fins, que ${patient} foi atendido(a) em ${unit}, na data de ${date}, às ${hour}.</p>${paragraph(data,"007","Motivo do atendimento",includeEmpty)}${paragraph(data,"010","Hipótese diagnóstica / observação clínica",includeEmpty)}${paragraph(data,"014","Orientações / plano de ação",includeEmpty)}${signature(data)}`}
+    function templateEncaminhamento(data,includeEmpty){return `<h2>Encaminhamento Médico</h2>${meta(data)}<p>Encaminho o(a) paciente abaixo identificado(a) para avaliação e/ou seguimento conforme quadro clínico descrito.</p>${block("Identificação",[line(data,"001",undefined,includeEmpty),birthLine(data,includeEmpty),line(data,"004",undefined,includeEmpty),line(data,"005",undefined,includeEmpty)])}${block("Resumo clínico",[paragraph(data,"007",undefined,includeEmpty),paragraph(data,"008",undefined,includeEmpty),paragraph(data,"008.1",undefined,includeEmpty),paragraph(data,"009.1",undefined,includeEmpty),paragraph(data,"010",undefined,includeEmpty),paragraph(data,"014",undefined,includeEmpty)])}${signature(data)}`}
+    function templateTransferencia(data,includeEmpty){return `<h2>Solicitação de Transferência</h2>${meta(data)}${block("Dados da transferência",[paragraph(data,"015",undefined,includeEmpty),paragraph(data,"016",undefined,includeEmpty),line(data,"016.1",undefined,includeEmpty),line(data,"016.2",undefined,includeEmpty),line(data,"017",undefined,includeEmpty),line(data,"018",undefined,includeEmpty)])}${block("Dados clínicos de suporte",[paragraph(data,"007",undefined,includeEmpty),paragraph(data,"008.1",undefined,includeEmpty),paragraph(data,"009.1",undefined,includeEmpty),paragraph(data,"010",undefined,includeEmpty),paragraph(data,"013",undefined,includeEmpty),paragraph(data,"014",undefined,includeEmpty)])}${signature(data)}`}
+    function renderDocument(){const data=getData();const includeEmpty=$("includeEmpty").checked;const type=$("templateSelect").value;if(!hasAnyData(data)&&!includeEmpty){preview.innerHTML="";setStatus("Preencha pelo menos um campo ou marque “Mostrar lacunas”.","warn");return}const templates={relatorio:templateRelatorio,atestado:templateAtestado,encaminhamento:templateEncaminhamento,transferencia:templateTransferencia};preview.innerHTML=templates[type](data,includeEmpty).trim();setStatus("Preview gerado. Revise antes de usar.","ok")}
+    function setStatus(message,kind=""){status.textContent=message;status.className="status "+kind}
+    async function copyPreview(){const text=preview.innerText.trim();if(!text){setStatus("Nenhum documento gerado para copiar.","warn");return}try{await navigator.clipboard.writeText(text);setStatus("Documento copiado para a área de transferência.","ok")}catch(e){setStatus("Não consegui copiar automaticamente. Selecione o texto manualmente.","warn")}}
+    function downloadHTML(){const h=preview.innerHTML.trim();if(!h){setStatus("Nenhum documento gerado para baixar.","warn");return}const doc=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Delyone Med Unity Document</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;line-height:1.55;color:#111}.doc-meta{color:#555;border-bottom:1px solid #ddd;padding-bottom:10px;margin-bottom:18px}.signature{text-align:center;margin-top:42px}.signature-line{width:420px;max-width:90%;border-top:1px solid #111;margin:48px auto 8px}h2{text-align:center;text-transform:uppercase}</style></head><body>${h}</body></html>`;const blob=new Blob([doc],{type:"text/html;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="delyone-med-unity-document.html";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);setStatus("Arquivo HTML gerado para download.","ok")}
+    function clearForm(){if(!confirm("Limpar todos os campos da ficha? Esta ação não pode ser desfeita."))return;Object.values(DOM_MAP).forEach(domId=>{const el=$(domId);if(el)el.value=""});initAutoDateTime();preview.innerHTML="";setStatus("Ficha limpa. Dados removidos da sessão.","ok")}
+    function initAutoDateTime(){if(!$("f021").value)$("f021").value=todayISO();if(!$("f022").value)$("f022").value=timeNow()}
+    $("f003").addEventListener("change",()=>{$("f004").value=calculateAge($("f003").value)});$("generateBtn").addEventListener("click",renderDocument);$("copyBtn").addEventListener("click",copyPreview);$("downloadBtn").addEventListener("click",downloadHTML);$("printBtn").addEventListener("click",()=>window.print());$("clearBtn").addEventListener("click",clearForm);initAutoDateTime();
+  </script>
+</body>
+</html>
