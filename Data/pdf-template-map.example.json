@@ -1,0 +1,7 @@
+{
+  "rule": "Nome recomendado dos campos no PDF: DMU_001, DMU_002, DMU_008_1 etc.",
+  "example": {
+    "001": "paciente_nome",
+    "008.1": "exame_fisico"
+  }
+}
