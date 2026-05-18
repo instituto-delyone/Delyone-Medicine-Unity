@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Delyone Med Unity v1.3</title>
+<link rel="stylesheet" href="./Css/style.css" />
+<script defer src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script defer src="./Js/app.js"></script>
+</head>
+<body>
+<main class="shell">
+<header class="hero"><div class="eyebrow">Delyone Med Unity · v1.3</div><h1>Native Templates<br>+ Local Memory</h1><p>Escolha documentos SUS nativos, preencha o Mother Form, gere PDF preenchido quando houver campos compatíveis e mantenha histórico local dos últimos 10 formulários.</p><div class="badges"><span>Senha Netlify</span><span>Templates nativos</span><span>Histórico local</span><span>Upload opcional</span></div></header>
+<section class="grid">
+<article class="card"><div class="card-head"><h2>Mother Form</h2><small>Campos universais + campos oficiais SUS.</small></div><div class="card-body" id="formRoot"></div></article>
+<aside class="card"><div class="card-head"><h2>Documento</h2><small>Fluxo principal: nativo. Fluxo avançado: upload.</small></div><div class="card-body controls">
+<label>Template nativo</label><select id="nativeTemplate"></select>
+<div class="row"><button id="inspectNative">Inspecionar nativo</button><button id="fillNative">Gerar PDF nativo</button></div>
+<label>Ou carregar PDF externo</label><input id="pdfInput" type="file" accept="application/pdf" />
+<div class="row"><button class="secondary" id="inspectUpload">Inspecionar upload</button><button class="secondary" id="fillUpload">Gerar PDF upload</button></div>
+<div class="row"><button class="ghost" id="saveSnapshot">Salvar no histórico</button><button class="danger" id="clearForm">Limpar ficha</button></div>
+<div id="status" class="status"></div>
+<div class="note"><b>Memória local:</b> salva só neste navegador/aparelho. Não é servidor, não é banco institucional.</div>
+<div class="card inner"><div class="card-head"><h2>Últimos 10 formulários</h2><small>Restaurar ou apagar histórico local.</small></div><div class="card-body"><div id="historyList"></div><button class="danger fullbtn" id="clearHistory">Apagar histórico</button></div></div>
+<div class="card inner"><div class="card-head"><h2>Campos do PDF</h2><small>Nomes detectados no formulário PDF.</small></div><div class="card-body"><pre id="pdfFields">Nenhum PDF inspecionado.</pre></div></div>
+</div></aside>
+</section><footer>Delyone Med Unity v1.3 · native templates + local memory</footer></main>
+</body></html>
