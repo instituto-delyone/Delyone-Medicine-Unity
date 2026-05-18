@@ -1,0 +1,15 @@
+{
+  "templateId": "001-aih-goiania",
+  "templateName": "AIH Goiânia",
+  "pdfFile": "./Templates/PDF/001-aih-goiania.pdf",
+  "fields": {
+    "nome_paciente": {
+      "canonicalId": "001",
+      "pdfFieldName": "Group 7"
+    },
+    "sinais_sintomas": {
+      "canonicalId": "020",
+      "pdfFieldName": "d9ef66cb2f45b39e-e4e44ab11cf6e0e7"
+    }
+  }
+}
