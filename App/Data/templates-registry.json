@@ -1,0 +1,23 @@
+[
+  {
+    "id": "001",
+    "name": "AIH Goiânia",
+    "type": "aih",
+    "file": "./Templates/PDF/001-aih-goiania.pdf",
+    "native": true
+  },
+  {
+    "id": "002",
+    "name": "APAC Goiânia",
+    "type": "apac",
+    "file": "./Templates/PDF/002-apac-goiania.pdf",
+    "native": true
+  },
+  {
+    "id": "003",
+    "name": "Receituário SUS",
+    "type": "receituario",
+    "file": "./Templates/PDF/003-receituario-sus.pdf",
+    "native": true
+  }
+]

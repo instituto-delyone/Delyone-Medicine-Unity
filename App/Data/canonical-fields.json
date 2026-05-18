@@ -1,0 +1,289 @@
+[
+  {
+    "id": "001",
+    "key": "paciente_nome",
+    "label": "Nome do paciente",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "002",
+    "key": "paciente_nome_mae",
+    "label": "Nome da mãe",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "003",
+    "key": "paciente_data_nascimento",
+    "label": "Data de nascimento",
+    "group": "Identificação",
+    "type": "date"
+  },
+  {
+    "id": "004",
+    "key": "paciente_idade",
+    "label": "Idade",
+    "group": "Identificação",
+    "type": "auto"
+  },
+  {
+    "id": "005",
+    "key": "paciente_cns",
+    "label": "Cartão Nacional de Saúde (CNS)",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "006",
+    "key": "unidade_atendimento",
+    "label": "Unidade / estabelecimento solicitante",
+    "group": "Estabelecimento",
+    "type": "text"
+  },
+  {
+    "id": "006.1",
+    "key": "cnes_solicitante",
+    "label": "CNES solicitante",
+    "group": "Estabelecimento",
+    "type": "text"
+  },
+  {
+    "id": "006.2",
+    "key": "estabelecimento_executante",
+    "label": "Estabelecimento executante",
+    "group": "Estabelecimento",
+    "type": "text"
+  },
+  {
+    "id": "006.3",
+    "key": "cnes_executante",
+    "label": "CNES executante",
+    "group": "Estabelecimento",
+    "type": "text"
+  },
+  {
+    "id": "007",
+    "key": "queixa_principal",
+    "label": "Queixa principal / motivo",
+    "group": "Clínico",
+    "type": "textarea"
+  },
+  {
+    "id": "008",
+    "key": "atendimento_clinico_inicial",
+    "label": "Atendimento clínico inicial",
+    "group": "Clínico",
+    "type": "textarea"
+  },
+  {
+    "id": "008.1",
+    "key": "sinais_sintomas",
+    "label": "Principais sinais e sintomas clínicos",
+    "group": "Clínico",
+    "type": "textarea"
+  },
+  {
+    "id": "008.2",
+    "key": "condicoes_justificam",
+    "label": "Condições que justificam internação/procedimento",
+    "group": "Clínico",
+    "type": "textarea"
+  },
+  {
+    "id": "009.1",
+    "key": "exames_resultados",
+    "label": "Resultados de exames / provas diagnósticas",
+    "group": "Exames",
+    "type": "textarea"
+  },
+  {
+    "id": "010",
+    "key": "diagnostico_inicial",
+    "label": "Diagnóstico inicial / descrição do diagnóstico",
+    "group": "Diagnóstico",
+    "type": "textarea"
+  },
+  {
+    "id": "011",
+    "key": "cid10_principal",
+    "label": "CID-10 principal",
+    "group": "Diagnóstico",
+    "type": "text"
+  },
+  {
+    "id": "011.1",
+    "key": "cid10_secundario",
+    "label": "CID-10 secundário",
+    "group": "Diagnóstico",
+    "type": "text"
+  },
+  {
+    "id": "011.2",
+    "key": "cid10_associadas",
+    "label": "CID-10 causas associadas",
+    "group": "Diagnóstico",
+    "type": "text"
+  },
+  {
+    "id": "012",
+    "key": "procedimento_principal_codigo",
+    "label": "Código do procedimento principal",
+    "group": "Procedimentos",
+    "type": "text"
+  },
+  {
+    "id": "012.1",
+    "key": "procedimento_principal_nome",
+    "label": "Nome/descrição do procedimento principal",
+    "group": "Procedimentos",
+    "type": "text"
+  },
+  {
+    "id": "012.2",
+    "key": "procedimento_qtd",
+    "label": "Quantidade",
+    "group": "Procedimentos",
+    "type": "text"
+  },
+  {
+    "id": "012.3",
+    "key": "procedimento_secundario",
+    "label": "Procedimento secundário",
+    "group": "Procedimentos",
+    "type": "text"
+  },
+  {
+    "id": "013",
+    "key": "medicacoes_prescricao",
+    "label": "Prescrição / modo de uso",
+    "group": "Prescrição",
+    "type": "textarea"
+  },
+  {
+    "id": "014",
+    "key": "observacoes_plano",
+    "label": "Observações / plano de ação",
+    "group": "Clínico",
+    "type": "textarea"
+  },
+  {
+    "id": "015",
+    "key": "endereco",
+    "label": "Endereço",
+    "group": "Residência",
+    "type": "text"
+  },
+  {
+    "id": "016",
+    "key": "municipio_residencia",
+    "label": "Município de residência",
+    "group": "Residência",
+    "type": "text"
+  },
+  {
+    "id": "017",
+    "key": "ibge_municipio",
+    "label": "Código IBGE município",
+    "group": "Residência",
+    "type": "text"
+  },
+  {
+    "id": "018",
+    "key": "uf",
+    "label": "UF",
+    "group": "Residência",
+    "type": "text"
+  },
+  {
+    "id": "019",
+    "key": "cep",
+    "label": "CEP",
+    "group": "Residência",
+    "type": "text"
+  },
+  {
+    "id": "020",
+    "key": "telefone",
+    "label": "Telefone de contato",
+    "group": "Contato",
+    "type": "text"
+  },
+  {
+    "id": "021",
+    "key": "data",
+    "label": "Data",
+    "group": "Identificação médica",
+    "type": "auto_date"
+  },
+  {
+    "id": "022",
+    "key": "hora",
+    "label": "Hora",
+    "group": "Identificação médica",
+    "type": "auto_time"
+  },
+  {
+    "id": "030",
+    "key": "numero_prontuario",
+    "label": "Nº do prontuário",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "031",
+    "key": "sexo",
+    "label": "Sexo",
+    "group": "Identificação",
+    "type": "select"
+  },
+  {
+    "id": "032",
+    "key": "raca_cor",
+    "label": "Raça/cor",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "033",
+    "key": "responsavel_nome",
+    "label": "Nome do responsável",
+    "group": "Identificação",
+    "type": "text"
+  },
+  {
+    "id": "040",
+    "key": "clinica",
+    "label": "Clínica",
+    "group": "AIH",
+    "type": "text"
+  },
+  {
+    "id": "041",
+    "key": "carater_internacao",
+    "label": "Caráter da internação",
+    "group": "AIH",
+    "type": "text"
+  },
+  {
+    "id": "050",
+    "key": "medico_nome",
+    "label": "Nome do profissional solicitante",
+    "group": "Identificação médica",
+    "type": "text"
+  },
+  {
+    "id": "051",
+    "key": "medico_doc",
+    "label": "CNS/CPF do profissional",
+    "group": "Identificação médica",
+    "type": "text"
+  },
+  {
+    "id": "052",
+    "key": "medico_crm",
+    "label": "Assinatura/carimbo CRM",
+    "group": "Identificação médica",
+    "type": "text"
+  }
+]
