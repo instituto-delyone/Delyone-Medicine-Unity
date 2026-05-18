@@ -82,3 +82,10 @@ Instituto Delyone de Medicina e Tecnologia
 # Delyone Med Unity v1.3
 
 Native Templates + Local Memory.
+
+# App v1.3.1 — Clean Working Build
+
+Versão para passar a limpo e testar com templates nativos.
+
+
+
