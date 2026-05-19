@@ -111,5 +111,9 @@ Por ultimo, os filtros logicos sao codificados e funcionam apenas com informaç�
 Grato!
 Dr. Delyone de Paula Canedo Filho
 
+Tal projeto pode ser utilizado para fins de obtenção de conhecimento livremente, 
+  apenas observo que sua raiz de funcionamento esta protegida sob o número de patente brasileiro : BR 10 2026 001743 4.
+  o mesmo, apesar de ter seu texto completo ainda em sigilo, será desenvolvido futuramente.
+
 
 
