@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MedUnity Delyone v1.6.1</title>
+  <link rel="stylesheet" href="./Css/style.css" />
+  <!-- Dependências externas: mantidas antes do app.js.
+       O app.js também possui fallback dinâmico caso alguma CDN falhe. -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script defer src="./Js/app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="eyebrow">MedUnity Delyone · v1.6.1</div>
+      <h1>Clinical PDF<br/>AcroForm Engine</h1>
+      <p>
+        Motor determinístico para preenchimento de documentos médicos institucionais por campos canônicos,
+        templates PDF nativos e mapeamento semântico externo em JSON.
+      </p>
+      <div class="badges">
+        <span>AcroForm</span>
+        <span>JSON Mapping</span>
+        <span>Dicionário externo</span>
+        <span>Sem IA em produção</span>
+      </div>
+    </header>
+
+    <section class="notice">
+      <strong>Uso restrito.</strong>
+      O uso dos documentos é restrito a profissionais médicos contratados ou formalmente autorizados a serviço do SUS.
+      A validade de uso depende dos logotipos, brasões e autorizações institucionais aplicáveis.
+    </section>
+
+    <section class="layout">
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <h2>Ficha-mãe</h2>
+            <small>Campos carregados de App/Data/canonical-fields.json</small>
+          </div>
+          <button id="compactToggle" class="mini" type="button">Modo compacto</button>
+        </div>
+        <div id="formRoot" class="card-body"></div>
+      </article>
+
+      <aside class="card">
+        <div class="card-head">
+          <div>
+            <h2>Documento nativo</h2>
+            <small>Template + mapa externo.</small>
+          </div>
+        </div>
+
+        <div class="card-body stack">
+          <label for="templateSelect">Template</label>
+          <select id="templateSelect"></select>
+
+          <div class="action-grid">
+            <button id="generateBtn" type="button">Gerar documento</button>
+            <button id="inspectBtn" class="secondary" type="button">Inspecionar template</button>
+          </div>
+
+          <div class="action-grid">
+            <button id="saveDraftBtn" class="secondary" type="button">Salvar rascunho</button>
+            <button id="clearBtn" class="danger" type="button">Limpar</button>
+          </div>
+
+          <div id="status" class="status">Carregando motor v1.6.1...</div>
+
+          <section class="panel">
+            <h3>Últimos rascunhos locais</h3>
+            <div id="draftList" class="draft-list"></div>
+          </section>
+
+          <section class="panel">
+            <h3>Campos detectados no template</h3>
+            <pre id="pdfFieldList">Nenhum PDF inspecionado ainda.</pre>
+          </section>
+
+          <section class="panel">
+            <h3>Arquitetura</h3>
+            <p>
+              O app lê o dicionário canônico e o mapa do template em JSON. Para expandir,
+              adicione campos no dicionário e edite o mapa do documento.
+            </p>
+          </section>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      MedUnity Delyone v1.6.1 · PDF + DOCX Engine · Clinical Canonical Field Registry
+    </footer>
+  </main>
+</body>
+</html>
