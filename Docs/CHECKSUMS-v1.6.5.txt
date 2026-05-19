@@ -1,0 +1,4 @@
+f4e540330f96b57cbec1cf1e2e85cc3261d595550cf6a02e4001a88b22d46402  App/Data/templates-registry.json
+518eee74f57205551214e718e3eea06a26fcb4c97166d90142c98c23e0981e6e  App/Templates/DOCX/002-prescricao-upa-v1.docx
+313699ae59e5310984c35adecb301aa5c928368afde67aec89d3b271d9c268a8  Docs/MANIFEST-v1.6.5.json
+d042ca263c05b6c014532dd7c35a06d77498023d916ce83fbd875a163bd62ce5  Docs/README-v1.6.5-docx-filename-fix.md
