@@ -1,0 +1,7 @@
+{
+  "App/Data/field-map-prescricao-upa-v1.json": "8208cde8e1babc6267ea36891ff8d98e99dc5af34a8e676251298a317ddf1dd3",
+  "App/Data/templates-registry.json": "28a8f3cf057f71f24e2d3ce04afdd1a5ff4c107fad8719e6e8284c3cea36d3fc",
+  "App/Templates/DOCX/002-prescricao-upa-v1.docx": "518eee74f57205551214e718e3eea06a26fcb4c97166d90142c98c23e0981e6e",
+  "Docs/README-v1.6.2-clean-docx-patch.md": "ed2002986441e1b4026cc984e93378e03abe48b483b72998291124940207f021",
+  "public/templates/002-prescricao-upa-v1.docx": "518eee74f57205551214e718e3eea06a26fcb4c97166d90142c98c23e0981e6e"
+}
