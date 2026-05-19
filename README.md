@@ -89,7 +89,10 @@ Versão para passar a limpo e testar com templates nativos.
 
 # Hibrid thinking model - Reflexion Note
 note que o desenvolvimento do projeto é simples no nível arquitetural. Porem, tal simplicidade advém de estudo profundo de áreas do conhecimento até entao pouquissimo miscíveis. o uso de ferramentas externas é mínimo e o uso de inteligência ou conhecimento operacionalizado fora do meu domínio intelectual, a menos que eu o aprenda, é, a partir dos meus principios, algo não facilmente justificável, e preterido sempre que possivel. de tal modo, dispensa-se nesse projeto a discussao sobre se é feito a partir de IA ou não. estando o limite sobre qual é o inicio da IA e qual não é, já superfluo no nosso contexto temporal. na maior parte dos casos a uso para tornar as ideias mais didaticas ao publico geral, ou para fins de universalizar linguagens, fim esse que é refletido no projeto. No qual foi utilizado modelo de linguagem desenvolvido pelo proprio autor. eu. nas seguintes condições:
-cerca da personal IA - AURora
+
+acerca da personal IA - AURora
+
+AURORA - o nome advém da tentativa de impossibilitar a ligação da invenção a qualquer acrônimo. ex: nome universal: norte, ouro, fala...
 
 A inteligência artificial foi utilizada como instrumento de aceleração cognitiva e exploração técnica, auxiliando o inventor a compreender o estado da técnica na interseção entre medicina, engenharia de linguagem, ciências da informação, computação e gestão em saúde pública.
 
