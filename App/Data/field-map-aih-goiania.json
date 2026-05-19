@@ -1,0 +1,215 @@
+{
+  "schema": "medunity.field-map.v1",
+  "version": "1.5.0",
+  "templateId": "aih-goiania",
+  "templateName": "AIH Goiânia — AcroForm",
+  "pdfFile": "./Templates/PDF/001-aih-goiania.pdf",
+  "mode": "acroform",
+  "description": "Mapa semântico entre campos canônicos MedUnity e campos AcroForm do PDF AIH Goiânia. Os nomes de campos podem ser editados sem alterar o app.",
+  "legalDisclaimer": "O uso deste documento em qualquer âmbito que não seja por profissionais médicos contratados ou formalmente autorizados a serviço do Sistema Único de Saúde é expressamente proibido e poderá sujeitar o responsável às sanções administrativas, municipais, federais, civis e penais cabíveis. A liberação e a validade de uso do documento dependem da presença, autorização e adequação dos logotipos, brasões e elementos institucionais aplicáveis.",
+  "fields": [
+    {
+      "canonicalId": "001",
+      "role": "nome_paciente",
+      "label": "Nome do paciente",
+      "pdfFieldCandidates": [
+        "001",
+        "1",
+        "nome",
+        "nome_paciente",
+        "patient_name",
+        "Group 7"
+      ],
+      "required": true
+    },
+    {
+      "canonicalId": "020",
+      "role": "quadro_clinico",
+      "label": "Quadro clínico / anamnese",
+      "pdfFieldCandidates": [
+        "002",
+        "2",
+        "quadro_clinico",
+        "clinical_summary",
+        "20 PRINCIPAIS SINAIS E SINTOMAS CLÍNICOS JUSTIFICATIVA DA INTERNAÇÃO"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "020.2",
+      "role": "quadro_clinico_continuacao_1",
+      "label": "Continuação do quadro clínico",
+      "pdfFieldCandidates": [
+        "002.1",
+        "2.1",
+        "quadro_clinico_continuacao_1"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "020.3",
+      "role": "quadro_clinico_continuacao_2",
+      "label": "Continuação 2 do quadro clínico",
+      "pdfFieldCandidates": [
+        "002.2",
+        "2.2",
+        "quadro_clinico_continuacao_2"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "002",
+      "role": "data_nascimento",
+      "label": "Data de nascimento",
+      "pdfFieldCandidates": [
+        "002",
+        "8 DATA DE NASCIMENTO",
+        "data_nascimento"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "005",
+      "role": "cns",
+      "label": "CNS",
+      "pdfFieldCandidates": [
+        "005",
+        "7 CARTÃO NACIONAL DE SAÚDE CNS",
+        "cns"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "006",
+      "role": "nome_mae",
+      "label": "Nome da mãe",
+      "pdfFieldCandidates": [
+        "006",
+        "11 NOME DA MÃE",
+        "nome_mae"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "015",
+      "role": "municipio",
+      "label": "Município",
+      "pdfFieldCandidates": [
+        "015",
+        "16 MUNICÍPIO DE RESIDÊNCIA",
+        "municipio"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "040",
+      "role": "diagnostico_inicial",
+      "label": "Diagnóstico inicial",
+      "pdfFieldCandidates": [
+        "040",
+        "23 DIAGNÓSTICO INICIAL",
+        "diagnostico"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "040.1",
+      "role": "cid10",
+      "label": "CID-10 principal",
+      "pdfFieldCandidates": [
+        "040.1",
+        "24 CID 10 PRINCIPAL",
+        "cid10"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "090",
+      "role": "procedimento_descricao",
+      "label": "Procedimento solicitado",
+      "pdfFieldCandidates": [
+        "090",
+        "27 DESCRIÇÃO DO PROCEDIMENTO SOLICITADO",
+        "procedimento"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "091",
+      "role": "procedimento_codigo",
+      "label": "Código do procedimento",
+      "pdfFieldCandidates": [
+        "091",
+        "28 CÓDIGO DO PROCEDIMENTO",
+        "codigo_procedimento"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "080",
+      "role": "clinica",
+      "label": "Clínica",
+      "pdfFieldCandidates": [
+        "080",
+        "29 CLÍNICA",
+        "clinica"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "100",
+      "role": "medico_solicitante",
+      "label": "Médico solicitante",
+      "pdfFieldCandidates": [
+        "100",
+        "33 NOME DO PROFISSIONAL SOLICITANTEASSISTENTE",
+        "medico"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "100.2",
+      "role": "crm",
+      "label": "CRM / registro profissional",
+      "pdfFieldCandidates": [
+        "100.2",
+        "35ASSINATURA E CARIMBO N DO REGISTRO DO CONSELHO",
+        "crm"
+      ],
+      "required": false
+    },
+    {
+      "canonicalId": "100.4",
+      "role": "data_solicitacao",
+      "label": "Data da solicitação",
+      "pdfFieldCandidates": [
+        "100.4",
+        "34 DATA DA SOLICITAÇÃO",
+        "data_solicitacao"
+      ],
+      "required": false
+    }
+  ],
+  "overflow": {
+    "sourceCanonicalId": "020",
+    "chunks": [
+      {
+        "canonicalId": "020",
+        "maxChars": 850
+      },
+      {
+        "canonicalId": "020.2",
+        "maxChars": 850
+      },
+      {
+        "canonicalId": "020.3",
+        "maxChars": 850
+      }
+    ]
+  },
+  "notes": [
+    "Quando os nomes reais dos campos AcroForm forem conhecidos pela inspeção do app, basta adicionar esses nomes em pdfFieldCandidates.",
+    "O motor v1.5 usa matching tolerante: nome exato, normalizado e por inclusão textual.",
+    "Os campos 2.1 e 2.2 funcionam como continuação do quadro clínico quando o texto principal extrapola o limite configurado."
+  ]
+}
