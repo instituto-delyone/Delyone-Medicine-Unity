@@ -1,0 +1,26 @@
+{
+  "schema": "medunity.templates-registry.v1",
+  "version": "1.6.5",
+  "templates": [
+    {
+      "id": "aih-goiania",
+      "number": "001",
+      "name": "AIH Goiânia",
+      "type": "AIH",
+      "pdfFile": "./Templates/PDF/001-aih-goiania.pdf",
+      "fieldMapFile": "./Data/field-map-aih-goiania.json",
+      "status": "active",
+      "description": "Laudo para Solicitação de Autorização de Internação Hospitalar — versão AcroForm mapeada por JSON."
+    },
+    {
+      "id": "prescricao-upa-v1",
+      "number": "002",
+      "name": "Prescrição UPA",
+      "type": "DOCX",
+      "docxFile": "./Templates/DOCX/002-prescricao-upa-v1.docx",
+      "fieldMapFile": "./Data/field-map-prescricao-upa-v1.json",
+      "status": "active",
+      "description": "Prescrição médica/evolução UPA em DOCX com placeholders canônicos MedUnity."
+    }
+  ]
+}
