@@ -115,5 +115,4 @@ Tal projeto pode ser utilizado para fins de obtenção de conhecimento livrement
   apenas observo que sua raiz de funcionamento esta protegida sob o número de patente brasileiro : BR 10 2026 001743 4.
   o mesmo, apesar de ter seu texto completo ainda em sigilo, será desenvolvido futuramente.
 
-
-
+por último, libero deliberadamente o acesso e uso da plataforma que será desenvolvida futuramente conforme o ritmo do instituto. apenas aconselho adicionalmente o uso dentro da plataforma publica, devido ao sigilo da patente e a falta de controle da propriedade quando reproduzida externamente.
