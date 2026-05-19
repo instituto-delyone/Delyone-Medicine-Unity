@@ -1,0 +1,10 @@
+{
+  "release": "MedUnity v1.6.5 DOCX filename fix",
+  "diagnosis": "Arquivo DOCX estava com espaços antes do nome no GitHub/ZIP.",
+  "replace": [
+    "App/Templates/DOCX/002-prescricao-upa-v1.docx",
+    "App/Data/templates-registry.json"
+  ],
+  "keep_registry_relative_to_app_root": true,
+  "expected_docx_fetch": "./Templates/DOCX/002-prescricao-upa-v1.docx"
+}
