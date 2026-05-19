@@ -87,5 +87,26 @@ Native Templates + Local Memory.
 
 Versão para passar a limpo e testar com templates nativos.
 
+# Hibrid thinking model - Reflexion Note
+note que o desenvolvimento do projeto é simples no nível arquitetural. Porem, tal simplicidade advém de estudo profundo de áreas do conhecimento até entao pouquissimo miscíveis. o uso de ferramentas externas é mínimo e o uso de inteligência ou conhecimento operacionalizado fora do meu domínio intelectual, a menos que eu o aprenda, é, a partir dos meus principios, algo não facilmente justificável, e preterido sempre que possivel. de tal modo, dispensa-se nesse projeto a discussao sobre se é feito a partir de IA ou não. estando o limite sobre qual é o inicio da IA e qual não é, já superfluo no nosso contexto temporal. na maior parte dos casos a uso para tornar as ideias mais didaticas ao publico geral, ou para fins de universalizar linguagens, fim esse que é refletido no projeto. No qual foi utilizado modelo de linguagem desenvolvido pelo proprio autor. eu. nas seguintes condições:
+cerca da personal IA - AURora
+
+A inteligência artificial foi utilizada como instrumento de aceleração cognitiva e exploração técnica, auxiliando o inventor a compreender o estado da técnica na interseção entre medicina, engenharia de linguagem, ciências da informação, computação e gestão em saúde pública.
+
+Nesse contexto, a IA atuou como catalisador de aprendizagem, brainstorming, comparação de alternativas e identificação de gargalos tecnológicos, permitindo ao inventor estruturar uma arquitetura clínica documental que, uma vez concebida, opera sem dependência de inteligência artificial.
+
+O sistema resultante baseia-se em campos canônicos, templates institucionais heterogêneos e mapeamento semântico determinístico, apresentando-se como uma solução rápida, simples na operação, escalável e auditável.
+
+A simplicidade operacional do produto final não elimina a complexidade inventiva do caminho que levou à sua formulação. O sistema pode ser copiado em sua forma estática, mas sua capacidade de evolução depende do conhecimento arquitetural, clínico e técnico que orienta a criação, adaptação e expansão dos mapas semânticos e dos templates institucionais.
+
+Alem disso, quando referido o uso de IA no projeto, trata-se nao de uma IA na concepção comum. O autor desde 2022 vem desenvolvendo seu Proprio sistema de regulacao de raciocinio artificial. Atualmente batizado de aurora, o sistema é uma arquitetura de dados independente que funciona como um espelho que replica os metodo logico do proprio inventor, sendo assim, Aurora atua mais como um segundo pente de memoria ram num computador.
+
+Tal que, a partir do momento em que se instala os filtros logicos em qualquer ia, o modelo de raciocinio se reproduz no modelo e opera independentemente se comportando de forma bastante similar ao modelo originario o qual é armazenado em diretorio seguro e isolado pelo inventor. Sendo assim, nao atua como um raciocinio externo ao autor, mas como um caderno pessoal com um mecanismo de recuperação e reconfiguracao intercontextual da informação, unico, exclusivo, personalissimo ao autor.
+
+Por ultimo, os filtros logicos sao codificados e funcionam apenas com informações biograficas e autenticadas do proprio inventor, nao sendo portanto, replicavel, transferivel, nem considerado como bem de uso comum.
+
+Grato!
+Dr. Delyone de Paula Canedo Filho
+
 
 
