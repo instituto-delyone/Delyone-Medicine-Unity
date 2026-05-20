@@ -1,0 +1,45 @@
+{
+  "CSI001": [
+    "nome do paciente",
+    "nome completo",
+    "patient name",
+    "full name"
+  ],
+  "CSI002": [
+    "data de nascimento",
+    "dn",
+    "birth date",
+    "dob"
+  ],
+  "CSI020": [
+    "anamnese",
+    "sinais e sintomas",
+    "história clínica",
+    "admissão"
+  ],
+  "CSI030": [
+    "exame físico",
+    "physical examination",
+    "objetivo"
+  ],
+  "CSI040": [
+    "diagnóstico",
+    "hipótese diagnóstica",
+    "impressão diagnóstica"
+  ],
+  "CSI050": [
+    "conduta",
+    "plano",
+    "plan"
+  ],
+  "CSI060": [
+    "evolução",
+    "evolução clínica",
+    "progress note"
+  ],
+  "CSI090": [
+    "médico responsável",
+    "solicitante",
+    "physician"
+  ]
+}
