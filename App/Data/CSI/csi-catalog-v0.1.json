@@ -1,0 +1,18 @@
+{
+  "version": "0.1",
+  "name": "CSI - Classificação Semiológica Internacional",
+  "description": "Camada semântica universal para interoperabilidade documental médica.",
+  "domains": {
+    "000": "Identificação do paciente",
+    "010": "Dados administrativos",
+    "020": "Semiologia e anamnese",
+    "030": "Exame físico",
+    "040": "Diagnóstico",
+    "050": "Conduta",
+    "060": "Evolução",
+    "070": "Prescrição estruturada",
+    "080": "Procedimentos",
+    "090": "Profissional responsável",
+    "100": "Datas automáticas e auditoria"
+  }
+}
