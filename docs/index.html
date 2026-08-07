@@ -97,3 +97,46 @@
   </main>
 </body>
 </html>
+<style>
+/* Fix e alinhamento do seletor de templates (select) */
+select, 
+.template-select, 
+#templateSelect {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 16px !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: #f3f4f6 !important;
+  background-color: #2a2a32 !important;
+  border: 1px solid #3f3f46 !important;
+  border-radius: 8px !important;
+  appearance: none !important; /* Remove o estilo feio padrão do SO */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23a1a1aa' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  cursor: pointer !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+/* Ajuste nos itens da lista suspensa */
+select option {
+  background-color: #1e1e24 !important;
+  color: #ffffff !important;
+  padding: 10px !important;
+}
+
+/* Garante que o container pai não estoure no mobile */
+.template-section, 
+.form-group {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+</style>
+
