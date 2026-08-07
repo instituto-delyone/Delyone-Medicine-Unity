@@ -34,6 +34,20 @@ App/
 │       └── 001-aih-goiania.pdf
 └── index.html
 
+script
+                    FICHA-MÃE
+                        │
+                        ▼
+          REGISTRO CLÍNICO CANÔNICO
+                        │
+             ┌──────────┼──────────┐
+             ▼          ▼          ▼
+          Template   Template   Template
+             │          │          │
+             ▼          ▼          ▼
+          Relatório   Formulário                                          Documento
+
+
 Features
 
 * Native AcroForm PDF engine
