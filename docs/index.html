@@ -1295,76 +1295,103 @@ document.addEventListener("DOMContentLoaded", () => {
 
     </div>
 
-  </section>
+      /* =======================================================
+       GENERATE
+       ======================================================= */
+
+    document
+      .getElementById("generateBtn")
+      .addEventListener(
+        "click",
+        () => {
+
+          if (!state.template) {
+
+            showToast(
+              "Selecione um template primeiro."
+            );
+
+            return;
+
+          }
+
+          // Puxa os dados atualizados da Ficha-Mãe
+          const master = getMasterData();
+
+          const templateName =
+            templateSelect
+              .options[
+                templateSelect.selectedIndex
+              ]
+              .text;
 
 
+          preview.innerHTML = `
 
-  <!-- =======================================================
-       MAIN
-       ======================================================= -->
+            <div style="font-family: Arial, sans-serif; padding: 10px; color: #172126;">
 
-  <main>
+              <h3 style="text-align:center; margin-bottom: 5px; color: #0f8f92;">
+                ${escapeHTML(templateName).toUpperCase()}
+              </h3>
 
+              <hr style="border: 0; border-top: 1px solid #dce5e8; margin-bottom: 15px;">
 
-    <h2 class="section-title">
-      Documento nativo
-    </h2>
-
-    <p class="section-description">
-      Selecione o template, carregue o mapa documental e,
-      quando necessário, inspecione um PDF para identificar
-      seus campos estruturais.
-    </p>
-
-
-
-    <div class="dashboard-grid">
-
-
-      <!-- ===================================================
-           COLUNA PRINCIPAL
-           =================================================== -->
-
-      <section>
-
-
-        <!-- TEMPLATE -->
-
-        <div class="card">
-
-          <div class="card-header">
-
-            <div>
-
-              <div class="card-kicker">
-                Template
-              </div>
-
-              <h2 class="card-title">
-                Template + mapa externo
-              </h2>
-
-              <p class="card-description">
-                O documento é construído a partir do template
-                institucional e do mapa de campos.
+              <p style="margin: 4px 0;">
+                <strong>PACIENTE:</strong> ${escapeHTML(master.patientName) || "---"} 
+                | <strong>IDADE:</strong> ${escapeHTML(master.age) || "---"} 
+                | <strong>CPF:</strong> ${escapeHTML(master.cpf) || "---"}
               </p>
+
+              ${master.motherName ? `<p style="margin: 4px 0;"><strong>MÃE:</strong> ${escapeHTML(master.motherName)}</p>` : ''}
+              ${master.municipality ? `<p style="margin: 4px 0;"><strong>MUNICÍPIO:</strong> ${escapeHTML(master.municipality)}</p>` : ''}
+
+              <br>
+
+              <p style="margin: 6px 0;">
+                <strong>QUEIXA PRINCIPAL:</strong><br>
+                ${escapeHTML(master.qpp) || "Não informada."}
+              </p>
+
+              <p style="margin: 6px 0;">
+                <strong>HISTÓRIA CLÍNICA (HDA):</strong><br>
+                ${escapeHTML(master.hda) || "Não informada."}
+              </p>
+
+              <p style="margin: 6px 0;">
+                <strong>EXAME FÍSICO:</strong><br>
+                ${escapeHTML(master.physicalExam) || "Não informado."}
+              </p>
+
+              <p style="margin: 6px 0;">
+                <strong>EXAMES COMPLEMENTARES:</strong><br>
+                ${escapeHTML(master.complementaryExams) || "Não informados."}
+              </p>
+
+              <p style="margin: 6px 0;">
+                <strong>HIPÓTESE DIAGNÓSTICA / CID:</strong> 
+                ${escapeHTML(master.hypothesis) || "A esclarecer"}
+              </p>
+
+              <br><br>
+
+              <div style="text-align: right; margin-top: 30px;">
+                <p style="margin: 0;">___________________________________</p>
+                <p style="margin: 4px 0;"><strong>${escapeHTML(master.doctorName) || "Médico Responsável"}</strong></p>
+                <p style="margin: 0; font-size: 12px; color: #66757c;">${escapeHTML(master.crm) || "CRM"}</p>
+              </div>
 
             </div>
 
-          </div>
+          `;
 
 
-          <div class="template-box">
+          showToast(
+            "Documento gerado com dados da Ficha-Mãe!"
+          );
 
-            <label for="templateSelect">
-              Template disponível
-            </label>
+        }
+      );
 
-            <select id="templateSelect">
-
-              <option value="">
-                Selecione um template
-              </option>
 
               <option value="clinical-standard">
                 Modelo clínico institucional
