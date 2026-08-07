@@ -771,6 +771,96 @@
       background:
         white;
     }
+    <!-- FICHA-MÃE / PRONTUÁRIO MESTRE -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-kicker">Fonte Única da Verdade</div>
+      <h2 class="card-title">Ficha-mãe (Prontuário Mestre)</h2>
+      <p class="card-description">Preencha o que tiver em mãos. Os dados salvos serão herdados por todos os documentos do sistema.</p>
+    </div>
+  </div>
+
+  <form id="masterForm" onsubmit="event.preventDefault();">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+      
+      <!-- Dados de Identificação -->
+      <div>
+        <label for="master_patient_name">Nome do Paciente</label>
+        <input type="text" id="master_patient_name" placeholder="Nome completo">
+      </div>
+      <div>
+        <label for="master_cpf">CPF / CNS</label>
+        <input type="text" id="master_cpf" placeholder="000.000.000-00">
+      </div>
+      <div>
+        <label for="master_age">Idade / Data de Nascimento</label>
+        <input type="text" id="master_age" placeholder="Ex: 45 anos ou 12/05/1979">
+      </div>
+      <div>
+        <label for="master_gender">Gênero</label>
+        <select id="master_gender">
+          <option value="">Selecione</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+        </select>
+      </div>
+
+      <!-- Dados de AIH / Internação -->
+      <div>
+        <label for="master_mother_name">Nome da Mãe (AIH)</label>
+        <input type="text" id="master_mother_name" placeholder="Nome da mãe">
+      </div>
+      <div>
+        <label for="master_municipality">Município de Residência</label>
+        <input type="text" id="master_municipality" placeholder="Goiânia - GO">
+      </div>
+
+      <!-- Anamnese e Exame Clínico -->
+      <div style="grid-column: 1 / -1;">
+        <label for="master_qpp">Queixa Principal e Duracao (QPD)</label>
+        <input type="text" id="master_qpp" placeholder="Ex: Dor abdominal há 2 dias">
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label for="master_hda">História da Doença Atual (HDA)</label>
+        <textarea id="master_hda" rows="3" placeholder="Detalhamento do quadro clínico..."></textarea>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label for="master_physical_exam">Exame Físico / Sinais Vitais</label>
+        <textarea id="master_physical_exam" rows="3" placeholder="PA: 120/80, FC: 80bpm, Abdômen doloroso em FID..."></textarea>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label for="master_complementary_exams">Exames Complementares</label>
+        <textarea id="master_complementary_exams" rows="2" placeholder="Leucogramas, USG, Raio-X..."></textarea>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label for="master_hypothesis">Hipótese Diagnóstica / CID-10</label>
+        <input type="text" id="master_hypothesis" placeholder="Ex: Apendicite Aguda (K35)">
+      </div>
+
+      <!-- Credenciais do Médico Solicitante -->
+      <div>
+        <label for="master_doctor_name">Médico Solicitante</label>
+        <input type="text" id="master_doctor_name" placeholder="Dr(a). Nome Completo">
+      </div>
+      <div>
+        <label for="master_crm">CRM / UF</label>
+        <input type="text" id="master_crm" placeholder="CRM-GO 00000">
+      </div>
+
+    </div>
+
+    <div style="margin-top: 15px; display: flex; gap: 10px;">
+      <button class="button primary" type="button" onclick="saveMasterRecord()">
+        💾 Salvar Ficha-Mãe
+      </button>
+      <button class="button secondary" type="button" onclick="clearMasterRecord()">
+        🧹 Limpar Ficha
+      </button>
+    </div>
+  </form>
+</div>
+
 
 
     .draft-info strong {
@@ -1008,6 +1098,71 @@
        ========================================================= */
 
     @media (max-width: 850px) {
+/* =======================================================
+   SISTEMA DE FICHA-MÃE (PRONTUÁRIO MESTRE)
+   ======================================================= */
+
+// Captura todos os campos da Ficha-Mãe
+function getMasterData() {
+  return {
+    patientName: document.getElementById("master_patient_name")?.value || "",
+    cpf: document.getElementById("master_cpf")?.value || "",
+    age: document.getElementById("master_age")?.value || "",
+    gender: document.getElementById("master_gender")?.value || "",
+    motherName: document.getElementById("master_mother_name")?.value || "",
+    municipality: document.getElementById("master_municipality")?.value || "",
+    qpp: document.getElementById("master_qpp")?.value || "",
+    hda: document.getElementById("master_hda")?.value || "",
+    physicalExam: document.getElementById("master_physical_exam")?.value || "",
+    complementaryExams: document.getElementById("master_complementary_exams")?.value || "",
+    hypothesis: document.getElementById("master_hypothesis")?.value || "",
+    doctorName: document.getElementById("master_doctor_name")?.value || "",
+    crm: document.getElementById("master_crm")?.value || ""
+  };
+}
+
+// Salva os dados na memória do navegador
+function saveMasterRecord() {
+  const masterData = getMasterData();
+  localStorage.setItem("medunity_master_record", JSON.stringify(masterData));
+  showToast("Ficha-Mãe salva! Dados prontos para herança.");
+}
+
+// Restaura a Ficha-Mãe automaticamente ao abrir a página
+function loadMasterRecord() {
+  const saved = localStorage.getItem("medunity_master_record");
+  if (!saved) return;
+  
+  try {
+    const data = JSON.parse(saved);
+    if (data.patientName) document.getElementById("master_patient_name").value = data.patientName;
+    if (data.cpf) document.getElementById("master_cpf").value = data.cpf;
+    if (data.age) document.getElementById("master_age").value = data.age;
+    if (data.gender) document.getElementById("master_gender").value = data.gender;
+    if (data.motherName) document.getElementById("master_mother_name").value = data.motherName;
+    if (data.municipality) document.getElementById("master_municipality").value = data.municipality;
+    if (data.qpp) document.getElementById("master_qpp").value = data.qpp;
+    if (data.hda) document.getElementById("master_hda").value = data.hda;
+    if (data.physicalExam) document.getElementById("master_physical_exam").value = data.physicalExam;
+    if (data.complementaryExams) document.getElementById("master_complementary_exams").value = data.complementaryExams;
+    if (data.hypothesis) document.getElementById("master_hypothesis").value = data.hypothesis;
+    if (data.doctorName) document.getElementById("master_doctor_name").value = data.doctorName;
+    if (data.crm) document.getElementById("master_crm").value = data.crm;
+  } catch (e) {
+    console.error("Erro ao carregar Ficha-Mãe:", e);
+  }
+}
+
+function clearMasterRecord() {
+  localStorage.removeItem("medunity_master_record");
+  document.getElementById("masterForm").reset();
+  showToast("Ficha-Mãe limpa.");
+}
+
+// Executa o carregamento ao iniciar a página
+document.addEventListener("DOMContentLoaded", () => {
+  loadMasterRecord();
+});
 
       .dashboard-grid {
         grid-template-columns: 1fr;
