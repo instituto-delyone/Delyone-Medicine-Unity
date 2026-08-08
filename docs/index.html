@@ -268,6 +268,35 @@ $('generateBtn').addEventListener('click', async () => {
   }
 });
 
+   /* =======================================================
+   INSPEÇÃO AUTOMÁTICA DE TEMPLATES DO SERVIDOR/GITHUB
+   ======================================================= */
+$('inspectTemplateBtn').addEventListener('click', async () => {
+  const selectedTemplate = $('templateSelect').value;
+
+  if (!selectedTemplate) {
+    return toast('Selecione um template na caixa acima primeiro.');
+  }
+
+  try {
+    toast(`Carregando e inspecionando ${selectedTemplate}...`);
+    
+    // 1. Busca o PDF direto da pasta docs/templates/ no GitHub Pages
+    const response = await fetch(`./templates/${selectedTemplate}`);
+    if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta ./templates/`);
+    
+    const arrayBuffer = await response.arrayBuffer();
+    
+    // 2. Cria um File genérico em memória e envia para a mesma função do Upload/CSI
+    const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
+    await processPdfFile(file);
+
+  } catch (error) {
+    console.error(error);
+    toast('Erro ao inspecionar template: ' + error.message);
+  }
+});
+
 /* =======================================================
    GERENCIAMENTO DE RASCUNHOS E LIMPEZA
    ======================================================= */
