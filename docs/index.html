@@ -67,9 +67,16 @@ function clearMaster(){if(!confirm('Limpar a Ficha-Mãe local deste navegador?')
 function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-Mãe carregada.';$('masterStatus').innerHTML='<span class="dot"></span>Nenhum registro carregado';return}const n=d.patient_name||'Paciente sem identificação';$('masterSummary').innerHTML='<strong>'+esc(n)+'</strong> · última atualização: '+esc(fmt(d.updatedAt));$('masterStatus').innerHTML='<span class="dot"></span>Ficha-Mãe disponível · '+esc(n)}
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
 $('generateBtn').addEventListener('click', () => {
-  if (!state.template) return toast('Selecione um template primeiro.');
-  generatePDFFromTemplate(state.template);
+  const selectedTemplate = $('templateSelect').value;
+  
+  if (!selectedTemplate) {
+    return toast('Selecione um template primeiro.');
+  }
+
+  state.template = selectedTemplate;
+  generatePDFFromTemplate(selectedTemplate);
 });
+
 
 $('generateBtn').addEventListener('click',()=>{if(!state.template)return toast('Selecione um template primeiro.');const d=master(),name=$('templateSelect').options[$('templateSelect').selectedIndex].text;$('preview').innerHTML=docHTML(name,d);toast('Documento preparado a partir da Ficha-Mãe.')});
 function docHTML(name,d){let info='';[['PACIENTE',d.patient_name],['NOME SOCIAL',d.social_name],['CPF',d.cpf],['CNS',d.cns],['NASCIMENTO',dateOnly(d.birth)],['IDADE',d.age],['SEXO',d.gender],['MÃE',d.mother_name],['MUNICÍPIO',d.municipality],['PRONTUÁRIO',d.record_number],['SETOR',d.sector]].forEach(([l,v])=>{if(v)info+='<div><b>'+esc(l)+':</b> '+esc(v)+'</div>'});let body='';[['QUEIXA PRINCIPAL E DURAÇÃO',d.qpp],['HISTÓRIA DA DOENÇA ATUAL',d.hda],['ANTECEDENTES / COMORBIDADES',d.antecedents],['MEDICAÇÕES',d.medications],['ALERGIAS',d.allergies],['HISTÓRIA FAMILIAR',d.family_history],['HISTÓRIA SOCIAL',d.social_history],['SINAIS VITAIS',d.vitals],['EXAME FÍSICO',d.physical_exam],['LABORATÓRIO',d.labs],['IMAGEM / EXAMES COMPLEMENTARES',d.imaging],['OUTROS RESULTADOS',d.other_results],['HIPÓTESE / DIAGNÓSTICO',d.hypothesis],['CID-10',d.cid10],['DIFERENCIAIS',d.differential],['AVALIAÇÃO',d.assessment],['PLANO / CONDUTA',d.plan],['EVOLUÇÃO',d.evolution]].forEach(([l,v])=>{if(v)body+='<p><b>'+esc(l)+':</b><br>'+esc(v).replace(/\n/g,'<br>')+'</p>'});return '<div><h3 style="text-align:center;color:#0f8f92">'+esc(name).toUpperCase()+'</h3><div style="text-align:center;color:#66757c;font-size:12px">MedUnity Delyone · derivado da Ficha-Mãe</div><hr>'+info+body+'<div style="text-align:right;margin-top:35px">____________________________<br><b>'+esc(d.doctor_name||'Médico Responsável')+'</b><br><small>'+esc(d.crm||'CRM')+'</small></div></div>'}
