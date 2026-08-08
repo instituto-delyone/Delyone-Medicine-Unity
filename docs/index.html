@@ -74,7 +74,7 @@ function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
 
 /* =======================================================
-   DICIONÁRIO CANÔNICO EXPANSÍVEL (ARRAY DE PALAVRAS)
+   DICIONÁRIO CANÔNICO DE BASE
    ======================================================= */
 const CANONICAL_DICTIONARY = {
   patient_name: ["nome", "paciente", "nome do paciente", "nome_completo", "patient_name"],
@@ -113,6 +113,36 @@ const CANONICAL_DICTIONARY = {
   doctor_name: ["medico", "medico_solicitante", "medico_responsavel", "profissional", "doctor_name"],
   crm: ["crm", "crm_uf", "registro_profissional"]
 };
+
+/* =======================================================
+   MOTOR C.S.I. — APRENDIZADO AUTOMÁTICO VIA GLOSSÁRIO
+   ======================================================= */
+async function syncCsiWithGlossary() {
+  try {
+    const res = await fetch('./templates/GLOSSARIO.md');
+    if (!res.ok) return;
+    const text = await res.text();
+
+    // Lê cada linha da tabela Markdown do Glossário e aprende os novos sinônimos
+    const lines = text.split('\n');
+    lines.forEach(line => {
+      const parts = line.split('|').map(p => p.trim());
+      if (parts.length >= 4) {
+        const labelText = parts[2];     // Ex: "Nome do Paciente"
+        const canonicalKey = parts[3];  // Ex: "patient_name"
+
+        if (canonicalKey && labelText && CANONICAL_DICTIONARY[canonicalKey]) {
+          if (!CANONICAL_DICTIONARY[canonicalKey].includes(labelText)) {
+            CANONICAL_DICTIONARY[canonicalKey].push(labelText);
+          }
+        }
+      }
+    });
+    console.log("CSI sincronizado com o Glossário ativamente!");
+  } catch (e) {
+    console.warn("CSI operando com dicionário nativo.", e);
+  }
+}
 
 function normalizeKey(str) {
   return String(str)
@@ -187,6 +217,31 @@ function renderFields(){
 }
 
 /* =======================================================
+   INSPEÇÃO AUTOMÁTICA DE TEMPLATES DO SERVIDOR/GITHUB
+   ======================================================= */
+$('inspectTemplateBtn').addEventListener('click', async () => {
+  const selectedTemplate = $('templateSelect').value;
+
+  if (!selectedTemplate) {
+    return toast('Selecione um template na caixa acima primeiro.');
+  }
+
+  try {
+    toast(`Carregando e inspecionando ${selectedTemplate}...`);
+    const response = await fetch(`./templates/${selectedTemplate}`);
+    if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta ./templates/`);
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
+    await processPdfFile(file);
+
+  } catch (error) {
+    console.error(error);
+    toast('Erro ao inspecionar template: ' + error.message);
+  }
+});
+
+/* =======================================================
    MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS DRAWTEXT)
    ======================================================= */
 $('generateBtn').addEventListener('click', async () => {
@@ -229,14 +284,36 @@ $('generateBtn').addEventListener('click', async () => {
       console.warn("PDF não possui campos AcroForm editáveis, aplicando coordenadas.", e);
     }
 
-    // B) Preenchimento por Coordenadas (Estilo Anotação do iPhone)
-    const COORDS = {
-      patient_name: { x: 130, y: 165, size: 9 },
-      cns:          { x: 130, y: 195, size: 8 },
-      mother_name:  { x: 130, y: 225, size: 8 },
-      hda:          { x: 60,  y: 310, size: 8 },
-      doctor_name:  { x: 320, y: 720, size: 9 },
-      crm:          { x: 480, y: 720, size: 9 }
+    // B) Preenchimento por Coordenadas (Ajustado para AIH e APAC do SUS)
+    const isAPAC = selectedTemplate.includes('APAC');
+
+    const COORDS = isAPAC ? {
+      patient_name: { x: 130, y: 92, size: 8 },
+      cns:          { x: 210, y: 108, size: 8 },
+      birth:        { x: 380, y: 92, size: 8 },
+      mother_name:  { x: 130, y: 124, size: 8 },
+      phone:        { x: 420, y: 124, size: 8 },
+      address:      { x: 130, y: 140, size: 8 },
+      municipality: { x: 130, y: 156, size: 8 },
+      hypothesis:   { x: 50,  y: 350, size: 8 },
+      cid10:        { x: 230, y: 350, size: 8 },
+      doctor_name:  { x: 130, y: 400, size: 8 },
+      crm:          { x: 400, y: 400, size: 8 }
+    } : {
+      patient_name: { x: 130, y: 128, size: 8 },
+      record_number:{ x: 450, y: 128, size: 8 },
+      cns:          { x: 130, y: 145, size: 8 },
+      birth:        { x: 350, y: 145, size: 8 },
+      mother_name:  { x: 130, y: 162, size: 8 },
+      phone:        { x: 430, y: 162, size: 8 },
+      address:      { x: 130, y: 195, size: 8 },
+      municipality: { x: 130, y: 212, size: 8 },
+      qpp:          { x: 50,  y: 250, size: 8 },
+      assessment:   { x: 50,  y: 330, size: 8 },
+      hypothesis:   { x: 50,  y: 430, size: 8 },
+      cid10:        { x: 280, y: 430, size: 8 },
+      doctor_name:  { x: 130, y: 520, size: 8 },
+      crm:          { x: 420, y: 520, size: 8 }
     };
 
     for (const [key, pos] of Object.entries(COORDS)) {
@@ -268,35 +345,6 @@ $('generateBtn').addEventListener('click', async () => {
   } catch (error) {
     console.error(error);
     toast('Erro: ' + error.message);
-  }
-});
-
-   /* =======================================================
-   INSPEÇÃO AUTOMÁTICA DE TEMPLATES DO SERVIDOR/GITHUB
-   ======================================================= */
-$('inspectTemplateBtn').addEventListener('click', async () => {
-  const selectedTemplate = $('templateSelect').value;
-
-  if (!selectedTemplate) {
-    return toast('Selecione um template na caixa acima primeiro.');
-  }
-
-  try {
-    toast(`Carregando e inspecionando ${selectedTemplate}...`);
-    
-    // 1. Busca o PDF direto da pasta docs/templates/ no GitHub Pages
-    const response = await fetch(`./templates/${selectedTemplate}`);
-    if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta ./templates/`);
-    
-    const arrayBuffer = await response.arrayBuffer();
-    
-    // 2. Cria um File genérico em memória e envia para a mesma função do Upload/CSI
-    const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
-    await processPdfFile(file);
-
-  } catch (error) {
-    console.error(error);
-    toast('Erro ao inspecionar template: ' + error.message);
   }
 });
 
@@ -334,7 +382,12 @@ function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'shor
 function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.1 carregado · ambiente local'},650);
-loadMaster();loadDrafts();renderFields();
+
+// Inicializa a aplicação e sincroniza com o Glossário
+syncCsiWithGlossary();
+loadMaster();
+loadDrafts();
+renderFields();
 </script>
 </body>
 </html>
