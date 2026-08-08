@@ -70,4 +70,76 @@ function loadDrafts(){try{state.drafts=JSON.parse(localStorage.getItem(DRAFTS_KE
 $('clearBtn').addEventListener('click',()=>{$('templateSelect').value='';state.template=null;state.detectedFields=[];$('pdfInput').value='';$('pdfResult').innerHTML='';$('preview').innerHTML='<span class="empty">A pré-visualização aparecerá aqui depois da geração.</span>';renderFields();toast('Área de trabalho limpa. A Ficha-Mãe foi preservada.')});
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}function dateOnly(v){try{return v?new Date(v+'T12:00:00').toLocaleDateString('pt-BR'):''}catch{return v||''}}function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.1 carregado · ambiente local'},650);loadMaster();loadDrafts();renderFields();
+/* =======================================================
+   DICIONÁRIO CANÔNICO EXPANSÍVEL (ARRAY DE PALAVRAS)
+   ======================================================= */
+
+const CANONICAL_DICTIONARY = {
+  // Para adicionar um novo campo, basta copiar uma linha abaixo e colar no final:
+  
+  patient_name: ["nome", "paciente", "nome do paciente", "nome_completo", "patient_name"],
+  social_name: ["nome_social", "nome social"],
+  cpf: ["cpf", "cns", "cpf_cns", "cartao_sus", "num_documento", "documento"],
+  cns: ["cns", "cartao_sus", "numero_cns"],
+  birth: ["dn", "d.n.", "data_nascimento", "nascimento", "date_of_birth", "data de nascimento"],
+  age: ["idade", "age"],
+  gender: ["sexo", "genero", "gênero"],
+  mother_name: ["nome_da_mae", "mae", "mãe", "filiacao", "nome_mae", "mother_name"],
+  municipality: ["municipio", "cidade", "naturalidade", "municipio_residencia"],
+  phone: ["telefone", "celular", "contato", "whatsapp"],
+  address: ["endereco", "rua", "logradouro", "residencia"],
+  record_number: ["prontuario", "registro", "num_prontuario"],
+  admission: ["data_internacao", "data_admissao", "data_entrada"],
+  sector: ["setor", "unidade", "enfermaria", "uti"],
+  aih: ["num_aih", "numero_aih", "aih", "solicitacao_aih"],
+  qpp: ["qpp", "qpd", "queixa_principal", "motivo_consulta", "queixa"],
+  hda: ["hda", "historia_doenca_atual", "anamnese", "historico_clinico", "clinical_history"],
+  antecedents: ["hpp", "antecedentes_pessoais", "comorbidades", "historico_patologico"],
+  medications: ["medicamentos_em_uso", "uso_continuo", "remedios", "prescricao_anterior"],
+  allergies: ["alergias", "alergia", "intolerancias"],
+  family_history: ["hf", "historico_familiar", "antecedentes_familiares"],
+  social_history: ["habitos", "historico_social", "estilo_de_vida"],
+  vitals: ["pa", "fc", "fr", "spo2", "temperatura", "glicemia", "sinais_vitais"],
+  physical_exam: ["exame_fisico", "ef", "exame_clinico", "physical_exam"],
+  labs: ["laboratorio", "exames_laboratoriais", "hemograma"],
+  imaging: ["imagem", "rx", "ultrassom", "tomografia", "ressonancia"],
+  other_results: ["outros_resultados", "laudos"],
+  hypothesis: ["hipotese", "hipotese_diagnostica", "hd", "diagnostico", "diagnosis"],
+  cid10: ["cid", "cid10", "codigo_cid", "diagnostico_principal"],
+  differential: ["diagnostico_diferencial", "diferenciais"],
+  assessment: ["impressao_clinica", "avaliacao"],
+  plan: ["prescricao", "conduta", "tratamento", "plano_terapeutico", "plan"],
+  evolution: ["evolucao", "observacoes"],
+  doctor_name: ["medico", "medico_solicitante", "medico_responsavel", "profissional", "doctor_name"],
+  crm: ["crm", "crm_uf", "registro_profissional"]
+
+  // EXEMPLO PARA EXPANDIR NO FUTURO:
+  // novo_campo: ["termo1", "termo2", "termo3"],
+};
+
+/* =======================================================
+   ENGRENAGEM DE TRADUÇÃO DURA
+   ======================================================= */
+
+function normalizeKey(str) {
+  return String(str)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/[^a-z0-9]/g, "")      // Remove caracteres especiais/espaços
+    .trim();
+}
+
+function translateToCanonicalKey(rawKey) {
+  const cleanKey = normalizeKey(rawKey);
+
+  for (const [canonicalKey, synonyms] of Object.entries(CANONICAL_DICTIONARY)) {
+    const hasMatch = synonyms.some(synonym => normalizeKey(synonym) === cleanKey);
+    if (hasMatch) {
+      return canonicalKey;
+    }
+  }
+
+  return null;
+}
 </script></body></html>
