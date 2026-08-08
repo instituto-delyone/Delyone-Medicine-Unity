@@ -11,7 +11,7 @@
 </head>
 <body>
 <header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
-<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v1.6.2 Pro</span></div></section>
+<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v2.0 Tipográfico</span></div></section>
 <main><div class="grid"><section>
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
@@ -43,7 +43,7 @@
 </select>
 
 
-<div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v1.6.2...</div></div></div>
+<div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v2.0...</div></div></div>
 
 <div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue o arquivo para registrar metadados e preparar a camada de inspeção estrutural.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Registro canônico</div><h2 class="title">Campos detectados no template</h2></div></div><div class="fields" id="fieldList"><div class="empty">Nenhum campo inspecionado ainda.</div></div></div>
@@ -57,7 +57,7 @@
 </aside></div>
 <section><h2>Estrutura do sistema</h2><p class="desc">Separação entre conteúdo clínico, registro canônico e estrutura documental.</p><div class="architecture"><div class="arch"><div class="num">01</div><strong>Clinical Canonical Field Registry</strong><span>Dicionário central.</span></div><div class="arch"><div class="num">02</div><strong>Master Record</strong><span>Registro clínico reutilizável.</span></div><div class="arch"><div class="num">03</div><strong>Templates</strong><span>Modelos institucionais.</span></div><div class="arch"><div class="num">04</div><strong>External Map</strong><span>Campos → documento.</span></div><div class="arch"><div class="num">05</div><strong>PDF Inspection</strong><span>Camada de inspeção.</span></div><div class="arch"><div class="num">06</div><strong>Deterministic Output</strong><span>Saída reproduzível.</span></div></div></section>
 </main>
-<footer><div class="footer-inner"><span>MedUnity Delyone v1.6.2 Pro</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
+<footer><div class="footer-inner"><span>MedUnity Delyone v2.0 Tipográfico</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
 
 <script>
 const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
@@ -74,7 +74,7 @@ function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
 
 /* =======================================================
-   DICIONÁRIO CANÔNICO E MAPAS ESTÁTICOS (FONTE ÚNICA)
+   DICIONÁRIO CANÔNICO E MAPAS ESTÁTICOS COM AUTO-FIT
    ======================================================= */
 const CANONICAL_DICTIONARY = {
   patient_name: ["nome", "paciente", "nome do paciente", "nome_completo", "patient_name"],
@@ -116,35 +116,34 @@ const CANONICAL_DICTIONARY = {
 
 const STATIC_MAPS = {
   APAC: {
-    patient_name: { x: 130, y: 92, size: 8 },
-    cns:          { x: 210, y: 108, size: 8 },
-    birth:        { x: 380, y: 92, size: 8 },
-    mother_name:  { x: 130, y: 124, size: 8 },
-    phone:        { x: 420, y: 124, size: 8 },
-    address:      { x: 130, y: 140, size: 8 },
-    municipality: { x: 130, y: 156, size: 8 },
-    hypothesis:   { x: 50,  y: 350, size: 8 },
-    cid10:        { x: 230, y: 350, size: 8 },
-    doctor_name:  { x: 130, y: 400, size: 8 },
-    crm:          { x: 400, y: 400, size: 8 }
+    patient_name: { code: "3", name: "Nome do Paciente", x: 130, y: 92, w: 240, h: 15, max: 9, min: 6 },
+    cns:          { code: "5", name: "CNS", x: 210, y: 108, w: 150, h: 15, max: 9, min: 6 },
+    birth:        { code: "6", name: "Data de Nascimento", x: 380, y: 92, w: 80, h: 15, max: 9, min: 6 },
+    mother_name:  { code: "8", name: "Nome da Mãe", x: 130, y: 124, w: 240, h: 15, max: 9, min: 6 },
+    phone:        { code: "9", name: "Telefone", x: 420, y: 124, w: 100, h: 15, max: 9, min: 6 },
+    address:      { code: "10", name: "Endereço", x: 130, y: 140, w: 400, h: 15, max: 9, min: 6 },
+    municipality: { code: "11", name: "Município", x: 130, y: 156, w: 200, h: 15, max: 9, min: 6 },
+    hypothesis:   { code: "33", name: "Diagnóstico", x: 50,  y: 350, w: 150, h: 40, max: 9, min: 6, multi: true },
+    cid10:        { code: "34", name: "CID-10", x: 230, y: 350, w: 60, h: 15, max: 9, min: 6 },
+    doctor_name:  { code: "38", name: "Profissional", x: 130, y: 400, w: 250, h: 15, max: 9, min: 6 },
+    crm:          { code: "42", name: "CRM", x: 400, y: 400, w: 100, h: 15, max: 9, min: 6 }
   },
   AIH: {
-    patient_name: { x: 60, y: 225, size: 8 },  // Campo 5
-    record_number:{ x: 440, y: 225, size: 8 }, // Campo 6
-    cns:          { x: 60, y: 265, size: 8 },  // Campo 7
-    birth:        { x: 350, y: 265, size: 8 }, // Campo 8
-    mother_name:  { x: 60, y: 290, size: 8 },  // Campo 11
-    phone:        { x: 440, y: 290, size: 8 }, // Campo 12/14
-    address:      { x: 60, y: 330, size: 8 },  // Campo 15
-    municipality: { x: 60, y: 355, size: 8 },  // Campo 16
-    qpp:          { x: 60, y: 395, size: 8 },  // Campo 20 (Sinais e Sintomas)
-    assessment:   { x: 60, y: 495, size: 8 },  // Campo 21 (Justificativa)
-    hypothesis:   { x: 60, y: 575, size: 8 },  // Campo 23 (Diag Inicial)
-    cid10:        { x: 260, y: 575, size: 8 }, // Campo 24 (CID Principal)
-    doctor_name:  { x: 60, y: 660, size: 8 },  // Campo 33 (Profissional)
-    crm:          { x: 420, y: 660, size: 8 }  // Campo 35 (CRM)
+    patient_name: { code: "5", name: "Nome do Paciente", x: 60, y: 165, w: 370, h: 15, max: 9, min: 5 },
+    record_number:{ code: "6", name: "Nº do Prontuário", x: 440, y: 165, w: 100, h: 15, max: 9, min: 5 },
+    cns:          { code: "7", name: "CNS", x: 60, y: 190, w: 300, h: 15, max: 9, min: 5 },
+    birth:        { code: "8", name: "Data de Nascimento", x: 370, y: 190, w: 80, h: 15, max: 9, min: 5 },
+    mother_name:  { code: "11", name: "Nome da Mãe", x: 60, y: 212, w: 370, h: 15, max: 9, min: 5 },
+    phone:        { code: "12", name: "Telefone de Contato", x: 440, y: 212, w: 100, h: 15, max: 9, min: 5 },
+    address:      { code: "15", name: "Endereço (Rua, Nº, Bairro)", x: 60, y: 265, w: 480, h: 15, max: 9, min: 5 },
+    municipality: { code: "16", name: "Município de Residência", x: 60, y: 290, w: 300, h: 15, max: 9, min: 5 },
+    qpp:          { code: "20", name: "Sinais e Sintomas Clínicos", x: 60, y: 330, w: 480, h: 55, max: 9, min: 4.5, multi: true },
+    assessment:   { code: "21", name: "Condições que Justificam", x: 60, y: 395, w: 480, h: 90, max: 9, min: 4.5, multi: true },
+    hypothesis:   { code: "23", name: "Diagnóstico Inicial", x: 60, y: 555, w: 220, h: 15, max: 9, min: 5 },
+    cid10:        { code: "24", name: "CID 10 Principal", x: 290, y: 555, w: 80, h: 15, max: 9, min: 5 },
+    doctor_name:  { code: "33", name: "Profissional Solicitante", x: 60, y: 615, w: 350, h: 15, max: 9, min: 5 },
+    crm:          { code: "35", name: "Registro do Conselho", x: 420, y: 615, w: 120, h: 15, max: 9, min: 5 }
   }
-
 };
 
 /* =======================================================
@@ -155,17 +154,13 @@ async function syncCsiWithGlossary() {
     const res = await fetch('./templates/GLOSSARIO.md');
     if (!res.ok) return;
     const text = await res.text();
-
     const lines = text.split('\n');
     lines.forEach(line => {
-      // Ignora linhas de formatação Markdown como |---|---|
       if (line.includes('---')) return;
-      
       const parts = line.split('|').map(p => p.trim());
       if (parts.length >= 4) {
         const labelText = parts[2];     
         const canonicalKey = parts[3];  
-
         if (canonicalKey && labelText && CANONICAL_DICTIONARY[canonicalKey]) {
           if (!CANONICAL_DICTIONARY[canonicalKey].includes(labelText)) {
             CANONICAL_DICTIONARY[canonicalKey].push(labelText);
@@ -180,19 +175,13 @@ async function syncCsiWithGlossary() {
 }
 
 function normalizeKey(str) {
-  return String(str)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "")
-    .trim();
+  return String(str).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
 }
 
 function translateToCanonicalKey(rawKey) {
   const cleanKey = normalizeKey(rawKey);
   for (const [canonicalKey, synonyms] of Object.entries(CANONICAL_DICTIONARY)) {
-    const hasMatch = synonyms.some(synonym => normalizeKey(synonym) === cleanKey);
-    if (hasMatch) return canonicalKey;
+    if (synonyms.some(synonym => normalizeKey(synonym) === cleanKey)) return canonicalKey;
   }
   return null;
 }
@@ -200,17 +189,10 @@ function translateToCanonicalKey(rawKey) {
 /* =======================================================
    INSPEÇÃO E DRAG & DROP DE PDF
    ======================================================= */
-$('pdfInput').addEventListener('change', e => {
-  if (e.target.files[0]) processPdfFile(e.target.files[0]);
-});
+$('pdfInput').addEventListener('change', e => { if (e.target.files[0]) processPdfFile(e.target.files[0]); });
 $('dropzone').addEventListener('dragover', e => { e.preventDefault(); $('dropzone').classList.add('drag'); });
 $('dropzone').addEventListener('dragleave', () => $('dropzone').classList.remove('drag'));
-$('dropzone').addEventListener('drop', e => {
-  e.preventDefault();
-  $('dropzone').classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if (f) processPdfFile(f);
-});
+$('dropzone').addEventListener('drop', e => { e.preventDefault(); $('dropzone').classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) processPdfFile(f); });
 
 async function processPdfFile(file) {
   try {
@@ -219,7 +201,6 @@ async function processPdfFile(file) {
     
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    
     let isInteractive = false;
     
     try {
@@ -229,10 +210,7 @@ async function processPdfFile(file) {
         isInteractive = true;
         state.detectedFields = fields.map(f => {
           const canonical = translateToCanonicalKey(f.getName());
-          return {
-            name: f.getName(),
-            type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
-          };
+          return { name: f.getName(), type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF' };
         });
       }
     } catch (e) {
@@ -242,14 +220,13 @@ async function processPdfFile(file) {
     if (!isInteractive) {
       const fileName = file.name.toUpperCase();
       let mapToUse = null;
-      
       if (fileName.includes('APAC')) mapToUse = STATIC_MAPS.APAC;
       else if (fileName.includes('AIH')) mapToUse = STATIC_MAPS.AIH;
 
       if (mapToUse) {
         state.detectedFields = Object.keys(mapToUse).map(key => ({
-          name: key,
-          type: 'Injeção por Coordenadas (SUS)'
+          name: `${mapToUse[key].code} · ${mapToUse[key].name}`,
+          type: 'Auto-Fit Bounding Box'
         }));
       } else {
         state.detectedFields = [{ name: 'Documento Estático', type: 'Nenhum mapa de coordenadas encontrado.' }];
@@ -266,10 +243,7 @@ async function processPdfFile(file) {
 
 function renderFields(){
   const box=$('fieldList');
-  if(!state.detectedFields.length){
-    box.innerHTML='<div class="empty">Nenhum campo inspecionado ainda.</div>';
-    return;
-  }
+  if(!state.detectedFields.length){ box.innerHTML='<div class="empty">Nenhum campo inspecionado ainda.</div>'; return; }
   box.innerHTML=state.detectedFields.map(f=>'<div class="field"><b>'+esc(f.name)+'</b><br><small>'+esc(f.type)+'</small></div>').join('');
 }
 
@@ -278,20 +252,14 @@ function renderFields(){
    ======================================================= */
 $('inspectTemplateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
-
-  if (!selectedTemplate) {
-    return toast('Selecione um template na caixa acima primeiro.');
-  }
-
+  if (!selectedTemplate) return toast('Selecione um template na caixa acima primeiro.');
   try {
     toast(`Carregando e inspecionando ${selectedTemplate}...`);
     const response = await fetch(`./templates/${selectedTemplate}`);
     if (!response.ok) throw new Error(`Template não encontrado.`);
-    
     const arrayBuffer = await response.arrayBuffer();
     const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
     await processPdfFile(file);
-
   } catch (error) {
     console.error(error);
     toast('Erro ao inspecionar template.');
@@ -299,14 +267,11 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
 });
 
 /* =======================================================
-   MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS)
+   MOTOR DE INJEÇÃO EM PDF (ACROFORM + AUTO-FIT ENGINE)
    ======================================================= */
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
-
-  if (!selectedTemplate && !state.currentPdfFile) {
-    return toast('Selecione um template ou envie um arquivo PDF.');
-  }
+  if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um arquivo PDF.');
 
   try {
     toast('Processando e preenchendo o PDF...');
@@ -325,7 +290,7 @@ $('generateBtn').addEventListener('click', async () => {
     const page = pdfDoc.getPages()[0]; 
     const { height } = page.getSize(); 
 
-    // A) Preenchimento por formulário interativo
+    // A) Preenchimento por formulário interativo (AcroForm)
     try {
       const form = pdfDoc.getForm();
       const fields = form.getFields();
@@ -338,10 +303,10 @@ $('generateBtn').addEventListener('click', async () => {
         }
       });
     } catch (e) {
-      console.warn("Sem campos AcroForm editáveis, avaliando coordenadas.");
+      console.warn("Sem campos AcroForm editáveis, avaliando coordenadas inteligentes.");
     }
 
-    // B) Preenchimento por Coordenadas unificado
+    // B) Motor Tipográfico Inteligente (Auto-Fit & Bounding Boxes)
     const fileName = selectedTemplate ? selectedTemplate.toUpperCase() : (state.currentPdfFile ? state.currentPdfFile.name.toUpperCase() : '');
     let activeMap = null;
     
@@ -349,17 +314,49 @@ $('generateBtn').addEventListener('click', async () => {
     else if (fileName.includes('AIH')) activeMap = STATIC_MAPS.AIH;
 
     if (activeMap) {
-      for (const [key, pos] of Object.entries(activeMap)) {
-        if (masterData[key]) {
-          page.drawText(String(masterData[key]), {
-            x: pos.x,
-            y: height - pos.y,
-            size: pos.size || 9,
+      const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+      for (const [key, field] of Object.entries(activeMap)) {
+        const rawValue = masterData[key];
+        
+        if (rawValue) {
+          const text = String(rawValue);
+          let fontSize = field.max || 9;
+          const minSize = field.min || 5;
+
+          while (fontSize > minSize) {
+            if (field.multi) {
+              const widthAtSize = font.widthOfTextAtSize(text, fontSize);
+              const estimatedLines = Math.ceil(widthAtSize / field.w);
+              const estimatedHeight = estimatedLines * (fontSize * 1.2); 
+              if (estimatedHeight <= field.h) break; 
+            } else {
+              const widthAtSize = font.widthOfTextAtSize(text, fontSize);
+              if (widthAtSize <= field.w) break; 
+            }
+            fontSize -= 0.5; 
+          }
+
+          page.drawText(text, {
+            x: field.x,
+            y: height - field.y,
+            size: fontSize,
+            font: font,
+            maxWidth: field.w,
+            lineHeight: fontSize * 1.2,
             color: PDFLib.rgb(0, 0, 0)
           });
         }
       }
     }
+
+    // Injeção da micro-assinatura (Easter Egg Delyone)
+    page.drawText('v', {
+      x: 15,
+      y: 15,
+      size: 6,
+      color: PDFLib.rgb(0.7, 0.7, 0.7)
+    });
 
     const filledPdfBytes = await pdfDoc.save();
     const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
@@ -415,7 +412,7 @@ function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}
 function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 
-setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.2 Pro carregado · ambiente local'},650);
+setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local'},650);
 
 syncCsiWithGlossary();
 loadMaster();
