@@ -35,10 +35,10 @@
 
 <div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label><select id="templateSelect">
   <option value="">Selecione um template</option>
-  <option value="001-AIH.pdf">001 — AIH Goiânia</option>
-  <option value="002-Prescricao.pdf">002 — Prescrição UPA</option>
-  <option value="relatorio-medico.pdf">Relatório Médico Institucional</option>
+  <option value="001-aih-goiania.pdf">001 — AIH Goiânia</option>
+  <option value="002-prescricao-upa-v1.docx">002 — Prescrição UPA v1</option>
 </select>
+
 <div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v1.6.1...</div></div></div>
 
 <div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue o arquivo para registrar metadados e preparar a camada de inspeção estrutural.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
