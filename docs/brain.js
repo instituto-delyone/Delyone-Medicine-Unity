@@ -1,5 +1,5 @@
 // brain.js - Módulo de Roteamento Inteligente do MedUnity
-const API_KEY = "SUA_CHAVE_GERADA_NO_AI_STUDIO"; // Cole sua chave aqui
+const API_KEY = "AQ.Ab8RN6LlyKj8ivhh-G9A8WvsRTz73LJFNrDyEbsea0G0OMhIKw"; // Cole sua chave aqui
 
 async function rotearCamposComIA(dadosDoFormulario) {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
