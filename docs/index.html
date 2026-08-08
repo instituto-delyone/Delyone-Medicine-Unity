@@ -161,71 +161,109 @@ function translateToCanonicalKey(rawKey) {
 
   return null;
 }
-   /* =======================================================
-   MOTOR DE INJEÇÃO EM PDF NATIVO (pdf-lib)
+/* =======================================================
+   MOTOR DE PREENCHIMENTO E PRE-VISUALIZACAO DE PDF
    ======================================================= */
 
-async function generatePDFFromTemplate(templateFileName) {
+// Guarda o arquivo enviado via Upload/Drag&Drop
+state.currentPdfFile = null;
+
+// Escuta a seleção/upload de arquivo PDF local
+$('pdfInput').addEventListener('change', e => {
+  if (e.target.files[0]) processPdfFile(e.target.files[0]);
+});
+
+// Processa o PDF e extrai os campos para inspeção
+async function processPdfFile(file) {
   try {
-    toast("Carregando template PDF...");
-
-    // 1. Busca o arquivo PDF na sua pasta de templates (ex: /templates/001-AIH.pdf)
-    const url = `./templates/${templateFileName}`;
-    const existingPdfBytes = await fetch(url).then((res) => {
-      if (!res.ok) throw new Error(`Template ${templateFileName} não encontrado.`);
-      return res.arrayBuffer();
-    });
-
-    // 2. Carrega o PDF e obtém o formulário interativo (AcroForm)
-    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+    state.currentPdfFile = file;
+    $('pdfResult').innerHTML = `<div class="status ok"><span class="dot"></span>${esc(file.name)} · ${bytes(file.size)}</div>`;
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
     const form = pdfDoc.getForm();
-
-    // 3. Obtém os dados da Ficha-Mãe
-    const masterData = master();
-
-    // 4. Mapeia cada campo presente no PDF usando o Dicionário Canônico
     const fields = form.getFields();
 
-    fields.forEach((field) => {
-      const rawFieldName = field.getName(); // Nome do campo no PDF
-      const canonicalKey = translateToCanonicalKey(rawFieldName); // Traduz via dicionário
+    state.detectedFields = fields.map(f => {
+      const canonical = translateToCanonicalKey(f.getName());
+      return {
+        name: f.getName(),
+        type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
+      };
+    });
+
+    renderFields();
+    toast('PDF inspecionado e pronto para preenchimento!');
+  } catch (err) {
+    console.error(err);
+    toast('Erro ao ler campos do PDF.');
+  }
+}
+
+// Botão GERAR DOCUMENTO: Injeta os dados da Ficha-Mãe e gera a pré-visualização real
+$('generateBtn').addEventListener('click', async () => {
+  const selectedTemplate = $('templateSelect').value;
+
+  if (!selectedTemplate && !state.currentPdfFile) {
+    return toast('Selecione um template ou envie um arquivo PDF.');
+  }
+
+  try {
+    toast('Processando e preenchendo o PDF...');
+    let pdfBytesBuffer;
+
+    // 1. Se houver arquivo enviado no Upload, usa ele; caso contrário, busca na pasta docs/templates/
+    if (state.currentPdfFile) {
+      pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
+    } else {
+      const response = await fetch(`./templates/${selectedTemplate}`);
+      if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta docs/templates/`);
+      pdfBytesBuffer = await response.arrayBuffer();
+    }
+
+    // 2. Carrega o PDF com a pdf-lib
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
+    const form = pdfDoc.getForm();
+    const masterData = master();
+
+    // 3. Preenche cada campo do PDF relacionando com a Ficha-Mãe
+    const fields = form.getFields();
+    fields.forEach(field => {
+      const fieldName = field.getName();
+      const canonicalKey = translateToCanonicalKey(fieldName);
 
       if (canonicalKey && masterData[canonicalKey]) {
         try {
-          // Se for um campo de texto, preenche com o valor correspondente
           if (field instanceof PDFLib.PDFTextField) {
             field.setText(String(masterData[canonicalKey]));
           }
         } catch (e) {
-          console.warn(`Não foi possível preencher o campo: ${rawFieldName}`, e);
+          console.warn(`Campo ${fieldName} não pôde ser preenchido`, e);
         }
       }
     });
 
-    // Opcional: Torna os campos do PDF não-editáveis após a geração (Flattening)
-    // form.flatten();
-
-    // 5. Salva o PDF preenchido em memória
-    const pdfBytes = await pdfDoc.save();
-
-    // 6. Exibe o PDF diretamente na área de Pré-visualização do site
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    // 4. Salva o PDF preenchido e gera a URL de visualização
+    const filledPdfBytes = await pdfDoc.save();
+    const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
     const pdfUrl = URL.createObjectURL(blob);
 
-    $("preview").innerHTML = `
+    // 5. Atualiza a caixa de Pré-Visualização com o PDF real e o botão de Baixar
+    $('preview').innerHTML = `
       <iframe src="${pdfUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe>
-      <div style="margin-top:10px; text-align:right;">
+      <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:var(--ok);">✓ PDF preenchido via Ficha-Mãe</span>
         <a href="${pdfUrl}" download="documento_preenchido_${Date.now()}.pdf" class="btn primary" style="text-decoration:none;">
-          ⬇ Baixar PDF Preenchido
+          ⇩ Baixar PDF Preenchido
         </a>
       </div>
     `;
 
-    toast("PDF preenchido com sucesso!");
+    toast('Documento PDF gerado com sucesso!');
   } catch (error) {
     console.error(error);
-    toast("Erro ao processar o PDF: " + error.message);
+    toast('Erro: ' + error.message);
   }
-}
+});
 
 </script></body></html>
