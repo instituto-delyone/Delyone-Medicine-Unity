@@ -116,17 +116,19 @@ const CANONICAL_DICTIONARY = {
 
 const STATIC_MAPS = {
   APAC: {
-    patient_name: { code: "3", name: "Nome do Paciente", x: 130, y: 92, w: 240, h: 15, max: 9, min: 6 },
-    cns:          { code: "5", name: "CNS", x: 210, y: 108, w: 150, h: 15, max: 9, min: 6 },
-    birth:        { code: "6", name: "Data de Nascimento", x: 380, y: 92, w: 80, h: 15, max: 9, min: 6 },
-    mother_name:  { code: "8", name: "Nome da Mãe", x: 130, y: 124, w: 240, h: 15, max: 9, min: 6 },
-    phone:        { code: "9", name: "Telefone", x: 420, y: 124, w: 100, h: 15, max: 9, min: 6 },
-    address:      { code: "10", name: "Endereço", x: 130, y: 140, w: 400, h: 15, max: 9, min: 6 },
-    municipality: { code: "11", name: "Município", x: 130, y: 156, w: 200, h: 15, max: 9, min: 6 },
-    hypothesis:   { code: "33", name: "Diagnóstico", x: 50,  y: 350, w: 150, h: 40, max: 9, min: 6, multi: true },
-    cid10:        { code: "34", name: "CID-10", x: 230, y: 350, w: 60, h: 15, max: 9, min: 6 },
-    doctor_name:  { code: "38", name: "Profissional", x: 130, y: 400, w: 250, h: 15, max: 9, min: 6 },
-    crm:          { code: "42", name: "CRM", x: 400, y: 400, w: 100, h: 15, max: 9, min: 6 }
+    patient_name: { code: "3", name: "Nome do Paciente", x: 62, y: 145, w: 470, h: 15, max: 9, min: 5 },
+    cns:          { code: "5", name: "CNS", x: 62, y: 170, w: 200, h: 15, max: 9, min: 5 },
+    birth:        { code: "6", name: "Data de Nascimento", x: 280, y: 170, w: 100, h: 15, max: 9, min: 5 },
+    mother_name:  { code: "8", name: "Nome da Mãe", x: 62, y: 195, w: 470, h: 15, max: 9, min: 5 },
+    phone:        { code: "9", name: "Telefone", x: 400, y: 195, w: 130, h: 15, max: 9, min: 5 },
+    address:      { code: "10", name: "Endereço", x: 62, y: 220, w: 470, h: 15, max: 9, min: 5 },
+    municipality: { code: "11", name: "Município", x: 62, y: 245, w: 250, h: 15, max: 9, min: 5 },
+    
+    // Suporte a texto longo na descrição do diagnóstico
+    hypothesis:   { code: "33", name: "Descrição do Diagnóstico", x: 62, y: 460, w: 470, h: 30, max: 9, min: 5, multi: true },
+    cid10:        { code: "34", name: "CID-10 Principal", x: 62, y: 485, w: 100, h: 15, max: 9, min: 5 },
+    doctor_name:  { code: "38", name: "Nome do Profissional Solicitante", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
+    crm:          { code: "42", name: "CRM", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
   },
   AIH: {
     patient_name: { code: "5", name: "Nome do Paciente", x: 60, y: 175, w: 370, h: 15, max: 9, min: 5 },
