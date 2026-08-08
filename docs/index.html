@@ -11,7 +11,7 @@
 </head>
 <body>
 <header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
-<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF + DOCX Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v1.6.1</span></div></section>
+<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v1.6.1</span></div></section>
 <main><div class="grid"><section>
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
@@ -33,10 +33,11 @@
 <div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
 </div><div class="actions"><button class="btn primary" type="submit">💾 Salvar Ficha-Mãe</button><button class="btn secondary" type="button" onclick="clearMaster()">🧹 Limpar</button><button class="btn gold" type="button" onclick="exportMaster()">⇩ Exportar JSON</button></div><div class="summary" id="masterSummary">Nenhuma Ficha-Mãe carregada.</div></form></div>
 
-<div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label><select id="templateSelect">
+<div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label>
+<select id="templateSelect">
   <option value="">Selecione um template</option>
   <option value="001-aih-goiania.pdf">001 — AIH Goiânia</option>
-  <option value="002-prescricao-upa-v1.docx">002 — Prescrição UPA v1</option>
+  <option value="002-prescricao-upa-v1.pdf">002 — Prescrição UPA v1</option>
 </select>
 
 <div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v1.6.1...</div></div></div>
@@ -54,10 +55,12 @@
 <section><h2>Estrutura do sistema</h2><p class="desc">Separação entre conteúdo clínico, registro canônico e estrutura documental.</p><div class="architecture"><div class="arch"><div class="num">01</div><strong>Clinical Canonical Field Registry</strong><span>Dicionário central.</span></div><div class="arch"><div class="num">02</div><strong>Master Record</strong><span>Registro clínico reutilizável.</span></div><div class="arch"><div class="num">03</div><strong>Templates</strong><span>Modelos institucionais.</span></div><div class="arch"><div class="num">04</div><strong>External Map</strong><span>Campos → documento.</span></div><div class="arch"><div class="num">05</div><strong>PDF Inspection</strong><span>Camada de inspeção.</span></div><div class="arch"><div class="num">06</div><strong>Deterministic Output</strong><span>Saída reproduzível.</span></div></div></section>
 </main>
 <footer><div class="footer-inner"><span>MedUnity Delyone v1.6.1</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
+
 <script>
 const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm'];
-const $=id=>document.getElementById(id);const state={template:null,drafts:[],detectedFields:[]};
+const $=id=>document.getElementById(id);const state={template:null,drafts:[],detectedFields:[],currentPdfFile:null};
+
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
 function master(){const d={};FIELDS.forEach(k=>d[k]=$('master_'+k)?.value||'');d.updatedAt=new Date().toISOString();return d}
 function setMaster(d){FIELDS.forEach(k=>{const e=$('master_'+k);if(e)e.value=d?.[k]??''});updateMasterUI(d)}
@@ -66,36 +69,11 @@ function loadMaster(){try{const d=JSON.parse(localStorage.getItem(MASTER_KEY)||'
 function clearMaster(){if(!confirm('Limpar a Ficha-Mãe local deste navegador?'))return;localStorage.removeItem(MASTER_KEY);$('masterForm').reset();updateMasterUI(null);toast('Ficha-Mãe limpa.')}
 function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-Mãe carregada.';$('masterStatus').innerHTML='<span class="dot"></span>Nenhum registro carregado';return}const n=d.patient_name||'Paciente sem identificação';$('masterSummary').innerHTML='<strong>'+esc(n)+'</strong> · última atualização: '+esc(fmt(d.updatedAt));$('masterStatus').innerHTML='<span class="dot"></span>Ficha-Mãe disponível · '+esc(n)}
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
-$('generateBtn').addEventListener('click', () => {
-  const selectedTemplate = $('templateSelect').value;
-  
-  if (!selectedTemplate) {
-    return toast('Selecione um template primeiro.');
-  }
 
-  state.template = selectedTemplate;
-  generatePDFFromTemplate(selectedTemplate);
-});
-
-
-$('generateBtn').addEventListener('click',()=>{if(!state.template)return toast('Selecione um template primeiro.');const d=master(),name=$('templateSelect').options[$('templateSelect').selectedIndex].text;$('preview').innerHTML=docHTML(name,d);toast('Documento preparado a partir da Ficha-Mãe.')});
-function docHTML(name,d){let info='';[['PACIENTE',d.patient_name],['NOME SOCIAL',d.social_name],['CPF',d.cpf],['CNS',d.cns],['NASCIMENTO',dateOnly(d.birth)],['IDADE',d.age],['SEXO',d.gender],['MÃE',d.mother_name],['MUNICÍPIO',d.municipality],['PRONTUÁRIO',d.record_number],['SETOR',d.sector]].forEach(([l,v])=>{if(v)info+='<div><b>'+esc(l)+':</b> '+esc(v)+'</div>'});let body='';[['QUEIXA PRINCIPAL E DURAÇÃO',d.qpp],['HISTÓRIA DA DOENÇA ATUAL',d.hda],['ANTECEDENTES / COMORBIDADES',d.antecedents],['MEDICAÇÕES',d.medications],['ALERGIAS',d.allergies],['HISTÓRIA FAMILIAR',d.family_history],['HISTÓRIA SOCIAL',d.social_history],['SINAIS VITAIS',d.vitals],['EXAME FÍSICO',d.physical_exam],['LABORATÓRIO',d.labs],['IMAGEM / EXAMES COMPLEMENTARES',d.imaging],['OUTROS RESULTADOS',d.other_results],['HIPÓTESE / DIAGNÓSTICO',d.hypothesis],['CID-10',d.cid10],['DIFERENCIAIS',d.differential],['AVALIAÇÃO',d.assessment],['PLANO / CONDUTA',d.plan],['EVOLUÇÃO',d.evolution]].forEach(([l,v])=>{if(v)body+='<p><b>'+esc(l)+':</b><br>'+esc(v).replace(/\n/g,'<br>')+'</p>'});return '<div><h3 style="text-align:center;color:#0f8f92">'+esc(name).toUpperCase()+'</h3><div style="text-align:center;color:#66757c;font-size:12px">MedUnity Delyone · derivado da Ficha-Mãe</div><hr>'+info+body+'<div style="text-align:right;margin-top:35px">____________________________<br><b>'+esc(d.doctor_name||'Médico Responsável')+'</b><br><small>'+esc(d.crm||'CRM')+'</small></div></div>'}
-$('inspectTemplateBtn').addEventListener('click',()=>{if(!state.template)return toast('Selecione um template.');state.detectedFields=['patient_name','birth','record_number','qpp','hda','physical_exam','labs','imaging','hypothesis','cid10','plan','doctor_name','crm'].map((name)=>({name,type:name.includes('date')||name==='birth'?'date':name.includes('exam')||['hda','qpp','labs','imaging','plan'].includes(name)?'textarea':'text'}));renderFields();toast('Mapa canônico do template carregado.')});
-function renderFields(){const box=$('fieldList');if(!state.detectedFields.length){box.innerHTML='<div class="empty">Nenhum campo inspecionado ainda.</div>';return}box.innerHTML=state.detectedFields.map(f=>'<div class="field"><b>'+esc(f.name)+'</b><br><small>'+esc(f.type)+'</small></div>').join('')}
-$('pdfInput').addEventListener('change',e=>{if(e.target.files[0])inspectPDF(e.target.files[0])});$('dropzone').addEventListener('dragover',e=>{e.preventDefault();$('dropzone').classList.add('drag')});$('dropzone').addEventListener('dragleave',()=>$('dropzone').classList.remove('drag'));$('dropzone').addEventListener('drop',e=>{e.preventDefault();$('dropzone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)inspectPDF(f)});
-function inspectPDF(f){$('pdfResult').innerHTML='<div class="status ok"><span class="dot"></span>'+esc(f.name)+' · '+bytes(f.size)+'</div>';state.detectedFields=['patient_name','date_of_birth','medical_record','clinical_history','diagnosis','professional_registration'].map(name=>({name,type:name.includes('history')?'textarea':name.includes('date')?'date':'text'}));renderFields();toast('PDF carregado para inspeção estrutural.')}
-$('saveDraftBtn').addEventListener('click',()=>{const d=master(),x={id:Date.now(),template:state.template,templateName:$('templateSelect').value?$('templateSelect').options[$('templateSelect').selectedIndex].text:'Sem template',patientName:d.patient_name||'Paciente sem identificação',master:d,createdAt:new Date().toISOString()};state.drafts.unshift(x);state.drafts=state.drafts.slice(0,10);localStorage.setItem(DRAFTS_KEY,JSON.stringify(state.drafts));renderDrafts();toast('Rascunho salvo com o estado da Ficha-Mãe.')});
-function loadDrafts(){try{state.drafts=JSON.parse(localStorage.getItem(DRAFTS_KEY)||'[]')}catch{state.drafts=[]}renderDrafts()}function renderDrafts(){const b=$('draftList');if(!state.drafts.length){b.innerHTML='<div class="empty">Nenhum rascunho salvo.</div>';return}b.innerHTML=state.drafts.map(d=>'<div class="draft"><div><strong>'+esc(d.patientName)+'</strong><small>'+esc(d.templateName)+' · '+esc(fmt(d.createdAt))+'</small></div><button class="btn danger" onclick="delDraft('+d.id+')">Excluir</button></div>').join('')}function delDraft(id){state.drafts=state.drafts.filter(d=>d.id!==id);localStorage.setItem(DRAFTS_KEY,JSON.stringify(state.drafts));renderDrafts();toast('Rascunho removido.')}window.delDraft=delDraft;
-$('clearBtn').addEventListener('click',()=>{$('templateSelect').value='';state.template=null;state.detectedFields=[];$('pdfInput').value='';$('pdfResult').innerHTML='';$('preview').innerHTML='<span class="empty">A pré-visualização aparecerá aqui depois da geração.</span>';renderFields();toast('Área de trabalho limpa. A Ficha-Mãe foi preservada.')});
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}function dateOnly(v){try{return v?new Date(v+'T12:00:00').toLocaleDateString('pt-BR'):''}catch{return v||''}}function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
-setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.1 carregado · ambiente local'},650);loadMaster();loadDrafts();renderFields();
 /* =======================================================
    DICIONÁRIO CANÔNICO EXPANSÍVEL (ARRAY DE PALAVRAS)
    ======================================================= */
-
 const CANONICAL_DICTIONARY = {
-  // Para adicionar um novo campo, basta copiar uma linha abaixo e colar no final:
-  
   patient_name: ["nome", "paciente", "nome do paciente", "nome_completo", "patient_name"],
   social_name: ["nome_social", "nome social"],
   cpf: ["cpf", "cns", "cpf_cns", "cartao_sus", "num_documento", "documento"],
@@ -131,49 +109,41 @@ const CANONICAL_DICTIONARY = {
   evolution: ["evolucao", "observacoes"],
   doctor_name: ["medico", "medico_solicitante", "medico_responsavel", "profissional", "doctor_name"],
   crm: ["crm", "crm_uf", "registro_profissional"]
-
-  // EXEMPLO PARA EXPANDIR NO FUTURO:
-  // novo_campo: ["termo1", "termo2", "termo3"],
 };
-
-/* =======================================================
-   ENGRENAGEM DE TRADUÇÃO DURA
-   ======================================================= */
 
 function normalizeKey(str) {
   return String(str)
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-    .replace(/[^a-z0-9]/g, "")      // Remove caracteres especiais/espaços
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "")
     .trim();
 }
 
 function translateToCanonicalKey(rawKey) {
   const cleanKey = normalizeKey(rawKey);
-
   for (const [canonicalKey, synonyms] of Object.entries(CANONICAL_DICTIONARY)) {
     const hasMatch = synonyms.some(synonym => normalizeKey(synonym) === cleanKey);
-    if (hasMatch) {
-      return canonicalKey;
-    }
+    if (hasMatch) return canonicalKey;
   }
-
   return null;
 }
+
 /* =======================================================
-   MOTOR DE PREENCHIMENTO E PRE-VISUALIZACAO DE PDF
+   INSPEÇÃO E DRAG & DROP DE PDF
    ======================================================= */
-
-// Guarda o arquivo enviado via Upload/Drag&Drop
-state.currentPdfFile = null;
-
-// Escuta a seleção/upload de arquivo PDF local
 $('pdfInput').addEventListener('change', e => {
   if (e.target.files[0]) processPdfFile(e.target.files[0]);
 });
+$('dropzone').addEventListener('dragover', e => { e.preventDefault(); $('dropzone').classList.add('drag'); });
+$('dropzone').addEventListener('dragleave', () => $('dropzone').classList.remove('drag'));
+$('dropzone').addEventListener('drop', e => {
+  e.preventDefault();
+  $('dropzone').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) processPdfFile(f);
+});
 
-// Processa o PDF e extrai os campos para inspeção
 async function processPdfFile(file) {
   try {
     state.currentPdfFile = file;
@@ -181,16 +151,20 @@ async function processPdfFile(file) {
     
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    const form = pdfDoc.getForm();
-    const fields = form.getFields();
-
-    state.detectedFields = fields.map(f => {
-      const canonical = translateToCanonicalKey(f.getName());
-      return {
-        name: f.getName(),
-        type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
-      };
-    });
+    
+    try {
+      const form = pdfDoc.getForm();
+      const fields = form.getFields();
+      state.detectedFields = fields.map(f => {
+        const canonical = translateToCanonicalKey(f.getName());
+        return {
+          name: f.getName(),
+          type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
+        };
+      });
+    } catch {
+      state.detectedFields = [{ name: 'Documento Estático', type: 'Preenchimento por Coordenadas' }];
+    }
 
     renderFields();
     toast('PDF inspecionado e pronto para preenchimento!');
@@ -200,10 +174,18 @@ async function processPdfFile(file) {
   }
 }
 
+function renderFields(){
+  const box=$('fieldList');
+  if(!state.detectedFields.length){
+    box.innerHTML='<div class="empty">Nenhum campo inspecionado ainda.</div>';
+    return;
+  }
+  box.innerHTML=state.detectedFields.map(f=>'<div class="field"><b>'+esc(f.name)+'</b><br><small>'+esc(f.type)+'</small></div>').join('');
+}
+
 /* =======================================================
    MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS DRAWTEXT)
    ======================================================= */
-
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
 
@@ -215,7 +197,6 @@ $('generateBtn').addEventListener('click', async () => {
     toast('Processando e preenchendo o PDF...');
     let pdfBytesBuffer;
 
-    // 1. Carrega o arquivo selecionado ou enviado
     if (state.currentPdfFile) {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
     } else {
@@ -224,13 +205,12 @@ $('generateBtn').addEventListener('click', async () => {
       pdfBytesBuffer = await response.arrayBuffer();
     }
 
-    // 2. Carrega o documento e os dados da Ficha-Mãe
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
     const masterData = master();
     const page = pdfDoc.getPages()[0]; 
     const { height } = page.getSize(); 
 
-    // A) PREENCHIMENTO POR FORMULÁRIO INTERATIVO (AcroForm)
+    // A) Preenchimento por formulário interativo
     try {
       const form = pdfDoc.getForm();
       const fields = form.getFields();
@@ -243,11 +223,10 @@ $('generateBtn').addEventListener('click', async () => {
         }
       });
     } catch (e) {
-      console.warn("PDF não possui campos AcroForm editáveis, usando apenas coordenadas.", e);
+      console.warn("PDF não possui campos AcroForm editáveis, aplicando coordenadas.", e);
     }
 
-    // B) PREENCHIMENTO POR COORDENADAS (Estilo Anotação/iPhone)
-    // Ajuste X (largura) e Y (distância do topo) para cada campo da sua folha AIH
+    // B) Preenchimento por Coordenadas (Estilo Anotação do iPhone)
     const COORDS = {
       patient_name: { x: 130, y: 165, size: 9 },
       cns:          { x: 130, y: 195, size: 8 },
@@ -261,14 +240,13 @@ $('generateBtn').addEventListener('click', async () => {
       if (masterData[key]) {
         page.drawText(String(masterData[key]), {
           x: pos.x,
-          y: height - pos.y, // Inverte o eixo Y para contar do topo da folha
+          y: height - pos.y,
           size: pos.size || 9,
           color: PDFLib.rgb(0, 0, 0)
         });
       }
     }
 
-    // 3. Salva e gera a pré-visualização em PDF real
     const filledPdfBytes = await pdfDoc.save();
     const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
     const pdfUrl = URL.createObjectURL(blob);
@@ -290,4 +268,41 @@ $('generateBtn').addEventListener('click', async () => {
   }
 });
 
-</script></body></html>
+/* =======================================================
+   GERENCIAMENTO DE RASCUNHOS E LIMPEZA
+   ======================================================= */
+$('saveDraftBtn').addEventListener('click',()=>{
+  const d=master(),x={id:Date.now(),template:$('templateSelect').value,templateName:$('templateSelect').value?$('templateSelect').options[$('templateSelect').selectedIndex].text:'Sem template',patientName:d.patient_name||'Paciente sem identificação',master:d,createdAt:new Date().toISOString()};
+  state.drafts.unshift(x);
+  state.drafts=state.drafts.slice(0,10);
+  localStorage.setItem(DRAFTS_KEY,JSON.stringify(state.drafts));
+  renderDrafts();
+  toast('Rascunho salvo com o estado da Ficha-Mãe.');
+});
+
+function loadDrafts(){try{state.drafts=JSON.parse(localStorage.getItem(DRAFTS_KEY)||'[]')}catch{state.drafts=[]}renderDrafts()}
+function renderDrafts(){const b=$('draftList');if(!state.drafts.length){b.innerHTML='<div class="empty">Nenhum rascunho salvo.</div>';return}b.innerHTML=state.drafts.map(d=>'<div class="draft"><div><strong>'+esc(d.patientName)+'</strong><small>'+esc(d.templateName)+' · '+esc(fmt(d.createdAt))+'</small></div><button class="btn danger" onclick="delDraft('+d.id+')">Excluir</button></div>').join('')}
+function delDraft(id){state.drafts=state.drafts.filter(d=>d.id!==id);localStorage.setItem(DRAFTS_KEY,JSON.stringify(state.drafts));renderDrafts();toast('Rascunho removido.')}
+window.delDraft=delDraft;
+
+$('clearBtn').addEventListener('click',()=>{
+  $('templateSelect').value='';
+  state.template=null;
+  state.currentPdfFile=null;
+  state.detectedFields=[];
+  $('pdfInput').value='';
+  $('pdfResult').innerHTML='';
+  $('preview').innerHTML='<span class="empty">A pré-visualização aparecerá aqui depois da geração.</span>';
+  renderFields();
+  toast('Área de trabalho limpa. A Ficha-Mãe foi preservada.');
+});
+
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}
+function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
+
+setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.1 carregado · ambiente local'},650);
+loadMaster();loadDrafts();renderFields();
+</script>
+</body>
+</html>
