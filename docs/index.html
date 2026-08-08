@@ -144,4 +144,71 @@ function translateToCanonicalKey(rawKey) {
 
   return null;
 }
+   /* =======================================================
+   MOTOR DE INJEÇÃO EM PDF NATIVO (pdf-lib)
+   ======================================================= */
+
+async function generatePDFFromTemplate(templateFileName) {
+  try {
+    toast("Carregando template PDF...");
+
+    // 1. Busca o arquivo PDF na sua pasta de templates (ex: /templates/001-AIH.pdf)
+    const url = `./templates/${templateFileName}`;
+    const existingPdfBytes = await fetch(url).then((res) => {
+      if (!res.ok) throw new Error(`Template ${templateFileName} não encontrado.`);
+      return res.arrayBuffer();
+    });
+
+    // 2. Carrega o PDF e obtém o formulário interativo (AcroForm)
+    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+    const form = pdfDoc.getForm();
+
+    // 3. Obtém os dados da Ficha-Mãe
+    const masterData = master();
+
+    // 4. Mapeia cada campo presente no PDF usando o Dicionário Canônico
+    const fields = form.getFields();
+
+    fields.forEach((field) => {
+      const rawFieldName = field.getName(); // Nome do campo no PDF
+      const canonicalKey = translateToCanonicalKey(rawFieldName); // Traduz via dicionário
+
+      if (canonicalKey && masterData[canonicalKey]) {
+        try {
+          // Se for um campo de texto, preenche com o valor correspondente
+          if (field instanceof PDFLib.PDFTextField) {
+            field.setText(String(masterData[canonicalKey]));
+          }
+        } catch (e) {
+          console.warn(`Não foi possível preencher o campo: ${rawFieldName}`, e);
+        }
+      }
+    });
+
+    // Opcional: Torna os campos do PDF não-editáveis após a geração (Flattening)
+    // form.flatten();
+
+    // 5. Salva o PDF preenchido em memória
+    const pdfBytes = await pdfDoc.save();
+
+    // 6. Exibe o PDF diretamente na área de Pré-visualização do site
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const pdfUrl = URL.createObjectURL(blob);
+
+    $("preview").innerHTML = `
+      <iframe src="${pdfUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe>
+      <div style="margin-top:10px; text-align:right;">
+        <a href="${pdfUrl}" download="documento_preenchido_${Date.now()}.pdf" class="btn primary" style="text-decoration:none;">
+          ⬇ Baixar PDF Preenchido
+        </a>
+      </div>
+    `;
+
+    toast("PDF preenchido com sucesso!");
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao processar o PDF: " + error.message);
+  }
+}
+
 </script></body></html>
