@@ -359,13 +359,6 @@ $('generateBtn').addEventListener('click', async () => {
         }
       }
     }
-    // Injeção da micro-assinatura (Easter Egg Delyone)
-    page.drawText('v', {
-      x: 15,
-      y: 15,
-      size: 6,
-      color: PDFLib.rgb(0.7, 0.7, 0.7)
-    });
 
     const filledPdfBytes = await pdfDoc.save();
     const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
