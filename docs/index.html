@@ -200,7 +200,10 @@ async function processPdfFile(file) {
   }
 }
 
-// Botão GERAR DOCUMENTO: Injeta os dados da Ficha-Mãe e gera a pré-visualização real
+/* =======================================================
+   MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS DRAWTEXT)
+   ======================================================= */
+
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
 
@@ -212,43 +215,64 @@ $('generateBtn').addEventListener('click', async () => {
     toast('Processando e preenchendo o PDF...');
     let pdfBytesBuffer;
 
-    // 1. Se houver arquivo enviado no Upload, usa ele; caso contrário, busca na pasta docs/templates/
+    // 1. Carrega o arquivo selecionado ou enviado
     if (state.currentPdfFile) {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
     } else {
       const response = await fetch(`./templates/${selectedTemplate}`);
-      if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta docs/templates/`);
+      if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado.`);
       pdfBytesBuffer = await response.arrayBuffer();
     }
 
-    // 2. Carrega o PDF com a pdf-lib
+    // 2. Carrega o documento e os dados da Ficha-Mãe
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
-    const form = pdfDoc.getForm();
     const masterData = master();
+    const page = pdfDoc.getPages()[0]; 
+    const { height } = page.getSize(); 
 
-    // 3. Preenche cada campo do PDF relacionando com a Ficha-Mãe
-    const fields = form.getFields();
-    fields.forEach(field => {
-      const fieldName = field.getName();
-      const canonicalKey = translateToCanonicalKey(fieldName);
-
-      if (canonicalKey && masterData[canonicalKey]) {
-        try {
+    // A) PREENCHIMENTO POR FORMULÁRIO INTERATIVO (AcroForm)
+    try {
+      const form = pdfDoc.getForm();
+      const fields = form.getFields();
+      fields.forEach(field => {
+        const canonicalKey = translateToCanonicalKey(field.getName());
+        if (canonicalKey && masterData[canonicalKey]) {
           if (field instanceof PDFLib.PDFTextField) {
             field.setText(String(masterData[canonicalKey]));
           }
-        } catch (e) {
-          console.warn(`Campo ${fieldName} não pôde ser preenchido`, e);
         }
-      }
-    });
+      });
+    } catch (e) {
+      console.warn("PDF não possui campos AcroForm editáveis, usando apenas coordenadas.", e);
+    }
 
-    // 4. Salva o PDF preenchido e gera a URL de visualização
+    // B) PREENCHIMENTO POR COORDENADAS (Estilo Anotação/iPhone)
+    // Ajuste X (largura) e Y (distância do topo) para cada campo da sua folha AIH
+    const COORDS = {
+      patient_name: { x: 130, y: 165, size: 9 },
+      cns:          { x: 130, y: 195, size: 8 },
+      mother_name:  { x: 130, y: 225, size: 8 },
+      hda:          { x: 60,  y: 310, size: 8 },
+      doctor_name:  { x: 320, y: 720, size: 9 },
+      crm:          { x: 480, y: 720, size: 9 }
+    };
+
+    for (const [key, pos] of Object.entries(COORDS)) {
+      if (masterData[key]) {
+        page.drawText(String(masterData[key]), {
+          x: pos.x,
+          y: height - pos.y, // Inverte o eixo Y para contar do topo da folha
+          size: pos.size || 9,
+          color: PDFLib.rgb(0, 0, 0)
+        });
+      }
+    }
+
+    // 3. Salva e gera a pré-visualização em PDF real
     const filledPdfBytes = await pdfDoc.save();
     const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
     const pdfUrl = URL.createObjectURL(blob);
 
-    // 5. Atualiza a caixa de Pré-Visualização com o PDF real e o botão de Baixar
     $('preview').innerHTML = `
       <iframe src="${pdfUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe>
       <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
