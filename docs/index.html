@@ -294,9 +294,19 @@ $('generateBtn').addEventListener('click', async () => {
       pdfBytesBuffer = await response.arrayBuffer();
     }
 
-    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
-    const masterData = master();
-    const page = pdfDoc.getPages()[0]; 
+      const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
+      
+      // 1. Resgata os dados brutos preenchidos na Ficha-Mãe
+      const rawMasterData = master();
+      
+      // 2. Passa pelo Cérebro da IA para etiquetar nos números canônicos (com fallback seguro)
+      toast('Conectando ao cérebro e organizando campos...');
+      const masterData = typeof rotearCamposComIA === 'function' 
+        ? await rotearCamposComIA(rawMasterData) 
+        : rawMasterData;
+
+      const page = pdfDoc.getPages()[0];
+
     const { height } = page.getSize(); 
 
     // A) Preenchimento por formulário interativo (AcroForm)
