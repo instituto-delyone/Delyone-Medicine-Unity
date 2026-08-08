@@ -11,7 +11,7 @@
 </head>
 <body>
 <header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
-<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v1.6.1</span></div></section>
+<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v1.6.2 Pro</span></div></section>
 <main><div class="grid"><section>
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
@@ -43,7 +43,7 @@
 </select>
 
 
-<div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v1.6.1...</div></div></div>
+<div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v1.6.2...</div></div></div>
 
 <div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue o arquivo para registrar metadados e preparar a camada de inspeção estrutural.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Registro canônico</div><h2 class="title">Campos detectados no template</h2></div></div><div class="fields" id="fieldList"><div class="empty">Nenhum campo inspecionado ainda.</div></div></div>
@@ -57,7 +57,7 @@
 </aside></div>
 <section><h2>Estrutura do sistema</h2><p class="desc">Separação entre conteúdo clínico, registro canônico e estrutura documental.</p><div class="architecture"><div class="arch"><div class="num">01</div><strong>Clinical Canonical Field Registry</strong><span>Dicionário central.</span></div><div class="arch"><div class="num">02</div><strong>Master Record</strong><span>Registro clínico reutilizável.</span></div><div class="arch"><div class="num">03</div><strong>Templates</strong><span>Modelos institucionais.</span></div><div class="arch"><div class="num">04</div><strong>External Map</strong><span>Campos → documento.</span></div><div class="arch"><div class="num">05</div><strong>PDF Inspection</strong><span>Camada de inspeção.</span></div><div class="arch"><div class="num">06</div><strong>Deterministic Output</strong><span>Saída reproduzível.</span></div></div></section>
 </main>
-<footer><div class="footer-inner"><span>MedUnity Delyone v1.6.1</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
+<footer><div class="footer-inner"><span>MedUnity Delyone v1.6.2 Pro</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
 
 <script>
 const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
@@ -74,7 +74,7 @@ function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
 
 /* =======================================================
-   DICIONÁRIO CANÔNICO DE BASE
+   DICIONÁRIO CANÔNICO E MAPAS ESTÁTICOS (FONTE ÚNICA)
    ======================================================= */
 const CANONICAL_DICTIONARY = {
   patient_name: ["nome", "paciente", "nome do paciente", "nome_completo", "patient_name"],
@@ -114,6 +114,38 @@ const CANONICAL_DICTIONARY = {
   crm: ["crm", "crm_uf", "registro_profissional"]
 };
 
+const STATIC_MAPS = {
+  APAC: {
+    patient_name: { x: 130, y: 92, size: 8 },
+    cns:          { x: 210, y: 108, size: 8 },
+    birth:        { x: 380, y: 92, size: 8 },
+    mother_name:  { x: 130, y: 124, size: 8 },
+    phone:        { x: 420, y: 124, size: 8 },
+    address:      { x: 130, y: 140, size: 8 },
+    municipality: { x: 130, y: 156, size: 8 },
+    hypothesis:   { x: 50,  y: 350, size: 8 },
+    cid10:        { x: 230, y: 350, size: 8 },
+    doctor_name:  { x: 130, y: 400, size: 8 },
+    crm:          { x: 400, y: 400, size: 8 }
+  },
+  AIH: {
+    patient_name: { x: 130, y: 128, size: 8 },
+    record_number:{ x: 450, y: 128, size: 8 },
+    cns:          { x: 130, y: 145, size: 8 },
+    birth:        { x: 350, y: 145, size: 8 },
+    mother_name:  { x: 130, y: 162, size: 8 },
+    phone:        { x: 430, y: 162, size: 8 },
+    address:      { x: 130, y: 195, size: 8 },
+    municipality: { x: 130, y: 212, size: 8 },
+    qpp:          { x: 50,  y: 250, size: 8 },
+    assessment:   { x: 50,  y: 330, size: 8 },
+    hypothesis:   { x: 50,  y: 430, size: 8 },
+    cid10:        { x: 280, y: 430, size: 8 },
+    doctor_name:  { x: 130, y: 520, size: 8 },
+    crm:          { x: 420, y: 520, size: 8 }
+  }
+};
+
 /* =======================================================
    MOTOR C.S.I. — APRENDIZADO AUTOMÁTICO VIA GLOSSÁRIO
    ======================================================= */
@@ -123,13 +155,15 @@ async function syncCsiWithGlossary() {
     if (!res.ok) return;
     const text = await res.text();
 
-    // Lê cada linha da tabela Markdown do Glossário e aprende os novos sinônimos
     const lines = text.split('\n');
     lines.forEach(line => {
+      // Ignora linhas de formatação Markdown como |---|---|
+      if (line.includes('---')) return;
+      
       const parts = line.split('|').map(p => p.trim());
       if (parts.length >= 4) {
-        const labelText = parts[2];     // Ex: "Nome do Paciente"
-        const canonicalKey = parts[3];  // Ex: "patient_name"
+        const labelText = parts[2];     
+        const canonicalKey = parts[3];  
 
         if (canonicalKey && labelText && CANONICAL_DICTIONARY[canonicalKey]) {
           if (!CANONICAL_DICTIONARY[canonicalKey].includes(labelText)) {
@@ -185,18 +219,40 @@ async function processPdfFile(file) {
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
     
+    let isInteractive = false;
+    
     try {
       const form = pdfDoc.getForm();
       const fields = form.getFields();
-      state.detectedFields = fields.map(f => {
-        const canonical = translateToCanonicalKey(f.getName());
-        return {
-          name: f.getName(),
-          type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
-        };
-      });
-    } catch {
-      state.detectedFields = [{ name: 'Documento Estático', type: 'Preenchimento por Coordenadas' }];
+      if (fields && fields.length > 0) {
+        isInteractive = true;
+        state.detectedFields = fields.map(f => {
+          const canonical = translateToCanonicalKey(f.getName());
+          return {
+            name: f.getName(),
+            type: canonical ? `Canônico: [${canonical}]` : 'Campo PDF'
+          };
+        });
+      }
+    } catch (e) {
+      isInteractive = false;
+    }
+
+    if (!isInteractive) {
+      const fileName = file.name.toUpperCase();
+      let mapToUse = null;
+      
+      if (fileName.includes('APAC')) mapToUse = STATIC_MAPS.APAC;
+      else if (fileName.includes('AIH')) mapToUse = STATIC_MAPS.AIH;
+
+      if (mapToUse) {
+        state.detectedFields = Object.keys(mapToUse).map(key => ({
+          name: key,
+          type: 'Injeção por Coordenadas (SUS)'
+        }));
+      } else {
+        state.detectedFields = [{ name: 'Documento Estático', type: 'Nenhum mapa de coordenadas encontrado.' }];
+      }
     }
 
     renderFields();
@@ -229,7 +285,7 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   try {
     toast(`Carregando e inspecionando ${selectedTemplate}...`);
     const response = await fetch(`./templates/${selectedTemplate}`);
-    if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado na pasta ./templates/`);
+    if (!response.ok) throw new Error(`Template não encontrado.`);
     
     const arrayBuffer = await response.arrayBuffer();
     const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
@@ -237,12 +293,12 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
 
   } catch (error) {
     console.error(error);
-    toast('Erro ao inspecionar template: ' + error.message);
+    toast('Erro ao inspecionar template.');
   }
 });
 
 /* =======================================================
-   MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS DRAWTEXT)
+   MOTOR DE INJEÇÃO EM PDF (ACROFORM + COORDENADAS)
    ======================================================= */
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
@@ -259,7 +315,7 @@ $('generateBtn').addEventListener('click', async () => {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
     } else {
       const response = await fetch(`./templates/${selectedTemplate}`);
-      if (!response.ok) throw new Error(`Template ${selectedTemplate} não encontrado.`);
+      if (!response.ok) throw new Error(`Template não encontrado.`);
       pdfBytesBuffer = await response.arrayBuffer();
     }
 
@@ -281,49 +337,26 @@ $('generateBtn').addEventListener('click', async () => {
         }
       });
     } catch (e) {
-      console.warn("PDF não possui campos AcroForm editáveis, aplicando coordenadas.", e);
+      console.warn("Sem campos AcroForm editáveis, avaliando coordenadas.");
     }
 
-    // B) Preenchimento por Coordenadas (Ajustado para AIH e APAC do SUS)
-    const isAPAC = selectedTemplate.includes('APAC');
+    // B) Preenchimento por Coordenadas unificado
+    const fileName = selectedTemplate ? selectedTemplate.toUpperCase() : (state.currentPdfFile ? state.currentPdfFile.name.toUpperCase() : '');
+    let activeMap = null;
+    
+    if (fileName.includes('APAC')) activeMap = STATIC_MAPS.APAC;
+    else if (fileName.includes('AIH')) activeMap = STATIC_MAPS.AIH;
 
-    const COORDS = isAPAC ? {
-      patient_name: { x: 130, y: 92, size: 8 },
-      cns:          { x: 210, y: 108, size: 8 },
-      birth:        { x: 380, y: 92, size: 8 },
-      mother_name:  { x: 130, y: 124, size: 8 },
-      phone:        { x: 420, y: 124, size: 8 },
-      address:      { x: 130, y: 140, size: 8 },
-      municipality: { x: 130, y: 156, size: 8 },
-      hypothesis:   { x: 50,  y: 350, size: 8 },
-      cid10:        { x: 230, y: 350, size: 8 },
-      doctor_name:  { x: 130, y: 400, size: 8 },
-      crm:          { x: 400, y: 400, size: 8 }
-    } : {
-      patient_name: { x: 130, y: 128, size: 8 },
-      record_number:{ x: 450, y: 128, size: 8 },
-      cns:          { x: 130, y: 145, size: 8 },
-      birth:        { x: 350, y: 145, size: 8 },
-      mother_name:  { x: 130, y: 162, size: 8 },
-      phone:        { x: 430, y: 162, size: 8 },
-      address:      { x: 130, y: 195, size: 8 },
-      municipality: { x: 130, y: 212, size: 8 },
-      qpp:          { x: 50,  y: 250, size: 8 },
-      assessment:   { x: 50,  y: 330, size: 8 },
-      hypothesis:   { x: 50,  y: 430, size: 8 },
-      cid10:        { x: 280, y: 430, size: 8 },
-      doctor_name:  { x: 130, y: 520, size: 8 },
-      crm:          { x: 420, y: 520, size: 8 }
-    };
-
-    for (const [key, pos] of Object.entries(COORDS)) {
-      if (masterData[key]) {
-        page.drawText(String(masterData[key]), {
-          x: pos.x,
-          y: height - pos.y,
-          size: pos.size || 9,
-          color: PDFLib.rgb(0, 0, 0)
-        });
+    if (activeMap) {
+      for (const [key, pos] of Object.entries(activeMap)) {
+        if (masterData[key]) {
+          page.drawText(String(masterData[key]), {
+            x: pos.x,
+            y: height - pos.y,
+            size: pos.size || 9,
+            color: PDFLib.rgb(0, 0, 0)
+          });
+        }
       }
     }
 
@@ -381,9 +414,8 @@ function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}
 function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 
-setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.1 carregado · ambiente local'},650);
+setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v1.6.2 Pro carregado · ambiente local'},650);
 
-// Inicializa a aplicação e sincroniza com o Glossário
 syncCsiWithGlossary();
 loadMaster();
 loadDrafts();
