@@ -90,31 +90,32 @@ const STATIC_MAPS = {
     "38": { code: "38", nativeKey: "doctor_name", name: "Nome do Profissional Solicitante", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
     "42": { code: "42", nativeKey: "crm", name: "CRM", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
   },
-    AIH: {
-    "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 172, w: 370, h: 15, max: 9, min: 5 },
-    "6":  { code: "6", nativeKey: "record_number", name: "Nº do Prontuário", x: 450, y: 172, w: 100, h: 15, max: 9, min: 5 },
-    "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 200, w: 200, h: 15, max: 9, min: 5 },
-    "8":  { code: "8", nativeKey: "birth", name: "Data de Nascimento", x: 275, y: 200, w: 80, h: 15, max: 9, min: 5 },
+  AIH: {
+    "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 188, w: 370, h: 15, max: 9, min: 5 },
+    "6":  { code: "6", nativeKey: "record_number", name: "Nº do Prontuário", x: 450, y: 188, w: 100, h: 15, max: 9, min: 5 },
+    "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 213, w: 200, h: 15, max: 9, min: 5 },
+    "8":  { code: "8", nativeKey: "birth", name: "Data de Nascimento", x: 275, y: 213, w: 80, h: 15, max: 9, min: 5 },
     
-    // Alinhados para não encavalar com o CNS
-    "11": { code: "11", nativeKey: "mother_name", name: "Nome da Mãe", x: 60, y: 228, w: 370, h: 15, max: 9, min: 5 },
-    "12": { code: "12", nativeKey: "phone", name: "Telefone de Contato", x: 440, y: 228, w: 100, h: 15, max: 9, min: 5 },
+    "11": { code: "11", nativeKey: "mother_name", name: "Nome da Mãe", x: 60, y: 242, w: 370, h: 15, max: 9, min: 5 },
+    "12": { code: "12", nativeKey: "phone", name: "Telefone de Contato", x: 440, y: 242, w: 100, h: 15, max: 9, min: 5 },
     
-    "15": { code: "15", nativeKey: "address", name: "Endereço (Rua, Nº, Bairro)", x: 60, y: 260, w: 480, h: 15, max: 9, min: 5 },
-    "16": { code: "16", nativeKey: "municipality", name: "Município de Residência", x: 60, y: 288, w: 300, h: 15, max: 9, min: 5 },
+    "15": { code: "15", nativeKey: "address", name: "Endereço (Rua, Nº, Bairro)", x: 60, y: 275, w: 480, h: 15, max: 9, min: 5 },
+    "16": { code: "16", nativeKey: "municipality", name: "Município de Residência", x: 60, y: 302, w: 300, h: 15, max: 9, min: 5 },
     
-    // Caixas de texto longo
-    "20": { code: "20", nativeKey: "qpp", name: "Sinais e Sintomas Clínicos", x: 60, y: 325, w: 480, h: 65, max: 9, min: 4.5, multi: true },
-    "21": { code: "21", nativeKey: "assessment", name: "Condições que Justificam", x: 60, y: 405, w: 480, h: 65, max: 9, min: 4.5, multi: true },
+    // Caixas de texto longo (Deslocadas para iniciar abaixo do título da caixa)
+    "20": { code: "20", nativeKey: "qpp", name: "Sinais e Sintomas Clínicos", x: 60, y: 338, w: 480, h: 60, max: 8.5, min: 4.5, multi: true },
+    "21": { code: "21", nativeKey: "assessment", name: "Condições que Justificam", x: 60, y: 420, w: 480, h: 65, max: 8.5, min: 4.5, multi: true },
     
-    // Diagnósticos e CID
-    "23": { code: "23", nativeKey: "hypothesis", name: "Diagnóstico Inicial", x: 60, y: 495, w: 220, h: 15, max: 9, min: 5 },
-    "24": { code: "24", nativeKey: "cid10", name: "CID 10 Principal", x: 290, y: 495, w: 80, h: 15, max: 9, min: 5 },
+    // Hipótese Diagnóstica e CID (Deslocados para a caixa 23/24)
+    "23": { code: "23", nativeKey: "hypothesis", name: "Diagnóstico Inicial", x: 60, y: 512, w: 220, h: 15, max: 9, min: 5 },
+    "24": { code: "24", nativeKey: "cid10", name: "CID 10 Principal", x: 290, y: 512, w: 80, h: 15, max: 9, min: 5 },
     
-    // Procedimento e Profissional Solicitante
-    "27": { code: "27", nativeKey: "plan", name: "Procedimento Solicitado", x: 60, y: 535, w: 350, h: 15, max: 9, min: 5 },
-    "33": { code: "33", nativeKey: "doctor_name", name: "Profissional Solicitante", x: 60, y: 580, w: 350, h: 15, max: 9, min: 5 },
-    "35": { code: "35", nativeKey: "crm", name: "Registro do Conselho", x: 430, y: 580, w: 120, h: 15, max: 9, min: 5 }
+    // Procedimento Solicitado (Deslocado para a caixa 27)
+    "27": { code: "27", nativeKey: "plan", name: "Procedimento Solicitado", x: 60, y: 552, w: 350, h: 15, max: 9, min: 5 },
+    
+    // Médico Solicitante (Deslocado para a caixa 33)
+    "33": { code: "33", nativeKey: "doctor_name", name: "Profissional Solicitante", x: 60, y: 595, w: 350, h: 15, max: 9, min: 5 },
+    "35": { code: "35", nativeKey: "crm", name: "Registro do Conselho", x: 430, y: 595, w: 120, h: 15, max: 9, min: 5 }
   }
    
 };
