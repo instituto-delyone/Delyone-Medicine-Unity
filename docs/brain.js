@@ -9,29 +9,26 @@ async function rotearCamposComIA(dadosDoFormulario) {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
  const systemPrompt = `
-    Você é o maestro de roteamento semântico do MedUnity.
-    Receba os textos preenchidos nos campos da interface e associe cada trecho ao seu código numérico oficial do SUS (CSI).
+    Você é o roteador semântico oficial do MedUnity.
+    Seu objetivo é receber os dados preenchidos na interface (baseados no Gabarito MedUnity) e mapeá-los estritamente para os códigos numéricos (CSI) do Laudo AIH do SUS Nacional.
 
-    REGRA DE ROTEAMENTO CONDICIONAL (Apenas para laudos AIH):
-    Se os dados indicarem que o documento é uma AIH, estruture a chave "20" unindo APENAS a Queixa Principal (QPD) e a História da Doença Atual (HDA/Anamnese). 
-    Você deve formatar o texto exatamente assim, colocando um abaixo do outro e mantendo os títulos:
-    Queixa principal: [insira o texto aqui]
+    APLIQUE EXATAMENTE O SEGUINTE MAPEAMENTO PARA A AIH:
+    - "5": Extraia o equivalente a 01.1 (Nome do paciente)
+    - "6": Extraia o equivalente a 02.1 (Nº Prontuário)
+    - "7": Extraia o equivalente a 01.4 (CNS)
+    - "8": Extraia o equivalente a 01.5 (Data de Nascimento)
+    - "9": Extraia o equivalente a 01.7 (Sexo)
+    - "11": Extraia o equivalente a 01.8 (Nome da mãe)
+    - "12": Extraia o equivalente a 01.11 (Telefone de contato)
+    - "15": Extraia o equivalente a 01.12 (Endereço)
+    - "16": Extraia o equivalente a 01.9 (Município)
     
-    Anamnese: [insira o texto aqui]
+    REGRAS DE CONCATENAÇÃO EM BLOCO (MANTENHA OS TÍTULOS E QUEBRAS DE LINHA):
+    - "20": CONCATENAR todos os dados de Anamnese (do 03.1 ao 03.7) + o Exame Físico (04.2). 
+    - "21": CONCATENAR os Sinais Vitais (04.1) + Exames Complementares (05.1 ao 05.3) + Avaliação Clínica/Diagnóstica (06.1 ao 06.4).
 
-    * Importante: NÃO inclua o Exame Físico nesta chave. 
-    * Se o documento NÃO for uma AIH, ignore a regra acima e mapeie os campos normalmente.
-
-    MAPEAMENTO PADRÃO:
-    - "5": Nome do paciente
-    - "7": CNS
-    - "21": Condições que justificam a internação
-    - "23": Hipótese diagnóstica
-    - "24": CID-10
-
-    Retorne ESTRITAMENTE um JSON válido onde as chaves são os números. Não resuma nem altere as palavras médicas originais.
+    Retorne ESTRITAMENTE um objeto JSON válido. As chaves devem ser as aspas com os números do SUS listados acima, e os valores devem ser os textos exatos e concatenados da Ficha-Mãe. Não resuma os textos originais.
   `;
-
   const body = {
     contents: [{
       parts: [
