@@ -323,7 +323,16 @@ $('generateBtn').addEventListener('click', async () => {
 
       for (const [codeKey, field] of Object.entries(activeMap)) {
         // BUSCA PRIMEIRO A CHAVE DA IA ("5", "20", "21") E SE NÃO ACHAR, USA A NATIVA
-        const rawValue = masterData[codeKey] || masterData[field.nativeKey];
+                let rawValue = masterData[codeKey];
+
+        if (rawValue === undefined || rawValue === null || rawValue === "") {
+          rawValue = rawMasterData[field.nativeKey];
+        }
+
+        if (field.nativeKey !== 'patient_name' && rawValue === rawMasterData.patient_name) {
+          rawValue = "";
+        }
+
         
         if (rawValue) {
           const text = String(rawValue);
