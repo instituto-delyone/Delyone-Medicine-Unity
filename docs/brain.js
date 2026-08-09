@@ -7,7 +7,7 @@ async function rotearCamposComIA(dadosDoFormulario) {
     return dadosDoFormulario;
   }
 
-  const endpoint = https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY};
+  const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}';
 
   const systemPrompt = `
     Você é o cérebro de roteamento do MedUnity.
@@ -95,7 +95,7 @@ async function rotearCamposComIA(dadosDoFormulario) {
     contents: [{
       parts: [
         { text: systemPrompt },
-        { text: Dados brutos do formulário: ${JSON.stringify(dadosDoFormulario)} }
+        { text: 'Dados brutos do formulário: ${JSON.stringify(dadosDoFormulario)}' }
       ]
     }],
     generationConfig: { responseMimeType: "application/json" }
