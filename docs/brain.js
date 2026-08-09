@@ -6,7 +6,7 @@
 // Coloque uma NOVA chave aqui apenas para teste local.
 // Não versione a chave real no GitHub.
 
-const API_KEY = "COLE_AQUI_SUA_NOVA_CHAVE";
+const API_KEY = "AQ.Ab8RN6LlyKj8ivhh-G9A8WvsRTz73LJFNrDyEbsea0G0OMhIKw";
 
 // Modelo usado pelo roteador.
 // Pode ser alterado sem modificar o restante do sistema.
