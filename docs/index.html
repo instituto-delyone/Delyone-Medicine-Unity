@@ -187,11 +187,14 @@ $('generateBtn').addEventListener('click', async () => {
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
     const rawMasterData = master();
     
-    // CHAMADA DA IA
+        // CHAMADA DA IA
     toast('Conectando ao cérebro e organizando campos...');
-    const masterData = typeof rotearCamposComIA === 'function' 
-      ? await rotearCamposComIA(rawMasterData) 
-      : rawMasterData;
+    let masterData = rawMasterData;
+    
+    if (typeof rotearCamposComIA === 'function') {
+      const aiResponse = await rotearCamposComIA(rawMasterData);
+      masterData = { ...rawMasterData, ...aiResponse };
+    }
 
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize(); 
