@@ -325,13 +325,22 @@ $('generateBtn').addEventListener('click', async () => {
 
       for (const [codeKey, field] of Object.entries(activeMap)) {
         // BUSCA PRIMEIRO A CHAVE DA IA ("5", "20", "21") E SE NÃO ACHAR, USA A NATIVA
-                let rawValue = masterData[codeKey];
+              let rawValue = masterData[codeKey];
 
+        // 1. Busca pela chave nativa correspondente se a chave numérica não trouxer nada
         if (rawValue === undefined || rawValue === null || rawValue === "") {
-          rawValue = rawMasterData[field.nativeKey];
+          if (field.nativeKey === 'city' || field.nativeKey === 'municipality') {
+            rawValue = rawMasterData.municipality || rawMasterData.city || "";
+          } else {
+            rawValue = rawMasterData[field.nativeKey] || "";
+          }
         }
 
+        // 2. Trava anti-vazamento global
         if (field.nativeKey !== 'patient_name' && rawValue === rawMasterData.patient_name) {
+          rawValue = "";
+        }
+        if (field.nativeKey !== 'mother_name' && rawValue === rawMasterData.mother_name) {
           rawValue = "";
         }
 
