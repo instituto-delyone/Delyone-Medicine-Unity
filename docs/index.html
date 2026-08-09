@@ -36,7 +36,6 @@
 <div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label>
 <select id="templateSelect">
   <option value="">Selecione um template</option>
-  <option value="002-prescricao-upa-v1.docx">002 — Prescrição UPA v1</option>
   <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">003 — Laudo AIH (SUS Nacional)</option>
   <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (SUS Nacional)</option>
 </select>
@@ -76,7 +75,7 @@ function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{t
 
 /* MAPAS ESTÁTICOS COM CHAVEAMENTO NUMÉRICO DO SUS */
 const STATIC_MAPS = {
-  "TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf": {
+  APAC: {
     "3":  { code: "3", nativeKey: "patient_name", name: "Nome do Paciente", x: 62, y: 145, w: 470, h: 15, max: 9, min: 5 },
     "5":  { code: "5", nativeKey: "cns", name: "CNS", x: 62, y: 170, w: 200, h: 15, max: 9, min: 5 },
     "6":  { code: "6", nativeKey: "birth", name: "Data de Nascimento", x: 280, y: 170, w: 100, h: 15, max: 9, min: 5 },
@@ -89,7 +88,7 @@ const STATIC_MAPS = {
     "38": { code: "38", nativeKey: "doctor_name", name: "Nome do Profissional Solicitante", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
     "42": { code: "42", nativeKey: "crm", name: "CRM", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
   },
-  "TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf": {
+  AIH: {
     "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 188, w: 370, h: 15, max: 9, min: 5 },
     "6":  { code: "6", nativeKey: "record_number", name: "Nº do Prontuário", x: 450, y: 188, w: 100, h: 15, max: 9, min: 5 },
     "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 213, w: 200, h: 15, max: 9, min: 5 },
