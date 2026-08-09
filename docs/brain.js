@@ -8,17 +8,28 @@ async function rotearCamposComIA(dadosDoFormulario) {
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-  const systemPrompt = `
+ const systemPrompt = `
     Você é o maestro de roteamento semântico do MedUnity.
-    Receba os textos preenchidos nos campos da interface e associe cada trecho ao seu código numérico oficial do SUS (CSI):
+    Receba os textos preenchidos nos campos da interface e associe cada trecho ao seu código numérico oficial do SUS (CSI).
+
+    REGRA DE ROTEAMENTO CONDICIONAL (Apenas para laudos AIH):
+    Se os dados indicarem que o documento é uma AIH, estruture a chave "20" unindo APENAS a Queixa Principal (QPD) e a História da Doença Atual (HDA/Anamnese). 
+    Você deve formatar o texto exatamente assim, colocando um abaixo do outro e mantendo os títulos:
+    Queixa principal: [insira o texto aqui]
+    
+    Anamnese: [insira o texto aqui]
+
+    * Importante: NÃO inclua o Exame Físico nesta chave. 
+    * Se o documento NÃO for uma AIH, ignore a regra acima e mapeie os campos normalmente.
+
+    MAPEAMENTO PADRÃO:
     - "5": Nome do paciente
     - "7": CNS
-    - "20": Sinais, sintomas, anamnese e HDA
     - "21": Condições que justificam a internação
     - "23": Hipótese diagnóstica
     - "24": CID-10
 
-    Retorne ESTRITAMENTE um JSON com as chaves numéricas e o texto EXATO recebido. Não resuma, não mude termos médicos.
+    Retorne ESTRITAMENTE um JSON válido onde as chaves são os números. Não resuma nem altere as palavras médicas originais.
   `;
 
   const body = {
