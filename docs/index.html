@@ -31,6 +31,36 @@
 <div class="full"><label>Plano terapêutico / conduta</label><textarea id="master_plan" rows="4"></textarea></div><div class="full"><label>Evolução / observações</label><textarea id="master_evolution" rows="4"></textarea></div>
 <div class="section">08 · Profissional responsável</div>
 <div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
+
+<!-- BLOCO NOVO ADICIONADO: SOLICITAÇÃO DE PROCEDIMENTOS (APAC) -->
+<div class="section">09 · Solicitação de Procedimentos (APAC)</div>
+<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);">
+  <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
+  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+    <input id="master_proc1_name" type="text" placeholder="Nome do Procedimento 1">
+    <input id="master_proc1_code" type="text" placeholder="Código SIGTAP / TUSS">
+    <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
+  </div>
+</div>
+
+<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
+  <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
+  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+    <input id="master_proc2_name" type="text" placeholder="Nome do Procedimento 2">
+    <input id="master_proc2_code" type="text" placeholder="Código SIGTAP / TUSS">
+    <input id="master_proc2_qty" type="text" placeholder="Qtd">
+  </div>
+</div>
+
+<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
+  <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
+  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+    <input id="master_proc3_name" type="text" placeholder="Nome do Procedimento 3">
+    <input id="master_proc3_code" type="text" placeholder="Código SIGTAP / TUSS">
+    <input id="master_proc3_qty" type="text" placeholder="Qtd">
+  </div>
+</div>
+
 </div><div class="actions"><button class="btn primary" type="submit">💾 Salvar Ficha-Mãe</button><button class="btn secondary" type="button" onclick="clearMaster()">🧹 Limpar</button><button class="btn gold" type="button" onclick="exportMaster()">⇩ Exportar JSON</button></div><div class="summary" id="masterSummary">Nenhuma Ficha-Mãe carregada.</div></form></div>
 
 <div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label>
@@ -48,7 +78,7 @@
 <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO PDF -->
 <div class="card"><div class="card-head"><div><div class="kicker">Saída</div><h2 class="title">Pré-visualização</h2></div></div><div class="preview" id="preview"><span class="empty">A pré-visualização aparecerá aqui depois da geração.</span></div></div>
 
-<!-- CARD ADICIONADO: VISUALIZAÇÃO CONSOLIDADA DA FICHA-MÃE -->
+<!-- CARD DE DADOS CONSOLIDADOS DA FICHA-MÃE -->
 <div class="card" id="motherFormCard" style="display: none; margin-top: 20px;">
   <div class="card-head" style="margin-bottom: 12px; align-items: center;">
     <div>
@@ -78,7 +108,7 @@
 
 <script>
 const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
-const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm'];
+const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm','proc1_name','proc1_code','proc1_qty','proc2_name','proc2_code','proc2_qty','proc3_name','proc3_code','proc3_qty'];
 const $=id=>document.getElementById(id);const state={template:null,drafts:[],detectedFields:[],currentPdfFile:null};
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
@@ -93,17 +123,41 @@ function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{t
 /* MAPAS ESTÁTICOS COM CHAVEAMENTO NUMÉRICO DO SUS */
 const STATIC_MAPS = {
   APAC: {
-    "3":  { code: "3", nativeKey: "patient_name", name: "Nome do Paciente", x: 62, y: 145, w: 470, h: 15, max: 9, min: 5 },
-    "5":  { code: "5", nativeKey: "cns", name: "CNS", x: 62, y: 170, w: 200, h: 15, max: 9, min: 5 },
-    "6":  { code: "6", nativeKey: "birth", name: "Data de Nascimento", x: 280, y: 170, w: 100, h: 15, max: 9, min: 5 },
-    "8":  { code: "8", nativeKey: "mother_name", name: "Nome da Mãe", x: 62, y: 195, w: 470, h: 15, max: 9, min: 5 },
-    "9":  { code: "9", nativeKey: "phone", name: "Telefone", x: 400, y: 195, w: 130, h: 15, max: 9, min: 5 },
-    "10": { code: "10", nativeKey: "address", name: "Endereço", x: 62, y: 220, w: 470, h: 15, max: 9, min: 5 },
-    "11": { code: "11", nativeKey: "municipality", name: "Município", x: 62, y: 245, w: 250, h: 15, max: 9, min: 5 },
-    "33": { code: "33", nativeKey: "hypothesis", name: "Descrição do Diagnóstico", x: 62, y: 460, w: 470, h: 30, max: 9, min: 5, multi: true },
-    "34": { code: "34", nativeKey: "cid10", name: "CID-10 Principal", x: 62, y: 485, w: 100, h: 15, max: 9, min: 5 },
-    "38": { code: "38", nativeKey: "doctor_name", name: "Nome do Profissional Solicitante", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
-    "42": { code: "42", nativeKey: "crm", name: "CRM", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
+    // 01 · IDENTIFICAÇÃO DO PACIENTE (Truncado nas posições reais)
+    "3":  { code: "3",  nativeKey: "patient_name",  name: "Nome do Paciente",        x: 60, y: 128, w: 370, h: 12, min: 9, max: 9 },
+    "4":  { code: "4",  nativeKey: "record_number", name: "Nº do Prontuário",        x: 440, y: 128, w: 100, h: 12, min: 9, max: 9 },
+    "5":  { code: "5",  nativeKey: "cns",            name: "CNS",                     x: 60, y: 148, w: 200, h: 12, min: 9, max: 9 },
+    "6":  { code: "6",  nativeKey: "birth",          name: "Data de Nascimento",      x: 275, y: 148, w: 80,  h: 12, min: 9, max: 9 },
+    "8":  { code: "8",  nativeKey: "mother_name",    name: "Nome da Mãe",             x: 60, y: 170, w: 370, h: 12, min: 9, max: 9 },
+    "9":  { code: "9",  nativeKey: "phone",          name: "Telefone de Contato",      x: 440, y: 170, w: 100, h: 12, min: 9, max: 9 },
+    "10": { code: "10", nativeKey: "address",        name: "Endereço",                x: 60, y: 191, w: 480, h: 12, min: 9, max: 9 },
+    "11": { code: "11", nativeKey: "municipality",   name: "Município de Residência", x: 60, y: 211, w: 300, h: 12, min: 9, max: 9 },
+
+    // 02 · PROCEDIMENTOS SOLICITADOS (Blocos 1, 2 e 3)
+    // Procedimento 1 (Principal)
+    "15": { code: "15", nativeKey: "proc1_code", name: "Cód. Procedimento 1", x: 60,  y: 252, w: 120, h: 12, min: 9, max: 9 },
+    "16": { code: "16", nativeKey: "proc1_name", name: "Nome Procedimento 1", x: 190, y: 252, w: 300, h: 12, min: 8, max: 8 },
+    "17": { code: "17", nativeKey: "proc1_qty",  name: "Qtd Proc 1",          x: 500, y: 252, w: 40,  h: 12, min: 9, max: 9 },
+
+    // Procedimento 2 (Secundário 1)
+    "18": { code: "18", nativeKey: "proc2_code", name: "Cód. Procedimento 2", x: 60,  y: 284, w: 120, h: 12, min: 9, max: 9 },
+    "19": { code: "19", nativeKey: "proc2_name", name: "Nome Procedimento 2", x: 190, y: 284, w: 300, h: 12, min: 8, max: 8 },
+    "20": { code: "20", nativeKey: "proc2_qty",  name: "Qtd Proc 2",          x: 500, y: 284, w: 40,  h: 12, min: 9, max: 9 },
+
+    // Procedimento 3 (Secundário 2)
+    "21": { code: "21", nativeKey: "proc3_code", name: "Cód. Procedimento 3", x: 60,  y: 305, w: 120, h: 12, min: 9, max: 9 },
+    "22": { code: "22", nativeKey: "proc3_name", name: "Nome Procedimento 3", x: 190, y: 305, w: 300, h: 12, min: 8, max: 8 },
+    "23": { code: "23", nativeKey: "proc3_qty",  name: "Qtd Proc 3",          x: 500, y: 305, w: 40,  h: 12, min: 9, max: 9 },
+
+    // 03 · JUSTIFICATIVA DO PROCEDIMENTO
+    "33": { code: "33", nativeKey: "hypothesis",   name: "Impressão Diagnóstica", x: 60,  y: 382, w: 320, h: 25, min: 8, max: 8, multi: true },
+    "34": { code: "34", nativeKey: "cid10",        name: "CID 10 Principal",       x: 395, y: 382, w: 60,  h: 12, min: 9, max: 9 },
+    "35": { code: "35", nativeKey: "differential", name: "DDxs Diferenciais",     x: 460, y: 382, w: 80,  h: 12, min: 8, max: 8 },
+    "37": { code: "37", nativeKey: "assessment",   name: "Observações / QPD / HDA",x: 60,  y: 420, w: 480, h: 65, min: 7.5, max: 7.5, multi: true },
+
+    // 04 · SOLICITAÇÃO (Médico Responsável)
+    "38": { code: "38", nativeKey: "doctor_name",  name: "Nome Profissional Solicitante", x: 60,  y: 512, w: 320, h: 12, min: 9, max: 9 },
+    "42": { code: "42", nativeKey: "crm",          name: "CRM / Conselho",               x: 430, y: 512, w: 110, h: 12, min: 9, max: 9 }
   },
   AIH: {
     // Ponto B: Topo Esquerdo (Nome do Paciente) -> Reajustado para dentro do box 5
@@ -166,6 +220,12 @@ function renderMotherFormPreview(data) {
     <div style="margin-bottom: 8px;"><strong>Exame Físico / Sinais Vitais:</strong><br>${esc(d.physical_exam || d.vitals || '-')}</div>
     <div style="margin-bottom: 8px;"><strong>Hipótese Diagnóstica / CID-10:</strong><br>${esc(d.hypothesis || '-')} ${d.cid10 ? ' (CID: ' + esc(d.cid10) + ')' : ''}</div>
     <div style="margin-bottom: 8px;"><strong>Plano / Conduta:</strong><br>${esc(d.plan || '-')}</div>
+    
+    ${d.proc1_name ? `
+    <hr style="border:0; border-top: 1px solid var(--line); margin: 12px 0;">
+    <div style="margin-bottom: 8px;"><strong>Procedimento 1:</strong> ${esc(d.proc1_name)} | <strong>Cód:</strong> ${esc(d.proc1_code || '-')} | <strong>Qtd:</strong> ${esc(d.proc1_qty || '1')}</div>
+    ` : ''}
+    
     <hr style="border:0; border-top: 1px solid var(--line); margin: 12px 0;">
     <div><strong>Médico Responsável:</strong> ${esc(d.doctor_name || '-')} · <strong>CRM:</strong> ${esc(d.crm || '-')}</div>
   `;
