@@ -15,7 +15,7 @@ async function rotearCamposComIA(dadosDoFormulario) {
 
     ================================================
     ETAPA 1: A "PEDRA DE ROSETA" (GABARITO CSI)
-    Identifique os dados recebidos e classifique-os internamente com estes códigos exatos:
+    Identifique os dados recebidos e classifique-os internamente com estes códigos exatos - os códigos referem-se aos campos de texto do site medunity:
     
     01 - IDENTIFICAÇÃO
     01.1 - Nome completo
@@ -68,9 +68,9 @@ async function rotearCamposComIA(dadosDoFormulario) {
     08.2 - CRM/UF
     ================================================
 
-    ETAPA 2: ROTEAMENTO PARA A AIH (SAÍDA FINAL)
+    ETAPA 2: ROTEAMENTO PARA TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf (SAÍDA FINAL)
     Agora que você classificou os dados, gere um objeto JSON roteando os códigos CSI para as chaves numéricas exclusivas da AIH, exatamente assim:
-    
+    (exemplo: o campo 5 do TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar chama nome do paciente e vai ser preenchido conforme o texto inserido em "nome completo" "01.1" no medunity) 
     - "5": 01.1
     - "6": 02.1
     - "7": 01.4
