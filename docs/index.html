@@ -44,7 +44,24 @@
 
 <div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue o arquivo para registrar metadados e preparar a camada de inspeção estrutural.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Registro canônico</div><h2 class="title">Campos detectados no template</h2></div></div><div class="fields" id="fieldList"><div class="empty">Nenhum campo inspecionado ainda.</div></div></div>
+
+<!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO PDF -->
 <div class="card"><div class="card-head"><div><div class="kicker">Saída</div><h2 class="title">Pré-visualização</h2></div></div><div class="preview" id="preview"><span class="empty">A pré-visualização aparecerá aqui depois da geração.</span></div></div>
+
+<!-- CARD ADICIONADO: VISUALIZAÇÃO CONSOLIDADA DA FICHA-MÃE -->
+<div class="card" id="motherFormCard" style="display: none; margin-top: 20px;">
+  <div class="card-head" style="margin-bottom: 12px; align-items: center;">
+    <div>
+      <div class="kicker">Resumo Estruturado</div>
+      <h2 class="title" style="font-size: 17px;">📋 Dados Consolidados da Ficha-Mãe</h2>
+    </div>
+    <button class="btn secondary" onclick="toggleMotherPreview()" style="font-size: 11px; padding: 5px 10px;">Ocultar/Exibir</button>
+  </div>
+  <div id="motherFormContent" style="background: var(--soft); border: 1px solid var(--line); padding: 16px; border-radius: 12px; font-size: 13px; line-height: 1.6; max-height: 450px; overflow-y: auto;">
+    <!-- Dados injetados dinamicamente via JS -->
+  </div>
+</div>
+
 </section>
 <aside>
 <div class="card"><div class="card-head"><div><div class="kicker">Persistência local</div><h2 class="title">Últimos rascunhos</h2></div></div><div id="draftList"><div class="empty">Nenhum rascunho salvo.</div></div></div>
@@ -88,7 +105,7 @@ const STATIC_MAPS = {
     "38": { code: "38", nativeKey: "doctor_name", name: "Nome do Profissional Solicitante", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
     "42": { code: "42", nativeKey: "crm", name: "CRM", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
   },
-      AIH: {
+  AIH: {
     // Ponto B: Topo Esquerdo (Nome do Paciente) -> Reajustado para dentro do box 5
     "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 175, w: 370, h: 15, min: 9, max: 9 },
     
@@ -108,7 +125,8 @@ const STATIC_MAPS = {
     // Centro Clínico (Sinais / Justificativa)
     "20_qp":  { code: "20", nativeKey: "qpd", name: "Queixa Principal e duração", x: 60, y: 338, w: 480, h: 12, min: 9, max: 9 },
     "20_hda": { code: "20", nativeKey: "hda", name: "História da Doença Atual (HDA)", x: 60, y: 350, w: 480, h: 53, min: 9, max: 9, multi: true },
-        // BLOCO 21: CONDIÇÕES QUE JUSTIFICAM A INTERNAÇÃO (Fonte 4.5)
+    
+    // BLOCO 21: CONDIÇÕES QUE JUSTIFICAM A INTERNAÇÃO (Fonte 4.5)
     "21_exam":   { code: "21", nativeKey: "physical_exam", name: "Exame Físico", x: 60, y: 415, w: 480, h: 20, min: 4.5, max: 4.5, multi: true },
     "21_vitals": { code: "21", nativeKey: "vital_signs", name: "Sinais Vitais", x: 60, y: 435, w: 480, h: 15, min: 4.5, max: 4.5, multi: true },
     "21_assess": { code: "21", nativeKey: "assessment", name: "Impressão Clínica / Avaliação", x: 60, y: 445, w: 480, h: 25, min: 4.5, max: 4.5, multi: true },
@@ -121,8 +139,47 @@ const STATIC_MAPS = {
     "33": { code: "33", nativeKey: "doctor_name", name: "Profissional Solicitante", x: 60, y: 609, w: 350, h: 15, max: 9, min: 9 },
     "35": { code: "35", nativeKey: "crm", name: "Registro do Conselho", x: 430, y: 592, w: 120, h: 15, max: 9, min: 9 }
   }
-   
 };
+
+/* FUNÇÃO PARA RENDERIZAR O RESUMO VISUAL DA FICHA-MÃE */
+function renderMotherFormPreview(data) {
+  const container = $('motherFormContent');
+  const card = $('motherFormCard');
+  if (!container || !card) return;
+
+  const d = data || master();
+
+  let html = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 12px;">
+      <div><strong>Paciente:</strong> ${esc(d.patient_name || '-')}</div>
+      <div><strong>Prontuário:</strong> ${esc(d.record_number || '-')}</div>
+      <div><strong>CPF:</strong> ${esc(d.cpf || '-')}</div>
+      <div><strong>CNS:</strong> ${esc(d.cns || '-')}</div>
+      <div><strong>Nascimento:</strong> ${esc(d.birth || '-')}</div>
+      <div><strong>Nome da Mãe:</strong> ${esc(d.mother_name || '-')}</div>
+      <div><strong>Município:</strong> ${esc(d.municipality || '-')}</div>
+      <div><strong>Telefone:</strong> ${esc(d.phone || '-')}</div>
+    </div>
+    <hr style="border:0; border-top: 1px solid var(--line); margin: 12px 0;">
+    <div style="margin-bottom: 8px;"><strong>Queixa Principal e Duração (QPD):</strong><br>${esc(d.qpp || '-')}</div>
+    <div style="margin-bottom: 8px;"><strong>História da Doença Atual (HDA):</strong><br>${esc(d.hda || '-')}</div>
+    <div style="margin-bottom: 8px;"><strong>Exame Físico / Sinais Vitais:</strong><br>${esc(d.physical_exam || d.vitals || '-')}</div>
+    <div style="margin-bottom: 8px;"><strong>Hipótese Diagnóstica / CID-10:</strong><br>${esc(d.hypothesis || '-')} ${d.cid10 ? ' (CID: ' + esc(d.cid10) + ')' : ''}</div>
+    <div style="margin-bottom: 8px;"><strong>Plano / Conduta:</strong><br>${esc(d.plan || '-')}</div>
+    <hr style="border:0; border-top: 1px solid var(--line); margin: 12px 0;">
+    <div><strong>Médico Responsável:</strong> ${esc(d.doctor_name || '-')} · <strong>CRM:</strong> ${esc(d.crm || '-')}</div>
+  `;
+
+  container.innerHTML = html;
+  card.style.display = 'block';
+}
+
+function toggleMotherPreview() {
+  const container = $('motherFormContent');
+  if (container) {
+    container.style.display = container.style.display === 'none' ? 'block' : 'none';
+  }
+}
 
 /* INSPEÇÃO DE PDF */
 $('pdfInput').addEventListener('change', e => { if (e.target.files[0]) processPdfFile(e.target.files[0]); });
@@ -199,7 +256,7 @@ $('generateBtn').addEventListener('click', async () => {
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
     const rawMasterData = master();
     
-        // CHAMADA DA IA
+    // CHAMADA DA IA
     toast('Conectando ao cérebro e organizando campos...');
     let masterData = rawMasterData;
     
@@ -269,6 +326,9 @@ $('generateBtn').addEventListener('click', async () => {
       </div>
     `;
 
+    // EXIBE A FICHA-MÃE CONSOLIDADA LOGO ABAIXO
+    renderMotherFormPreview(masterData);
+
     toast('Documento PDF gerado com sucesso!');
   } catch (error) {
     console.error(error);
@@ -299,6 +359,7 @@ $('clearBtn').addEventListener('click',()=>{
   $('pdfInput').value='';
   $('pdfResult').innerHTML='';
   $('preview').innerHTML='<span class="empty">A pré-visualização aparecerá aqui depois da geração.</span>';
+  if ($('motherFormCard')) $('motherFormCard').style.display = 'none';
   renderFields();
   toast('Área de trabalho limpa.');
 });
