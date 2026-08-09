@@ -124,7 +124,7 @@ function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{t
 const STATIC_MAPS = {
   APAC: {
     // 01 · IDENTIFICAÇÃO DO PACIENTE
-    "3":  { code: "3",  nativeKey: "patient_name",  name: "Nome do Paciente",        x: 80, y: 155, w: 320, h: 12, min: 9, max: 9 },
+    "3":  { code: "3",  nativeKey: "patient_name",  name: "Nome do Paciente",        x: 80, y: 185, w: 320, h: 12, min: 9, max: 9 },
     "4":  { code: "4",  nativeKey: "record_number", name: "Nº do Prontuário",        x: 430, y: 185, w: 100, h: 12, min: 9, max: 9 },
     "5":  { code: "5",  nativeKey: "cns",            name: "CNS",                     x: 80, y: 208, w: 200, h: 12, min: 9, max: 9 },
     "6":  { code: "6",  nativeKey: "birth",          name: "Data de Nascimento",      x: 320, y: 208, w: 80,  h: 12, min: 9, max: 9 },
@@ -158,35 +158,21 @@ const STATIC_MAPS = {
   },
    
   AIH: {
-    // Ponto B: Topo Esquerdo (Nome do Paciente) -> Reajustado para dentro do box 5
     "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 175, w: 370, h: 15, min: 9, max: 9 },
-    
-    // Ponto A: Topo Direito (Nº do Prontuário) -> Descido para encaixar no box 6
     "6":  { code: "6", nativeKey: "record_number", name: "Nº do Prontuário", x: 450, y: 175, w: 100, h: 15, min: 9, max: 9 },
-    
-    "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 205, w: 200, h: 15, max: 9, min: 9  },
+    "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 205, w: 200, h: 15, max: 9, min: 9 },
     "8":  { code: "8", nativeKey: "birth", name: "Data de Nascimento", x: 275, y: 205, w: 80, h: 15, max: 9, min: 9 },
-    
-    // Ponto C: Meio Esquerdo (Nome da Mãe) -> Descido para dentro do box 11
     "11": { code: "11", nativeKey: "mother_name", name: "Nome da Mãe", x: 60, y: 230, w: 370, h: 15, max: 9, min: 9 },
     "12": { code: "12", nativeKey: "phone", name: "Telefone de Contato", x: 440, y: 236, w: 100, h: 15, max: 9, min: 9 },
-    
     "15": { code: "15", nativeKey: "address", name: "Endereço (Rua, Nº, Bairro)", x: 60, y: 270, w: 480, h: 15, max: 9, min: 9 },
     "16": { code: "16", nativeKey: "municipality", name: "Município de Residência", x: 60, y: 298, w: 300, h: 15, max: 9, min: 9 },
-    
-    // Centro Clínico (Sinais / Justificativa)
     "20_qp":  { code: "20", nativeKey: "qpd", name: "Queixa Principal e duração", x: 60, y: 338, w: 480, h: 12, min: 9, max: 9 },
     "20_hda": { code: "20", nativeKey: "hda", name: "História da Doença Atual (HDA)", x: 60, y: 350, w: 480, h: 53, min: 9, max: 9, multi: true },
-    
-    // BLOCO 21: CONDIÇÕES QUE JUSTIFICAM A INTERNAÇÃO (Fonte 4.5)
     "21_exam":   { code: "21", nativeKey: "physical_exam", name: "Exame Físico", x: 60, y: 415, w: 480, h: 20, min: 4.5, max: 4.5, multi: true },
     "21_vitals": { code: "21", nativeKey: "vital_signs", name: "Sinais Vitais", x: 60, y: 435, w: 480, h: 15, min: 4.5, max: 4.5, multi: true },
     "21_assess": { code: "21", nativeKey: "assessment", name: "Impressão Clínica / Avaliação", x: 60, y: 445, w: 480, h: 25, min: 4.5, max: 4.5, multi: true },
-
     "23": { code: "23", nativeKey: "hypothesis", name: "Diagnóstico Inicial", x: 60, y: 520, w: 220, h: 15, max: 9, min: 9 },
     "24": { code: "24", nativeKey: "cid10", name: "CID 10 Principal", x: 290, y: 520, w: 80, h: 15, max: 9, min: 9 },
-    
-    // Base - Reajustado levemente para baixo para centrar nos boxes 27 e 33
     "27": { code: "27", nativeKey: "plan", name: "Procedimento Solicitado", x: 60, y: 560, w: 350, h: 15, max: 9, min: 9 },
     "33": { code: "33", nativeKey: "doctor_name", name: "Profissional Solicitante", x: 60, y: 609, w: 350, h: 15, max: 9, min: 9 },
     "35": { code: "35", nativeKey: "crm", name: "Registro do Conselho", x: 430, y: 592, w: 120, h: 15, max: 9, min: 9 }
