@@ -1,5 +1,5 @@
 // brain.js - Módulo de Roteamento Inteligente do MedUnity
-const API_KEY = "SUA_CHAVE_AQUI"; // Cole sua chave do AI Studio aqui
+const API_KEY = "AQ.Ab8RN6LlyKj8ivhh-G9A8WvsRTz73LJFNrDyEbsea0G0OMhIKw"; 
 
 async function rotearCamposComIA(dadosDoFormulario) {
   if (!API_KEY || API_KEY === "SUA_CHAVE_AQUI") {
