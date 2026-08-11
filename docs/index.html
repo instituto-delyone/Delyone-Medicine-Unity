@@ -29,6 +29,19 @@
 <header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
 <section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v2.0 Tipográfico</span></div></section>
 <main><div class="grid"><section>
+<!-- TERMO DE RESPONSABILIDADE E AVISO DE DESENVOLVIMENTO -->
+<div class="card" style="background: #fffdf5; border: 1px solid #eedaa8; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+  <div style="display: flex; align-items: flex-start; gap: 12px;">
+    <div style="font-size: 20px; line-height: 1;">⚠️</div>
+    <div style="font-size: 12px; color: #765b21; line-height: 1.5;">
+      <strong style="font-size: 13px; color: #85631d; display: block; margin-bottom: 4px;">
+        AVISO DE SISTEMA EM DESENVOLVIMENTO & TERMO DE RESPONSABILIDADE
+      </strong>
+      O <strong>MedUnity Delyone</strong> é um motor de automação e apoio à gestão documental em fase de desenvolvimento e testes. A verificação, validação técnica, conferência dos dados clínicos, códigos SIGTAP/TUSS e a assinatura dos documentos gerados são de responsabilidade exclusiva do profissional médico solicitante. Este sistema não substitui o julgamento clínico nem os fluxos de validação oficiais das instituições de saúde.
+    </div>
+  </div>
+</div>
+
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
 <div class="section">01 · Identificação</div>
