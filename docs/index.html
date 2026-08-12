@@ -22,6 +22,9 @@
 .exam-item .code-badge { background: var(--bsoft); color: var(--dark); font-weight: 700; padding: 2px 6px; border-radius: 6px; font-size: 10px; margin-right: 6px; }
 .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
 .btn-remove:hover { background: #fff0f0; }
+
+/* ANIMAÇÃO DE SPIN PARA O DIAGNOSES */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 @media(max-width: 560px){ .exam-input-row { grid-template-columns: 1fr 70px; } .exam-input-row button { grid-column: 1 / -1; } }
 </style>
 </head>
@@ -58,7 +61,7 @@
 <div class="full"><label>Sinais vitais</label><input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C"></div><div class="full"><label>Exame físico</label><textarea id="master_physical_exam" rows="4"></textarea></div>
 
 <div class="section">05 · Avaliação clínica e Diagnóstico</div>
-<div class="full"><label>Hipótese diagnóstica / diagnóstico</label><input id="master_hypothesis" type="text"></div><div><label>CID-10</label><input id="master_cid10" type="text"></div><div><label>Diagnósticos diferenciais</label><input id="master_differential" type="text"></div><div class="full"><label>Impressão / avaliação clínica</label><textarea id="master_assessment"></textarea></div>
+<div class="full"><label>Hipótese diagnóstica / diagnóstico</label><input id="master_hypothesis" type="text" placeholder="Preencha a hipótese para liberar os Diagnósticos Diferenciais (DDxs)..."></div><div><label>CID-10</label><input id="master_cid10" type="text"></div><div><label>Diagnósticos diferenciais</label><input id="master_differential" type="text" placeholder="Serão inseridos via Diagnoses ou digitação manual"></div><div class="full"><label>Impressão / avaliação clínica</label><textarea id="master_assessment"></textarea></div>
 
 <div class="section">06 · Profissional responsável</div>
 <div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
@@ -145,6 +148,32 @@
 </main>
 <footer><div class="footer-inner"><span>MedUnity Delyone v2.0 Tipográfico</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
 
+<!-- WIDGET FLUTUANTE: DIAGNOSES (DIAGNÓSTICO DIFERENCIAL) -->
+<div id="diagnosesFab" onclick="abrirDiagnosesModal()" style="position: fixed; bottom: 25px; right: 25px; z-index: 99; background: linear-gradient(135deg, var(--brand), var(--dark)); color: #fff; padding: 12px 18px; border-radius: 99px; box-shadow: 0 8px 24px rgba(15,143,146,0.35); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px; transition: transform 0.2s;">
+  <span style="font-size: 16px;">💡</span> Diagnoses <span style="font-size: 11px; opacity: 0.85; font-weight: normal;">(DDxs)</span>
+</div>
+
+<!-- MODAL / POPUP DO DIAGNOSES -->
+<div id="diagnosesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,33,38,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: #fff; width: 100%; max-width: 520px; border-radius: 18px; border: 1px solid var(--line); box-shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden;">
+    
+    <div style="background: var(--soft); padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 10px; font-weight: 800; color: var(--brand); letter-spacing: 0.08em; text-transform: uppercase;">Apoio à Decisão Clínica</div>
+        <h3 style="margin: 0; font-size: 16px; color: var(--ink);">Diagnoses (Diagnósticos Diferenciais)</h3>
+      </div>
+      <button onclick="fecharDiagnosesModal()" style="border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--muted); cursor: pointer;">✕</button>
+    </div>
+
+    <div id="diagnosesContent" style="padding: 20px; max-height: 400px; overflow-y: auto;">
+    </div>
+
+    <div style="padding: 12px 20px; background: var(--soft); border-top: 1px solid var(--line); text-align: right;">
+      <button class="btn secondary" onclick="fecharDiagnosesModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','vitals','physical_exam','hypothesis','cid10','differential','assessment','doctor_name','crm'];
@@ -222,6 +251,160 @@ function renderizarListaExames() {
   }).join('');
 }
 
+/* ==========================================================================
+   MÓDULO DIAGNOSES (DIAGNÓSTICO DIFERENCIAL COM IA)
+   ========================================================================== */
+const GOOGLE_GEMINI_API_KEY = "AQ.Ab8RN6LlyKj8ivhh-G9A8WvsRTz73LJFNrDyEbsea0G0OMhIKw"; // Insira sua chave de API aqui
+
+function abrirDiagnosesModal() {
+  const modal = $('diagnosesModal');
+  const content = $('diagnosesContent');
+  const d = master();
+
+  // RESTRIÇÃO 1: Bloqueia se a Hipótese Diagnóstica não estiver preenchida
+  if (!d.hypothesis || d.hypothesis.trim() === "") {
+    toast('⚠️ Preencha a Hipótese Diagnóstica na Ficha-Mãe primeiro!');
+    const campoHyp = $('master_hypothesis');
+    if (campoHyp) campoHyp.focus();
+    return;
+  }
+
+  modal.style.display = 'flex';
+  
+  content.innerHTML = `
+    <div style="text-align: center; padding: 30px 10px;">
+      <div style="font-size: 28px; margin-bottom: 12px; display: inline-block; animation: spin 1s infinite linear;">🔄</div>
+      <div style="font-weight: 700; color: var(--brand); font-size: 14px;">Analisando Ficha-Mãe e cruzando evidências...</div>
+      <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Buscando 2 diagnósticos diferenciais e probabilidades para: <strong>"${esc(d.hypothesis)}"</strong></div>
+    </div>
+  `;
+
+  gerarDiagnosticosDiferenciais(d);
+}
+
+function fecharDiagnosesModal() {
+  $('diagnosesModal').style.display = 'none';
+}
+
+async function gerarDiagnosticosDiferenciais(masterData) {
+  const content = $('diagnosesContent');
+
+  const prompt = `
+Você é um assistente sênior de suporte à decisão clínica médica.
+Com base nos dados deste caso clínico:
+- Idade/Sexo: ${masterData.age || 'Não informada'} anos, ${masterData.gender || 'Não informado'}
+- Queixa / HDA: ${masterData.qpp || ''} | ${masterData.hda || ''}
+- Exame Físico / Sinais Vitais: ${masterData.physical_exam || ''} | ${masterData.vitals || ''}
+- Hipótese Diagnóstica Principal: "${masterData.hypothesis}"
+
+Sua tarefa:
+Forneça EXATAMENTE 2 Diagnósticos Diferenciais (DDxs) relevantes. Para cada um deles, forneça:
+1. Nome da patologia
+2. Código CID-10
+3. Porcentagem estimada de probabilidade (%) com base nas evidências deste caso específico.
+4. Breve justificativa clínica (1 frase de diferenciação).
+
+Retorne ESTRITAMENTE um objeto JSON válido no seguinte formato:
+{
+  "ddxs": [
+    {
+      "nome": "Nome do DDx 1",
+      "cid10": "Código CID",
+      "porcentagem": 35,
+      "justificativa": "Breve justificativa..."
+    },
+    {
+      "nome": "Nome do DDx 2",
+      "cid10": "Código CID",
+      "porcentagem": 20,
+      "justificativa": "Breve justificativa..."
+    }
+  ]
+}
+`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      })
+    });
+
+    if (!response.ok) throw new Error("Erro de comunicação com a API.");
+
+    const data = await response.json();
+    const rawJsonText = data.candidates[0].content.parts[0].text;
+    const result = JSON.parse(rawJsonText);
+
+    renderizarResultadosDiagnoses(result.ddxs);
+
+  } catch (err) {
+    console.error(err);
+    content.innerHTML = `
+      <div style="padding: 20px; text-align: center; color: var(--danger);">
+        <strong>⚠️ Não foi possível calcular os DDxs.</strong>
+        <div style="font-size: 12px; margin-top: 6px;">Verifique sua chave de API ou conexão com a internet.</div>
+      </div>
+    `;
+  }
+}
+
+function renderizarResultadosDiagnoses(ddxs) {
+  const content = $('diagnosesContent');
+
+  if (!ddxs || ddxs.length === 0) {
+    content.innerHTML = '<div class="empty">Nenhum diagnóstico diferencial retornado.</div>';
+    return;
+  }
+
+  let html = `
+    <div style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">
+      Evidências analisadas com sucesso. Sugestões de DDxs priorizadas por probabilidade:
+    </div>
+  `;
+
+  ddxs.forEach((ddx, idx) => {
+    html += `
+      <div style="border: 1px solid var(--line); background: var(--soft); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="font-size: 14px; color: var(--ink);">${idx + 1}. ${esc(ddx.nome)}</strong>
+          <span style="background: var(--bsoft); color: var(--dark); font-weight: 800; font-size: 11px; padding: 4px 8px; border-radius: 6px;">
+            ${ddx.porcentagem}% Probabilidade
+          </span>
+        </div>
+        <div style="font-size: 11px; color: var(--brand); font-weight: bold; margin-bottom: 6px;">
+          CID-10: ${esc(ddx.cid10)}
+        </div>
+        <div style="font-size: 12px; color: var(--muted); line-height: 1.4; margin-bottom: 10px;">
+          ${esc(ddx.justificativa)}
+        </div>
+        <button class="btn secondary" style="font-size: 11px; padding: 6px 10px; width: 100%; text-align: center;" 
+                onclick="injetarDDxNoFormulario('${esc(ddx.nome)}', '${esc(ddx.cid10)}')">
+          ➕ Injetar este DDx no Formulário
+        </button>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
+}
+
+function injetarDDxNoFormulario(nomeDDx, cid10) {
+  const campoDiff = $('master_differential');
+  if (campoDiff) {
+    const valorAtual = campoDiff.value.trim();
+    const novoValor = valorAtual ? `${valorAtual}; ${nomeDDx} (${cid10})` : `${nomeDDx} (${cid10})`;
+    campoDiff.value = novoValor;
+    saveMaster();
+    toast(`DDx "${nomeDDx}" injetado com sucesso!`);
+    fecharDiagnosesModal();
+  }
+}
+
+/* AUXILIARES DO SISTEMA */
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
 function master(){const d={};FIELDS.forEach(k=>d[k]=$('master_'+k)?.value||'');d.updatedAt=new Date().toISOString();d.examesComplementares=examesComplementares;return d}
 function setMaster(d){
@@ -287,6 +470,7 @@ function renderMotherFormPreview(data) {
     <div style="margin-bottom: 8px;"><strong>História da Doença Atual (HDA):</strong><br>${esc(d.hda || '-')}</div>
     <div style="margin-bottom: 8px;"><strong>Exame Físico / Sinais Vitais:</strong><br>${esc(d.physical_exam || d.vitals || '-')}</div>
     <div style="margin-bottom: 8px;"><strong>Hipótese Diagnóstica / CID-10:</strong><br>${esc(d.hypothesis || '-')} ${d.cid10 ? ' (CID: ' + esc(d.cid10) + ')' : ''}</div>
+    <div style="margin-bottom: 8px;"><strong>Diagnósticos Diferenciais:</strong><br>${esc(d.differential || '-')}</div>
     
     ${examesHtml}
 
@@ -369,7 +553,6 @@ $('generateBtn').addEventListener('click', async () => {
 
     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
-    // Exemplo de Injeção Básica no Paciente
     if (rawMasterData.patient_name) {
       page.drawText(rawMasterData.patient_name, {
         x: 95,
@@ -444,3 +627,4 @@ renderFields();
 </script>
 </body>
 </html>
+
