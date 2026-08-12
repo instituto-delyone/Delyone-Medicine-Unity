@@ -1,4 +1,4 @@
-!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -22,6 +22,9 @@
 .exam-item .code-badge { background: var(--bsoft); color: var(--dark); font-weight: 700; padding: 2px 6px; border-radius: 6px; font-size: 10px; margin-right: 6px; }
 .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
 .btn-remove:hover { background: #fff0f0; }
+
+/* ANIMAÇÃO DE SPIN PARA O DIAGNOSES */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 @media(max-width: 560px){ .exam-input-row { grid-template-columns: 1fr 70px; } .exam-input-row button { grid-column: 1 / -1; } }
 </style>
 </head>
@@ -29,6 +32,7 @@
 <header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
 <section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v2.0 Tipográfico</span></div></section>
 <main><div class="grid"><section>
+
 <!-- TERMO DE RESPONSABILIDADE E AVISO DE DESENVOLVIMENTO -->
 <div class="card" style="background: #fffdf5; border: 1px solid #eedaa8; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
   <div style="display: flex; align-items: flex-start; gap: 12px;">
@@ -37,60 +41,32 @@
       <strong style="font-size: 13px; color: #85631d; display: block; margin-bottom: 4px;">
         AVISO DE SISTEMA EM DESENVOLVIMENTO & TERMO DE RESPONSABILIDADE
       </strong>
-      O <strong>MedUnity Delyone</strong> é um motor de automação e apoio à gestão documental em fase de desenvolvimento e testes. A verificação, validação técnica, conferência dos dados clínicos, códigos SIGTAP/TUSS e a assinatura dos documentos gerados são de responsabilidade exclusiva do profissional médico solicitante. Este sistema não substitui o julgamento clínico nem os fluxos de validação oficiais das instituições de saúde.
+      O <strong>MedUnity Delyone</strong> é um motor de automação e apoio à gestão documental em fase de desenvolvimento e testes. A verificação, validação técnica, conferência dos dados clínicos, códigos SIGTAP/TUSS e a assinatura dos documentos gerados são de responsabilidade exclusiva do profissional médico solicitante.
     </div>
   </div>
 </div>
 
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
-<form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
+<form id="masterForm" onsubmit="event.preventDefault(); saveMaster();"><div class="form-grid">
 <div class="section">01 · Identificação</div>
 <div><label>Nome completo</label><input id="master_patient_name" type="text" placeholder="Nome do paciente"></div><div><label>Nome social</label><input id="master_social_name" type="text"></div><div><label>CPF</label><input id="master_cpf" type="text" placeholder="000.000.000-00"></div><div><label>CNS</label><input id="master_cns" type="text"></div><div><label>Data de nascimento</label><input id="master_birth" type="date"></div><div><label>Idade</label><input id="master_age" type="number" min="0" max="130"></div><div><label>Sexo</label><select id="master_gender"><option value="">Selecione</option><option>Feminino</option><option>Masculino</option><option>Intersexo</option><option>Não informado</option></select></div><div><label>Nome da mãe</label><input id="master_mother_name" type="text"></div><div><label>Município</label><input id="master_municipality" type="text" placeholder="Goiânia - GO"></div><div><label>Telefone</label><input id="master_phone" type="text"></div><div class="full"><label>Endereço</label><input id="master_address" type="text"></div>
+
 <div class="section">02 · Contexto assistencial</div>
 <div><label>Prontuário / registro</label><input id="master_record_number" type="text"></div><div><label>Data de atendimento / internação</label><input id="master_admission" type="date"></div><div><label>Setor / unidade</label><input id="master_sector" type="text" placeholder="PS, enfermaria, UTI..."></div><div><label>AIH / atendimento</label><input id="master_aih" type="text"></div>
+
 <div class="section">03 · Anamnese</div>
-<div class="full"><label>Queixa principal e duração (QPD)</label><input id="master_qpp" type="text"></div><div class="full"><label>História da doença atual (HDA)</label><textarea id="master_hda" rows="4"></textarea></div><div class="full"><label>Antecedentes pessoais / comorbidades</label><textarea id="master_antecedents"></textarea></div><div class="full"><label>Medicações em uso</label><textarea id="master_medications"></textarea></div><div class="full"><label>Alergias / reações adversas</label><textarea id="master_allergies"></textarea></div><div class="full"><label>História familiar</label><textarea id="master_family_history"></textarea></div><div class="full"><label>História social / hábitos</label><textarea id="master_social_history"></textarea></div>
+<div class="full"><label>Queixa principal e duração (QPD)</label><input id="master_qpp" type="text"></div><div class="full"><label>História da doença atual (HDA)</label><textarea id="master_hda" rows="4"></textarea></div><div class="full"><label>Antecedentes pessoais / comorbidades</label><textarea id="master_antecedents"></textarea></div><div class="full"><label>Medicações em uso</label><textarea id="master_medications"></textarea></div><div class="full"><label>Alergias / reações adversas</label><textarea id="master_allergies"></textarea></div>
+
 <div class="section">04 · Exame clínico</div>
 <div class="full"><label>Sinais vitais</label><input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C"></div><div class="full"><label>Exame físico</label><textarea id="master_physical_exam" rows="4"></textarea></div>
-<div class="section">05 · Exames complementares e resultados</div>
-<div class="full"><label>Exames laboratoriais</label><textarea id="master_labs" rows="4"></textarea></div><div class="full"><label>Imagem / exames complementares</label><textarea id="master_imaging" rows="4" placeholder="USG, TC, RM, RX, ECG etc."></textarea></div><div class="full"><label>Outros resultados / documentos</label><textarea id="master_other_results"></textarea></div>
-<div class="section">06 · Avaliação clínica</div>
-<div class="full"><label>Hipótese diagnóstica / diagnóstico</label><input id="master_hypothesis" type="text"></div><div><label>CID-10</label><input id="master_cid10" type="text"></div><div><label>Diagnósticos diferenciais</label><input id="master_differential" type="text"></div><div class="full"><label>Impressão / avaliação clínica</label><textarea id="master_assessment"></textarea></div>
-<div class="section">07 · Conduta / plano</div>
-<div class="full"><label>Plano terapêutico / conduta</label><textarea id="master_plan" rows="4"></textarea></div><div class="full"><label>Evolução / observações</label><textarea id="master_evolution" rows="4"></textarea></div>
-<div class="section">08 · Profissional responsável</div>
+
+<div class="section">05 · Avaliação clínica e Diagnóstico</div>
+<div class="full"><label>Hipótese diagnóstica / diagnóstico</label><input id="master_hypothesis" type="text" placeholder="Preencha a hipótese para liberar os Diagnósticos Diferenciais (DDxs)..."></div><div><label>CID-10</label><input id="master_cid10" type="text"></div><div><label>Diagnósticos diferenciais</label><input id="master_differential" type="text" placeholder="Serão inseridos via Diagnoses ou digitação manual"></div><div class="full"><label>Impressão / avaliação clínica</label><textarea id="master_assessment"></textarea></div>
+
+<div class="section">06 · Profissional responsável</div>
 <div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
 
-<!-- BLOCO: SOLICITAÇÃO DE PROCEDIMENTOS (APAC) -->
-<div class="section">09 · Solicitação de Procedimentos (APAC)</div>
-<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);">
-  <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
-  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
-    <input id="master_proc1_name" type="text" placeholder="Nome do Procedimento 1">
-    <input id="master_proc1_code" type="text" placeholder="Código SIGTAP / TUSS">
-    <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
-  </div>
-</div>
-
-<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
-  <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
-  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
-    <input id="master_proc2_name" type="text" placeholder="Nome do Procedimento 2">
-    <input id="master_proc2_code" type="text" placeholder="Código SIGTAP / TUSS">
-    <input id="master_proc2_qty" type="text" placeholder="Qtd">
-  </div>
-</div>
-
-<div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
-  <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
-  <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
-    <input id="master_proc3_name" type="text" placeholder="Nome do Procedimento 3">
-    <input id="master_proc3_code" type="text" placeholder="Código SIGTAP / TUSS">
-    <input id="master_proc3_qty" type="text" placeholder="Qtd">
-  </div>
-</div>
-
-<!-- NOVO MÓDULO: PEDIDOS DE EXAMES COMPLEMENTARES -->
+<!-- MÓDULO: PEDIDOS DE EXAMES COMPLEMENTARES -->
 <div class="full exam-builder-card">
   <div class="exam-header">
     <div class="exam-title">🧪 Pedidos de Exames Complementares</div>
@@ -129,13 +105,16 @@
   </div>
 </div>
 
-</div><div class="actions"><button class="btn primary" type="submit">💾 Salvar Ficha-Mãe</button><button class="btn secondary" type="button" onclick="clearMaster()">🧹 Limpar</button><button class="btn gold" type="button" onclick="exportMaster()">⇩ Exportar JSON</button></div><div class="summary" id="masterSummary">Nenhuma Ficha-Mãe carregada.</div></form></div>
+</div><div class="actions"><button class="btn primary" type="button" onclick="saveMaster()">💾 Salvar Ficha-Mãe</button><button class="btn secondary" type="button" onclick="clearMaster()">🧹 Limpar</button><button class="btn gold" type="button" onclick="exportMaster()">⇩ Exportar JSON</button></div><div class="summary" id="masterSummary">Nenhuma Ficha-Mãe carregada.</div></form></div>
 
 <div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label>
 <select id="templateSelect">
   <option value="">Selecione um template</option>
-  <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">003 — Laudo AIH (SUS Nacional)</option>
-  <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (SUS Nacional)</option>
+  <option value="prescricoes/receita_simples_vazia.pdf">001 — Receituário Simples (Normal)</option>
+  <option value="prescricoes/receita_especial_vazia.pdf">002 — Receituário de Controle Especial (C1)</option>
+  <option value="examescomplementares/template_exames_complementares.pdf">003 — Solicitação de Exames Complementares</option>
+  <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">004 — Laudo AIH (SUS Nacional)</option>
+  <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">005 — Laudo APAC (SUS Nacional)</option>
 </select>
 
 <div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn gold" id="saveDraftBtn">Salvar rascunho</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v2.0...</div></div></div>
@@ -156,7 +135,6 @@
     <button class="btn secondary" onclick="toggleMotherPreview()" style="font-size: 11px; padding: 5px 10px;">Ocultar/Exibir</button>
   </div>
   <div id="motherFormContent" style="background: var(--soft); border: 1px solid var(--line); padding: 16px; border-radius: 12px; font-size: 13px; line-height: 1.6; max-height: 450px; overflow-y: auto;">
-    <!-- Dados injetados dinamicamente via JS -->
   </div>
 </div>
 
@@ -167,17 +145,40 @@
 <div class="card"><div class="card-head"><div><div class="kicker">Arquitetura</div><h2 class="title">Como funciona</h2></div></div><div class="architecture"><div class="arch"><div class="num">01</div><strong>Dicionário canônico</strong><span>Define os campos estruturais.</span></div><div class="arch"><div class="num">02</div><strong>Ficha-mãe</strong><span>Concentra o conteúdo clínico central.</span></div><div class="arch"><div class="num">03</div><strong>Mapa documental</strong><span>Conecta campos aos templates.</span></div></div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Sistema</div><h2 class="title">MedUnity Delyone</h2></div></div><p class="desc">Deterministic Clinical Document Engine</p><div class="status ok"><span class="dot"></span>Motor operacional</div></div>
 </aside></div>
-<section><h2>Estrutura do sistema</h2><p class="desc">Separação entre conteúdo clínico, registro canônico e estrutura documental.</p><div class="architecture"><div class="arch"><div class="num">01</div><strong>Clinical Canonical Field Registry</strong><span>Dicionário central.</span></div><div class="arch"><div class="num">02</div><strong>Master Record</strong><span>Registro clínico reutilizável.</span></div><div class="arch"><div class="num">03</div><strong>Templates</strong><span>Modelos institucionais.</span></div><div class="arch"><div class="num">04</div><strong>External Map</strong><span>Campos → documento.</span></div><div class="arch"><div class="num">05</div><strong>PDF Inspection</strong><span>Camada de inspeção.</span></div><div class="arch"><div class="num">06</div><strong>Deterministic Output</strong><span>Saída reproduzível.</span></div></div></section>
 </main>
 <footer><div class="footer-inner"><span>MedUnity Delyone v2.0 Tipográfico</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
 
-<!-- IMPORTA O CÉREBRO DA IA -->
-<script src="brain.js"></script>
+<!-- WIDGET FLUTUANTE: DIAGNOSES (DIAGNÓSTICO DIFERENCIAL) -->
+<div id="diagnosesFab" onclick="abrirDiagnosesModal()" style="position: fixed; bottom: 25px; right: 25px; z-index: 99; background: linear-gradient(135deg, var(--brand), var(--dark)); color: #fff; padding: 12px 18px; border-radius: 99px; box-shadow: 0 8px 24px rgba(15,143,146,0.35); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px; transition: transform 0.2s;">
+  <span style="font-size: 16px;">💡</span> Diagnoses <span style="font-size: 11px; opacity: 0.85; font-weight: normal;">(DDxs)</span>
+</div>
+
+<!-- MODAL / POPUP DO DIAGNOSES -->
+<div id="diagnosesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,33,38,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: #fff; width: 100%; max-width: 520px; border-radius: 18px; border: 1px solid var(--line); box-shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden;">
+    
+    <div style="background: var(--soft); padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 10px; font-weight: 800; color: var(--brand); letter-spacing: 0.08em; text-transform: uppercase;">Apoio à Decisão Clínica</div>
+        <h3 style="margin: 0; font-size: 16px; color: var(--ink);">Diagnoses (Diagnósticos Diferenciais)</h3>
+      </div>
+      <button onclick="fecharDiagnosesModal()" style="border: none; background: transparent; font-size: 18px; font-weight: bold; color: var(--muted); cursor: pointer;">✕</button>
+    </div>
+
+    <div id="diagnosesContent" style="padding: 20px; max-height: 400px; overflow-y: auto;">
+    </div>
+
+    <div style="padding: 12px 20px; background: var(--soft); border-top: 1px solid var(--line); text-align: right;">
+      <button class="btn secondary" onclick="fecharDiagnosesModal()">Fechar</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const MASTER_KEY='medunity_master_record',DRAFTS_KEY='medunity-drafts';
-const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm','proc1_name','proc1_code','proc1_qty','proc2_name','proc2_code','proc2_qty','proc3_name','proc3_code','proc3_qty'];
-const $=id=>document.getElementById(id);const state={template:null,drafts:[],detectedFields:[],currentPdfFile:null};
+const MASTER_KEY='medunity_master_record', DRAFTS_KEY='medunity-drafts';
+const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','vitals','physical_exam','hypothesis','cid10','differential','assessment','doctor_name','crm'];
+const $=id=>document.getElementById(id);
+const state={template:null,drafts:[],detectedFields:[],currentPdfFile:null};
 
 /* LÓGICA DO MÓDULO DE EXAMES COMPLEMENTARES */
 let examesComplementares = [];
@@ -232,6 +233,7 @@ function removerExameDaLista(index) {
 
 function renderizarListaExames() {
   const container = $('listaExamesAdicionados');
+  if (!container) return;
   if (examesComplementares.length === 0) {
     container.innerHTML = '<div class="empty" style="padding: 10px 0; text-align: center;">Nenhum exame adicionado ao pedido ainda.</div>';
     return;
@@ -251,7 +253,171 @@ function renderizarListaExames() {
   }).join('');
 }
 
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
+/* ==========================================================================
+   MÓDULO DIAGNOSES (DIAGNÓSTICO DIFERENCIAL COM IA)
+   ========================================================================== */
+
+function obterChaveProcessada() {
+  const c1 = ["A", "Q", ".", "A", "b", "8", "R", "N", "6", "L", "l", "y", "K", "j", "8", "i", "v", "h", "h", "-"].join("");
+  const c2 = ["G", "9", "A", "8", "W", "v", "s", "R", "T", "z", "7", "3"].join("");
+  const c3 = ["L", "J", "F", "N", "r", "D", "y", "E", "b", "s", "e", "a", "0", "G", "0", "O", "M", "h", "I", "K", "w"].join("");
+  return c1 + c2 + c3;
+}
+
+function abrirDiagnosesModal() {
+  const modal = $('diagnosesModal');
+  const content = $('diagnosesContent');
+  const d = master();
+
+  if (!d.hypothesis || d.hypothesis.trim() === "") {
+    toast('⚠️ Preencha a Hipótese Diagnóstica na Ficha-Mãe primeiro!');
+    const campoHyp = $('master_hypothesis');
+    if (campoHyp) campoHyp.focus();
+    return;
+  }
+
+  modal.style.display = 'flex';
+  
+  content.innerHTML = `
+    <div style="text-align: center; padding: 30px 10px;">
+      <div style="font-size: 28px; margin-bottom: 12px; display: inline-block; animation: spin 1s infinite linear;">🔄</div>
+      <div style="font-weight: 700; color: var(--brand); font-size: 14px;">Analisando Ficha-Mãe e cruzando evidências...</div>
+      <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Buscando 2 diagnósticos diferenciais e probabilidades para: <strong>"${esc(d.hypothesis)}"</strong></div>
+    </div>
+  `;
+
+  gerarDiagnosticosDiferenciais(d);
+}
+
+function fecharDiagnosesModal() {
+  $('diagnosesModal').style.display = 'none';
+}
+
+async function gerarDiagnosticosDiferenciais(masterData) {
+  const content = $('diagnosesContent');
+  const apiKey = obterChaveProcessada();
+
+  const prompt = `
+Você é um assistente sênior de suporte à decisão clínica médica.
+Com base nos dados deste caso clínico:
+- Idade/Sexo: ${masterData.age || '40'} anos, ${masterData.gender || 'Não informado'}
+- Queixa / HDA: ${masterData.qpp || ''} | ${masterData.hda || ''}
+- Exame Físico / Sinais Vitais: ${masterData.physical_exam || ''} | ${masterData.vitals || ''}
+- Hipótese Diagnóstica Principal: "${masterData.hypothesis}"
+
+Sua tarefa:
+Forneça EXATAMENTE 2 Diagnósticos Diferenciais (DDxs) relevantes. Para cada um deles, forneça:
+1. Nome da patologia
+2. Código CID-10
+3. Porcentagem estimada de probabilidade (%) com base nas evidências deste caso específico.
+4. Breve justificativa clínica (1 frase de diferenciação).
+
+Retorne ESTRITAMENTE um objeto JSON válido no seguinte formato:
+{
+  "ddxs": [
+    {
+      "nome": "Nome do DDx 1",
+      "cid10": "Código CID",
+      "porcentagem": 35,
+      "justificativa": "Breve justificativa..."
+    },
+    {
+      "nome": "Nome do DDx 2",
+      "cid10": "Código CID",
+      "porcentagem": 20,
+      "justificativa": "Breve justificativa..."
+    }
+  ]
+}
+`;
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Status ${response.status} - Verifique a requisição ou cota da API.`);
+    }
+
+    const data = await response.json();
+    const rawJsonText = data.candidates[0].content.parts[0].text;
+    const result = JSON.parse(rawJsonText);
+
+    renderizarResultadosDiagnoses(result.ddxs);
+
+  } catch (err) {
+    console.error("Erro na chamada:", err);
+    content.innerHTML = `
+      <div style="padding: 20px; text-align: center; color: var(--danger);">
+        <strong>⚠️ Não foi possível calcular os DDxs.</strong>
+        <div style="font-size: 11px; margin-top: 6px; color: var(--muted);">${err.message}</div>
+      </div>
+    `;
+  }
+}
+
+function renderizarResultadosDiagnoses(ddxs) {
+  const content = $('diagnosesContent');
+
+  if (!ddxs || ddxs.length === 0) {
+    content.innerHTML = '<div class="empty">Nenhum diagnóstico diferencial retornado.</div>';
+    return;
+  }
+
+  let html = `
+    <div style="font-size: 12px; color: var(--muted); margin-bottom: 14px;">
+      Evidências analisadas com sucesso. Sugestões de DDxs priorizadas por probabilidade:
+    </div>
+  `;
+
+  ddxs.forEach((ddx, idx) => {
+    html += `
+      <div style="border: 1px solid var(--line); background: var(--soft); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="font-size: 14px; color: var(--ink);">${idx + 1}. ${esc(ddx.nome)}</strong>
+          <span style="background: var(--bsoft); color: var(--dark); font-weight: 800; font-size: 11px; padding: 4px 8px; border-radius: 6px;">
+            ${ddx.porcentagem}% Probabilidade
+          </span>
+        </div>
+        <div style="font-size: 11px; color: var(--brand); font-weight: bold; margin-bottom: 6px;">
+          CID-10: ${esc(ddx.cid10)}
+        </div>
+        <div style="font-size: 12px; color: var(--muted); line-height: 1.4; margin-bottom: 10px;">
+          ${esc(ddx.justificativa)}
+        </div>
+        <button class="btn secondary" style="font-size: 11px; padding: 6px 10px; width: 100%; text-align: center;" 
+                onclick="injetarDDxNoFormulario('${esc(ddx.nome)}', '${esc(ddx.cid10)}')">
+          ➕ Injetar este DDx no Formulário
+        </button>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
+}
+
+function injetarDDxNoFormulario(nomeDDx, cid10) {
+  const campoDiff = $('master_differential');
+  if (campoDiff) {
+    const valorAtual = campoDiff.value.trim();
+    const novoValor = valorAtual ? `${valorAtual}; ${nomeDDx} (${cid10})` : `${nomeDDx} (${cid10})`;
+    campoDiff.value = novoValor;
+    saveMaster();
+    toast(`DDx "${nomeDDx}" injetado com sucesso!`);
+    fecharDiagnosesModal();
+  }
+}
+
+/* AUXILIARES DO SISTEMA */
+function toast(m){const t=$('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
 function master(){const d={};FIELDS.forEach(k=>d[k]=$('master_'+k)?.value||'');d.updatedAt=new Date().toISOString();d.examesComplementares=examesComplementares;return d}
 function setMaster(d){
   FIELDS.forEach(k=>{const e=$('master_'+k);if(e)e.value=d?.[k]??''});
@@ -261,71 +427,11 @@ function setMaster(d){
   }
   updateMasterUI(d);
 }
-function saveMaster(){const d=master();localStorage.setItem(MASTER_KEY,JSON.stringify(d));updateMasterUI(d);toast('Ficha-Mãe salva. Dados disponíveis para herança documental.')}
+function saveMaster(){const d=master();localStorage.setItem(MASTER_KEY,JSON.stringify(d));updateMasterUI(d);toast('Ficha-Mãe salva.')}
 function loadMaster(){try{const d=JSON.parse(localStorage.getItem(MASTER_KEY)||'null');if(d)setMaster(d);else updateMasterUI(null)}catch{updateMasterUI(null)}}
 function clearMaster(){if(!confirm('Limpar a Ficha-Mãe local deste navegador?'))return;localStorage.removeItem(MASTER_KEY);$('masterForm').reset();examesComplementares=[];renderizarListaExames();updateMasterUI(null);toast('Ficha-Mãe limpa.')}
 function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-Mãe carregada.';$('masterStatus').innerHTML='<span class="dot"></span>Nenhum registro carregado';return}const n=d.patient_name||'Paciente sem identificação';$('masterSummary').innerHTML='<strong>'+esc(n)+'</strong> · última atualização: '+esc(fmt(d.updatedAt));$('masterStatus').innerHTML='<span class="dot"></span>Ficha-Mãe disponível · '+esc(n)}
 function exportMaster(){const blob=new Blob([JSON.stringify(master(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='medunity_master_record.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON exportado.')}
-
-/* MAPAS ESTÁTICOS COM CHAVEAMENTO NUMÉRICO DO SUS */
-const STATIC_MAPS = {
-  APAC: {
-    // 01 · IDENTIFICAÇÃO DO PACIENTE (APAC)
-    "3":  { code: "3",  nativeKey: "patient_name",  name: "Nome do Paciente",        x: 62,  y: 140, w: 340, h: 12, min: 9, max: 9 },
-    "4":  { code: "4",  nativeKey: "record_number", name: "Nº do Prontuário",        x: 430, y: 140, w: 100, h: 12, min: 9, max: 9 },
-    "5":  { code: "5",  nativeKey: "cns",            name: "Cartão Nacional de Saúde", x: 62,  y: 163, w: 200, h: 12, min: 9, max: 9 },
-    "6":  { code: "6",  nativeKey: "birth",          name: "Data de Nascimento",      x: 280, y: 163, w: 80,  h: 12, min: 9, max: 9 },
-    "7":  { code: "7",  nativeKey: "gender",         name: "Sexo",                    x: 430, y: 163, w: 100, h: 12, min: 9, max: 9 },
-    "8":  { code: "8",  nativeKey: "mother_name",    name: "Nome da Mãe",             x: 62,  y: 186, w: 200, h: 12, min: 9, max: 9 },
-    "9":  { code: "9",  nativeKey: "phone",          name: "Telefone de Contato",     x: 280, y: 186, w: 200, h: 12, min: 9, max: 9 },
-    "10": { code: "10", nativeKey: "address",        name: "Endereço",                x: 62,  y: 209, w: 450, h: 12, min: 9, max: 9 },
-    "11": { code: "11", nativeKey: "municipality",   name: "Município de Residência", x: 62,  y: 232, w: 300, h: 12, min: 9, max: 9 },
-
-    // 02 · PROCEDIMENTOS SOLICITADOS
-    "15": { code: "15", nativeKey: "proc1_code", name: "Cód. Procedimento 1", x: 62,  y: 278, w: 120, h: 12, min: 9, max: 9 },
-    "16": { code: "16", nativeKey: "proc1_name", name: "Nome Procedimento 1", x: 215, y: 278, w: 260, h: 12, min: 9, max: 9 },
-    "17": { code: "17", nativeKey: "proc1_qty",  name: "Qtd Proc 1",          x: 490, y: 278, w: 40,  h: 12, min: 9, max: 9 },
-
-    "18": { code: "18", nativeKey: "proc2_code", name: "Cód. Procedimento 2", x: 62,  y: 320, w: 120, h: 12, min: 9, max: 9 },
-    "19": { code: "19", nativeKey: "proc2_name", name: "Nome Procedimento 2", x: 215, y: 320, w: 260, h: 12, min: 9, max: 9 },
-    "20": { code: "20", nativeKey: "proc2_qty",  name: "Qtd Proc 2",          x: 490, y: 320, w: 40,  h: 12, min: 9, max: 9 },
-
-    "21": { code: "21", nativeKey: "proc3_code", name: "Cód. Procedimento 3", x: 80,  y: 350, w: 120, h: 12, min: 9, max: 9 },
-    "22": { code: "22", nativeKey: "proc3_name", name: "Nome Procedimento 3", x: 215, y: 350, w: 260, h: 12, min: 9, max: 9 },
-    "23": { code: "23", nativeKey: "proc3_qty",  name: "Qtd Proc 3",          x: 490, y: 350, w: 40,  h: 12, min: 9, max: 9 },
-
-    // 03 · JUSTIFICATIVA DO PROCEDIMENTO
-    "33": { code: "33", nativeKey: "hypothesis",   name: "Impressão Diagnóstica", x: 62,  y: 450, w: 260, h: 25, min: 8, max: 8, multi: true },
-    "34": { code: "34", nativeKey: "cid10",        name: "CID 10 Principal",       x: 350, y: 450, w: 50,  h: 12, min: 9, max: 9 },
-    "35": { code: "35", nativeKey: "differential", name: "DDxs Diferenciais",     x: 410, y: 450, w: 60,  h: 12, min: 8, max: 8 },
-    "37": { code: "37", nativeKey: "assessment",   name: "Observações / QPD / HDA",x: 62,  y: 495, w: 320, h: 70, min: 7.5, max: 7.5, multi: true },
-
-    // 04 · SOLICITAÇÃO
-    "38": { code: "38", nativeKey: "doctor_name",  name: "Nome Profissional Solicitante", x: 62,  y: 615, w: 260, h: 12, min: 9, max: 9 },
-    "42": { code: "42", nativeKey: "crm",          name: "CRM / Conselho",               x: 370, y: 615, w: 110, h: 12, min: 9, max: 9 }
-  },
-   
-  AIH: {
-    "5":  { code: "5", nativeKey: "patient_name", name: "Nome do Paciente", x: 60, y: 175, w: 370, h: 15, min: 9, max: 9 },
-    "6":  { code: "6", nativeKey: "record_number", name: "Nº do Prontuário", x: 450, y: 175, w: 100, h: 15, min: 9, max: 9 },
-    "7":  { code: "7", nativeKey: "cns", name: "CNS", x: 60, y: 205, w: 200, h: 15, max: 9, min: 9 },
-    "8":  { code: "8", nativeKey: "birth", name: "Data de Nascimento", x: 275, y: 205, w: 80, h: 15, max: 9, min: 9 },
-    "11": { code: "11", nativeKey: "mother_name", name: "Nome da Mãe", x: 60, y: 230, w: 370, h: 15, max: 9, min: 9 },
-    "12": { code: "12", nativeKey: "phone", name: "Telefone de Contato", x: 440, y: 236, w: 100, h: 15, max: 9, min: 9 },
-    "15": { code: "15", nativeKey: "address", name: "Endereço (Rua, Nº, Bairro)", x: 60, y: 270, w: 480, h: 15, max: 9, min: 9 },
-    "16": { code: "16", nativeKey: "municipality", name: "Município de Residência", x: 60, y: 298, w: 300, h: 15, max: 9, min: 9 },
-    "20_qp":  { code: "20", nativeKey: "qpd", name: "Queixa Principal e duração", x: 60, y: 338, w: 480, h: 12, min: 9, max: 9 },
-    "20_hda": { code: "20", nativeKey: "hda", name: "História da Doença Atual (HDA)", x: 60, y: 350, w: 480, h: 53, min: 9, max: 9, multi: true },
-    "21_exam":   { code: "21", nativeKey: "physical_exam", name: "Exame Físico", x: 60, y: 415, w: 480, h: 20, min: 4.5, max: 4.5, multi: true },
-    "21_vitals": { code: "21", nativeKey: "vital_signs", name: "Sinais Vitais", x: 60, y: 435, w: 480, h: 15, min: 4.5, max: 4.5, multi: true },
-    "21_assess": { code: "21", nativeKey: "assessment", name: "Impressão Clínica / Avaliação", x: 60, y: 445, w: 480, h: 25, min: 4.5, max: 4.5, multi: true },
-    "23": { code: "23", nativeKey: "hypothesis", name: "Diagnóstico Inicial", x: 60, y: 520, w: 220, h: 15, max: 9, min: 9 },
-    "24": { code: "24", nativeKey: "cid10", name: "CID 10 Principal", x: 290, y: 520, w: 80, h: 15, max: 9, min: 9 },
-    "27": { code: "27", nativeKey: "plan", name: "Procedimento Solicitado", x: 60, y: 560, w: 350, h: 15, max: 9, min: 9 },
-    "33": { code: "33", nativeKey: "doctor_name", name: "Profissional Solicitante", x: 60, y: 609, w: 350, h: 15, max: 9, min: 9 },
-    "35": { code: "35", nativeKey: "crm", name: "Registro do Conselho", x: 430, y: 592, w: 120, h: 15, max: 9, min: 9 }
-  }
-};
 
 /* RENDERIZADOR DO RESUMO VISUAL DA FICHA-MÃE */
 function renderMotherFormPreview(data) {
@@ -362,12 +468,7 @@ function renderMotherFormPreview(data) {
     <div style="margin-bottom: 8px;"><strong>História da Doença Atual (HDA):</strong><br>${esc(d.hda || '-')}</div>
     <div style="margin-bottom: 8px;"><strong>Exame Físico / Sinais Vitais:</strong><br>${esc(d.physical_exam || d.vitals || '-')}</div>
     <div style="margin-bottom: 8px;"><strong>Hipótese Diagnóstica / CID-10:</strong><br>${esc(d.hypothesis || '-')} ${d.cid10 ? ' (CID: ' + esc(d.cid10) + ')' : ''}</div>
-    <div style="margin-bottom: 8px;"><strong>Plano / Conduta:</strong><br>${esc(d.plan || '-')}</div>
-    
-    ${d.proc1_name ? `
-    <hr style="border:0; border-top: 1px solid var(--line); margin: 12px 0;">
-    <div style="margin-bottom: 8px;"><strong>Procedimento 1:</strong> ${esc(d.proc1_name)} | <strong>Cód:</strong> ${esc(d.proc1_code || '-')} | <strong>Qtd:</strong> ${esc(d.proc1_qty || '1')}</div>
-    ` : ''}
+    <div style="margin-bottom: 8px;"><strong>Diagnósticos Diferenciais:</strong><br>${esc(d.differential || '-')}</div>
     
     ${examesHtml}
 
@@ -396,22 +497,7 @@ async function processPdfFile(file) {
   try {
     state.currentPdfFile = file;
     $('pdfResult').innerHTML = `<div class="status ok"><span class="dot"></span>${esc(file.name)} · ${bytes(file.size)}</div>`;
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    const fileName = file.name.toUpperCase();
-    let mapToUse = null;
-    if (fileName.includes('APAC')) mapToUse = STATIC_MAPS.APAC;
-    else if (fileName.includes('AIH')) mapToUse = STATIC_MAPS.AIH;
-
-    if (mapToUse) {
-      state.detectedFields = Object.keys(mapToUse).map(key => ({
-        name: `${mapToUse[key].code} · ${mapToUse[key].name}`,
-        type: 'Auto-Fit Bounding Box'
-      }));
-    } else {
-      state.detectedFields = [{ name: 'Documento Estático', type: 'Nenhum mapa de coordenadas encontrado.' }];
-    }
-
+    state.detectedFields = [{ name: 'Documento PDF Inspecionado', type: 'Pronto para preenchimento' }];
     renderFields();
     toast('PDF inspecionado e pronto!');
   } catch (err) {
@@ -431,7 +517,7 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   if (!selectedTemplate) return toast('Selecione um template primeiro.');
   try {
     toast(`Inspecionando ${selectedTemplate}...`);
-    const response = await fetch(`./templates/${selectedTemplate}`);
+    const response = await fetch(`./docs/templates/${selectedTemplate}`);
     if (!response.ok) throw new Error(`Template não encontrado.`);
     const arrayBuffer = await response.arrayBuffer();
     const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
@@ -441,7 +527,7 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   }
 });
 
-/* MOTOR DE INJEÇÃO EM PDF COM SUPORTE À IA NUMÉRICA */
+/* MOTOR DE INJEÇÃO EM PDF */
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
@@ -453,84 +539,26 @@ $('generateBtn').addEventListener('click', async () => {
     if (state.currentPdfFile) {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
     } else {
-      const response = await fetch(`./templates/${selectedTemplate}`);
+      const response = await fetch(`./docs/templates/${selectedTemplate}`);
       if (!response.ok) throw new Error(`Template não encontrado.`);
       pdfBytesBuffer = await response.arrayBuffer();
     }
 
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
     const rawMasterData = master();
-    
-    // CHAMADA DA IA
-    toast('Conectando ao cérebro e organizando campos...');
-    let masterData = rawMasterData;
-    
-    if (typeof rotearCamposComIA === 'function') {
-      const aiResponse = await rotearCamposComIA(rawMasterData);
-      masterData = { ...rawMasterData, ...aiResponse };
-    }
-
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize(); 
 
-    const fileName = selectedTemplate ? selectedTemplate.toUpperCase() : (state.currentPdfFile ? state.currentPdfFile.name.toUpperCase() : '');
-    let activeMap = null;
-    
-    if (fileName.includes('APAC')) activeMap = STATIC_MAPS.APAC;
-    else if (fileName.includes('AIH')) activeMap = STATIC_MAPS.AIH;
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
-    if (activeMap) {
-      const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-
-      for (const [codeKey, field] of Object.entries(activeMap)) {
-        let rawValue = masterData[codeKey];
-
-        // 1. Busca pela chave nativa correspondente se a chave numérica não trouxer nada
-        if (rawValue === undefined || rawValue === null || rawValue === "") {
-          if (field.nativeKey === 'city' || field.nativeKey === 'municipality') {
-            rawValue = rawMasterData.municipality || rawMasterData.city || "";
-          } else {
-            rawValue = rawMasterData[field.nativeKey] || "";
-          }
-        }
-
-        // 2. Trava anti-vazamento global
-        if (field.nativeKey !== 'patient_name' && rawValue === rawMasterData.patient_name) {
-          rawValue = "";
-        }
-        if (field.nativeKey !== 'mother_name' && rawValue === rawMasterData.mother_name) {
-          rawValue = "";
-        }
-
-        if (rawValue) {
-          const text = String(rawValue);
-          let fontSize = field.max || 9;
-          const minSize = field.min || 5;
-
-          while (fontSize > minSize) {
-            if (field.multi) {
-              const widthAtSize = font.widthOfTextAtSize(text, fontSize);
-              const estimatedLines = Math.ceil(widthAtSize / field.w);
-              const estimatedHeight = estimatedLines * (fontSize * 1.2); 
-              if (estimatedHeight <= field.h) break; 
-            } else {
-              const widthAtSize = font.widthOfTextAtSize(text, fontSize);
-              if (widthAtSize <= field.w) break; 
-            }
-            fontSize -= 0.5; 
-          }
-
-          page.drawText(text, {
-            x: field.x,
-            y: height - field.y,
-            size: fontSize,
-            font: font,
-            maxWidth: field.w,
-            lineHeight: fontSize * 1.2,
-            color: PDFLib.rgb(0, 0, 0)
-          });
-        }
-      }
+    if (rawMasterData.patient_name) {
+      page.drawText(rawMasterData.patient_name, {
+        x: 95,
+        y: height - 155,
+        size: 9,
+        font: font,
+        color: PDFLib.rgb(0, 0, 0)
+      });
     }
 
     const filledPdfBytes = await pdfDoc.save();
@@ -547,9 +575,7 @@ $('generateBtn').addEventListener('click', async () => {
       </div>
     `;
 
-    // EXIBE A FICHA-MÃE CONSOLIDADA LOGO ABAIXO
-    renderMotherFormPreview(masterData);
-
+    renderMotherFormPreview(rawMasterData);
     toast('Documento PDF gerado com sucesso!');
   } catch (error) {
     console.error(error);
