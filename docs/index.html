@@ -41,6 +41,71 @@
     </div>
   </div>
 </div>
+<!-- GUIA DE USO / PASSO A PASSO -->
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-head" style="margin-bottom: 15px;">
+    <div>
+      <div class="kicker">Guia Rápido</div>
+      <h2 class="title">Como utilizar o MedUnity</h2>
+      <p class="desc">Entenda o fluxo de preenchimento e o funcionamento dos botões principais.</p>
+    </div>
+  </div>
+
+  <!-- Grade de Passo a Passo -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px;">
+    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
+      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 1</div>
+      <strong style="font-size: 13px; color: var(--dark); display: block;">Preencha os dados</strong>
+      <span style="font-size: 12px; color: var(--muted);">Insira as informações do paciente, anamnese e pedidos de exames na Ficha-Mãe.</span>
+    </div>
+    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
+      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 2 (Opcional)</div>
+      <strong style="font-size: 13px; color: var(--dark); display: block;">Apoio IA (Diagnoses)</strong>
+      <span style="font-size: 12px; color: var(--muted);">Preencha a "Hipótese Diagnóstica" e acione o botão flutuante para obter sugestões de DDxs.</span>
+    </div>
+    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
+      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 3</div>
+      <strong style="font-size: 13px; color: var(--dark); display: block;">Salve a Ficha-Mãe</strong>
+      <span style="font-size: 12px; color: var(--muted);">Clique em "Salvar" para gravar as informações localmente e montar o resumo estruturado.</span>
+    </div>
+    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
+      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 4</div>
+      <strong style="font-size: 13px; color: var(--dark); display: block;">Gere o Documento</strong>
+      <span style="font-size: 12px; color: var(--muted);">Escolha o template (ex: Receita Especial, Laudo SUS) e clique em "Gerar documento" para obter o PDF.</span>
+    </div>
+  </div>
+
+  <!-- Glossário de Botões -->
+  <div class="kicker" style="margin-bottom: 12px;">Glossário de Botões</div>
+  <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px;">
+    
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <button class="btn primary" style="pointer-events: none; min-width: 165px; font-size: 12px;">💾 Salvar Ficha-Mãe</button>
+      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Grava os dados no navegador para compor o documento em tempo real e liberar a injeção no PDF.</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="background: linear-gradient(135deg, var(--brand), var(--dark)); color: #fff; padding: 8px 14px; border-radius: 99px; font-weight: 800; font-size: 12px; min-width: 165px; text-align: center;">💡 Diagnoses (DDxs)</div>
+      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Aciona o motor de Inteligência Artificial para cruzar as evidências clínicas preenchidas e sugerir diagnósticos diferenciais.</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <button class="btn primary" style="pointer-events: none; min-width: 165px; font-size: 12px;">Gerar documento</button>
+      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Injeta os dados canônicos da Ficha-Mãe diretamente nas coordenadas mapeadas do Template PDF selecionado.</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <button class="btn secondary" style="pointer-events: none; min-width: 165px; font-size: 12px;">🧹 Limpar</button>
+      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Apaga todos os dados da ficha atual e zera a área de trabalho.</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <button class="btn gold" style="pointer-events: none; min-width: 165px; font-size: 12px;">⇩ Exportar JSON</button>
+      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Faz o download do prontuário completo no formato de dados estruturados para backup seguro.</span>
+    </div>
+
+  </div>
+</div>
 
 <div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
