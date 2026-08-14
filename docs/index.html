@@ -607,7 +607,7 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   if (!selectedTemplate) return toast('Selecione um template primeiro.');
   try {
     toast(`Inspecionando ${selectedTemplate}...`);
-    const response = await fetch(`./docs/templates/${selectedTemplate}`);
+    const response = await fetch(`./templates/${selectedTemplate}`);
     if (!response.ok) throw new Error(`Template não encontrado.`);
     const arrayBuffer = await response.arrayBuffer();
     const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
@@ -629,7 +629,7 @@ $('generateBtn').addEventListener('click', async () => {
     if (state.currentPdfFile) {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
     } else {
-      const response = await fetch(`./docs/templates/${selectedTemplate}`);
+      const response = await fetch(`./templates/${selectedTemplate}`);
       if (!response.ok) throw new Error(`Template não encontrado.`);
       pdfBytesBuffer = await response.arrayBuffer();
     }
@@ -716,5 +716,3 @@ atualizarPreviewEmTempoReal();
 
 </body>
 </html>
-
-
