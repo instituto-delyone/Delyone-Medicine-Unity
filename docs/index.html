@@ -3,7 +3,7 @@
 <head>
   <!-- Biblioteca para manipulação de PDFs -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-  <!-- Biblioteca para compactação em arquivo ZIP -->
+  <!-- Biblioteca para compactação e descompactação em arquivo ZIP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -242,10 +242,17 @@
     <div id="shiftTimer" class="shift-timer">00:00:00</div>
     <div style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">Fichas arquivadas: <strong id="shiftCount" style="color: var(--ink); font-size: 14px;">0</strong></div>
     
-    <div style="display: flex; gap: 8px; justify-content: center;">
+    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
       <button id="btnStartShift" class="btn primary" style="padding: 10px; font-size: 12px; flex: 1;" onclick="toggleShift()">▶ Iniciar</button>
       <button id="btnEndShift" class="btn gold" style="padding: 10px; font-size: 12px; display: none; flex: 1;" onclick="exportShiftZip()">📦 Gerar ZIP</button>
     </div>
+
+    <!-- BOTÃO DE RECUPERAÇÃO DE MEMÓRIA -->
+    <label class="btn secondary" style="display: block; margin-top: 10px; font-size: 11px; padding: 8px; cursor: pointer; border: 1px dashed var(--brand); color: var(--brand); background: transparent;">
+      <input type="file" id="importShiftZip" accept=".zip" style="display: none;" onchange="importShiftZip(event)">
+      📂 Recuperar Plantão (ZIP)
+    </label>
+
     <p id="shiftStatusText" style="font-size: 10px; color: var(--muted); margin: 10px 0 0 0;">Plantão inativo. Inicie para arquivar os salvamentos.</p>
   </div>
 </div>
@@ -291,7 +298,7 @@ function toggleShift() {
     shiftActive = false;
     clearInterval(shiftTimerInterval);
     $('btnStartShift').innerHTML = '▶ Retomar';
-    $('btnStartShift').style.background = ''; // Volta ao CSS padrão primary
+    $('btnStartShift').style.background = ''; 
     $('shiftStatusText').innerText = 'Plantão pausado.';
     panel.classList.remove('active');
     toast('Plantão pausado.');
@@ -336,7 +343,6 @@ async function exportShiftZip() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    // Zera o plantão após exportar com sucesso
     shiftActive = false;
     clearInterval(shiftTimerInterval);
     shiftRecords = {};
@@ -352,6 +358,52 @@ async function exportShiftZip() {
   } catch(e) {
     console.error(e);
     toast('Erro ao gerar o arquivo ZIP.');
+  }
+}
+
+async function importShiftZip(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  toast('Lendo arquivo ZIP. Aguarde...');
+  try {
+    const zip = new JSZip();
+    const contents = await zip.loadAsync(file);
+    
+    let loadedCount = 0;
+    
+    if (!shiftActive) {
+      shiftActive = true;
+      shiftStartTime = new Date();
+      $('btnStartShift').innerHTML = '⏸ Pausar';
+      $('btnStartShift').style.background = 'var(--muted)';
+      $('btnEndShift').style.display = 'block';
+      $('shiftPanel').classList.add('active');
+    }
+
+    for (const [filename, fileData] of Object.entries(contents.files)) {
+      if (!fileData.dir && filename.endsWith('.json')) {
+        const jsonText = await fileData.async('string');
+        try {
+          const record = JSON.parse(jsonText);
+          const nomeIdentificador = record.patient_name || 'Paciente_Recuperado_' + Date.now() + Math.random();
+          shiftRecords[nomeIdentificador] = record;
+          loadedCount++;
+        } catch (e) {
+          console.error("Erro ao extrair JSON do arquivo: ", filename);
+        }
+      }
+    }
+    
+    $('shiftCount').innerText = Object.keys(shiftRecords).length;
+    $('shiftStatusText').innerText = `Memória restaurada. ${loadedCount} fichas importadas.`;
+    event.target.value = ''; 
+    
+    toast(`Sucesso! ${loadedCount} atendimentos recuperados.`);
+    
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao ler o ZIP. O arquivo pode estar corrompido.');
   }
 }
 
@@ -603,7 +655,6 @@ function saveMaster(){
   const d=master();
   localStorage.setItem(MASTER_KEY,JSON.stringify(d));
   
-  // ARQUIVAMENTO NA GESTÃO DE PLANTÃO
   if (shiftActive) {
     const nomeIdentificador = d.patient_name || 'Paciente_Anonimo_' + Date.now();
     shiftRecords[nomeIdentificador] = d;
@@ -707,7 +758,6 @@ $('generateBtn').addEventListener('click', async () => {
     const previewArea = $('preview');
     let cleanHTML = previewArea.innerHTML;
     
-    // Força atualização caso o usuário clique sem ter preenchido nada de novo
     if(cleanHTML.includes('print-btn-wrapper')) {
         atualizarPreviewEmTempoReal(); 
         cleanHTML = previewArea.innerHTML;
