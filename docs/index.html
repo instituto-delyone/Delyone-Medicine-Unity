@@ -23,6 +23,13 @@
 .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
 .btn-remove:hover { background: #fff0f0; }
 @media(max-width: 560px){ .exam-input-row { grid-template-columns: 1fr 70px; } .exam-input-row button { grid-column: 1 / -1; } }
+
+/* ESTILOS PARA IMPRESSÃO NATIVA */
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible !important; }
+  #print-area { position: absolute; left: 0; top: 0; width: 100%; border: none !important; padding: 0 !important; box-shadow: none !important; }
+}
 </style>
 </head>
 <body>
@@ -199,6 +206,7 @@
 <div class="card"><div class="card-head"><div><div class="kicker">Documento nativo</div><h2 class="title">Template + mapa externo</h2><p class="desc">Selecione o documento que receberá os dados da Ficha-Mãe.</p></div></div><div><label>Template</label>
 <select id="templateSelect">
   <option value="">Selecione um template</option>
+  <option value="FICHA_MAE" style="font-weight: bold; color: var(--brand);">000 — Ficha-Mãe (Prontuário Clínico Completo)</option>
   <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">003 — Laudo AIH (SUS Nacional)</option>
   <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (SUS Nacional)</option>
 </select>
@@ -210,20 +218,6 @@
 
 <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO PDF -->
 <div class="card"><div class="card-head"><div><div class="kicker">Saída</div><h2 class="title">Pré-visualização</h2></div></div><div class="preview" id="preview"><span class="empty">A pré-visualização aparecerá aqui depois da geração.</span></div></div>
-
-<!-- CARD DE DADOS CONSOLIDADOS DA FICHA-MÃE -->
-<div class="card" id="motherFormCard" style="display: none; margin-top: 20px;">
-  <div class="card-head" style="margin-bottom: 12px; align-items: center;">
-    <div>
-      <div class="kicker">Resumo Estruturado</div>
-      <h2 class="title" style="font-size: 17px;">📋 Dados Consolidados da Ficha-Mãe</h2>
-    </div>
-    <button class="btn secondary" onclick="toggleMotherPreview()" style="font-size: 11px; padding: 5px 10px;">Ocultar/Exibir</button>
-  </div>
-  <div id="motherFormContent" style="background: var(--soft); border: 1px solid var(--line); padding: 16px; border-radius: 12px; font-size: 13px; line-height: 1.6; max-height: 450px; overflow-y: auto;">
-    <!-- Dados injetados dinamicamente via JS -->
-  </div>
-</div>
 
 </section>
 <aside>
@@ -241,7 +235,7 @@
 
 <script>
 const MASTER_KEY='medunity_master_record', DRAFTS_KEY='medunity-drafts';
-const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','vitals','physical_exam','hypothesis','cid10','differential','assessment','doctor_name','crm'];
+const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,drafts:[],detectedFields:[],currentPdfFile:null};
 
@@ -359,7 +353,7 @@ function renderizarListaExames() {
 }
 
 /* ==========================================================================
-   PRÉ-VISUALIZAÇÃO EM TEMPO REAL (LIVE PREVIEW)
+   PRÉ-VISUALIZAÇÃO EM TEMPO REAL COMPLETA (FICHA MÃE)
    ========================================================================== */
 
 function atualizarPreviewEmTempoReal() {
@@ -367,7 +361,6 @@ function atualizarPreviewEmTempoReal() {
   if (!previewArea) return;
 
   const d = master();
-
   const temDados = FIELDS.some(k => d[k] && d[k].trim() !== "") || (d.examesComplementares && d.examesComplementares.length > 0);
 
   if (!temDados) {
@@ -375,51 +368,99 @@ function atualizarPreviewEmTempoReal() {
     return;
   }
 
+  // Funções de formatação para os blocos
+  const row = (label, val) => val ? `<div style="margin-bottom: 6px;"><strong>${label}:</strong> <span style="white-space: pre-wrap;">${esc(val)}</span></div>` : '';
+  const inline = (label, val) => val ? `<strong>${label}:</strong> ${esc(val)} &nbsp;&nbsp;&nbsp;` : '';
+
   let examesBloco = '';
   if (Array.isArray(d.examesComplementares) && d.examesComplementares.length > 0) {
     examesBloco = `
-      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--line);">
-        <strong style="color: var(--brand); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Procedimentos e Exames Solicitados:</strong>
-        <ul style="margin: 6px 0 0 18px; padding: 0; font-size: 13px;">
+      <div style="margin-top: 10px;">
+        <strong>Pedidos de Exames Complementares:</strong>
+        <ul style="margin: 4px 0 0 18px; padding: 0;">
           ${d.examesComplementares.map(e => `<li><strong>${e.qtd}x</strong> ${e.codigo ? `[${e.codigo}] ` : ''}${esc(e.nome)}</li>`).join('')}
         </ul>
       </div>
     `;
   }
 
+  let apacBloco = '';
+  if (d.proc1_name || d.proc2_name || d.proc3_name) {
+     apacBloco = `<div style="margin-top: 10px;"><strong>Procedimentos (APAC):</strong><ul style="margin: 4px 0 0 18px; padding: 0;">`;
+     if(d.proc1_name) apacBloco += `<li>${d.proc1_qty||1}x ${esc(d.proc1_name)} ${d.proc1_code? `[${esc(d.proc1_code)}]`:''}</li>`;
+     if(d.proc2_name) apacBloco += `<li>${d.proc2_qty||1}x ${esc(d.proc2_name)} ${d.proc2_code? `[${esc(d.proc2_code)}]`:''}</li>`;
+     if(d.proc3_name) apacBloco += `<li>${d.proc3_qty||1}x ${esc(d.proc3_name)} ${d.proc3_code? `[${esc(d.proc3_code)}]`:''}</li>`;
+     apacBloco += `</ul></div>`;
+  }
+
   previewArea.innerHTML = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--ink); line-height: 1.5; font-size: 13px;">
-      <div style="border-bottom: 2px solid var(--brand); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-          <strong style="font-size: 15px; text-transform: uppercase;">${esc(d.patient_name || 'PACIENTE NÃO IDENTIFICADO')}</strong>
-          <div style="font-size: 11px; color: var(--muted);">
-            ${d.age ? `Idade: ${esc(d.age)} anos · ` : ''} ${d.gender ? `Sexo: ${esc(d.gender)} · ` : ''} ${d.cpf ? `CPF: ${esc(d.cpf)}` : ''}
-          </div>
+    <div id="print-area" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #000; line-height: 1.5; font-size: 13px; background: #fff; padding: 24px; border: 1px solid var(--line); border-radius: 8px;">
+      <div style="border-bottom: 2px solid var(--brand); padding-bottom: 10px; margin-bottom: 15px; text-align: center;">
+        <h2 style="margin: 0; font-size: 18px; text-transform: uppercase; color: var(--ink);">Prontuário Clínico / Evolução</h2>
+        <div style="font-size: 11px; color: var(--muted);">Gerado por MedUnity Delyone em ${fmt(d.updatedAt)}</div>
+      </div>
+
+      <!-- 1. IDENTIFICAÇÃO E CONTEXTO -->
+      <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+        <div style="margin-bottom: 6px; font-size: 15px; text-transform: uppercase;">
+          <strong>${esc(d.patient_name || 'PACIENTE NÃO IDENTIFICADO')}</strong>
         </div>
-        <div style="font-size: 10px; color: var(--muted); text-align: right;">
-          ${d.record_number ? `Prontuário: <strong>${esc(d.record_number)}</strong><br>` : ''}
-          ${fmt(d.updatedAt)}
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
+          ${inline('Nome Social', d.social_name)} ${inline('Nascimento', d.birth)} ${inline('Idade', d.age ? d.age + ' anos' : '')} ${inline('Sexo', d.gender)}
+        </div>
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
+          ${inline('CPF', d.cpf)} ${inline('CNS', d.cns)} ${inline('Mãe', d.mother_name)}
+        </div>
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
+          ${inline('Telefone', d.phone)} ${inline('Município', d.municipality)} ${inline('Endereço', d.address)}
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 12px; color: #444;">
+          ${inline('Data Admissão', d.admission)} ${inline('Prontuário', d.record_number)} ${inline('Setor', d.sector)} ${inline('AIH', d.aih)}
         </div>
       </div>
 
-      ${d.qpp ? `<div style="margin-bottom: 8px;"><strong>Queixa Principal / QPD:</strong> ${esc(d.qpp)}</div>` : ''}
-      ${d.hda ? `<div style="margin-bottom: 8px;"><strong>História da Doença Atual (HDA):</strong><br><span style="white-space: pre-wrap;">${esc(d.hda)}</span></div>` : ''}
-      ${d.vitals || d.physical_exam ? `<div style="margin-bottom: 8px;"><strong>Exame Físico / Sinais Vitais:</strong> ${esc(d.vitals || '')} ${esc(d.physical_exam || '')}</div>` : ''}
-      
-      ${d.hypothesis ? `
-        <div style="margin-bottom: 8px; background: var(--soft); padding: 8px 10px; border-radius: 8px; border-left: 3px solid var(--brand);">
-          <strong>Hipótese Diagnóstica:</strong> ${esc(d.hypothesis)} ${d.cid10 ? `(CID-10: ${esc(d.cid10)})` : ''}
-          ${d.differential ? `<br><small style="color: var(--muted);"><strong>DDxs:</strong> ${esc(d.differential)}</small>` : ''}
-        </div>
-      ` : ''}
+      <!-- 2. ANAMNESE E HISTÓRIA CLÍNICA -->
+      <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+        <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Anamnese e História</div>
+        ${row('Queixa Principal (QPD)', d.qpp)}
+        ${row('História da Doença Atual (HDA)', d.hda)}
+        ${row('Antecedentes Pessoais / Comorbidades', d.antecedents)}
+        ${row('Medicações em Uso', d.medications)}
+        ${row('Alergias', d.allergies)}
+        ${row('História Familiar', d.family_history)}
+        ${row('História Social', d.social_history)}
+      </div>
 
-      ${examesBloco}
+      <!-- 3. EXAME CLÍNICO E EXAMES COMPLEMENTARES -->
+      <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+        <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Exame Físico e Complementares</div>
+        ${row('Sinais Vitais', d.vitals)}
+        ${row('Exame Físico', d.physical_exam)}
+        ${row('Laboratório', d.labs)}
+        ${row('Imagem', d.imaging)}
+        ${row('Outros Resultados', d.other_results)}
+      </div>
 
-      ${d.doctor_name ? `
-        <div style="margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); text-align: right;">
-          Médico Responsável: <strong>${esc(d.doctor_name)}</strong> ${d.crm ? `(${esc(d.crm)})` : ''}
+      <!-- 4. AVALIAÇÃO E CONDUTA -->
+      <div style="margin-bottom: 15px;">
+        <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Avaliação e Conduta</div>
+        <div style="margin-bottom: 6px; background: var(--soft); padding: 8px; border-left: 3px solid var(--brand);">
+          ${inline('Hipótese Diagnóstica', d.hypothesis)} ${inline('CID-10', d.cid10)}
+          ${d.differential ? `<br><small style="color: var(--muted); margin-top: 4px; display: inline-block;"><strong>DDxs:</strong> ${esc(d.differential)}</small>` : ''}
         </div>
-      ` : ''}
+        ${row('Impressão Clínica', d.assessment)}
+        ${row('Conduta / Plano Terapêutico', d.plan)}
+        ${row('Evolução', d.evolution)}
+        ${apacBloco}
+        ${examesBloco}
+      </div>
+
+      <!-- ASSINATURA -->
+      <div style="margin-top: 40px; text-align: center; font-size: 12px;">
+        _______________________________________________________<br>
+        <strong>${esc(d.doctor_name || 'Assinatura do Profissional')}</strong><br>
+        CRM: ${esc(d.crm || '_________')}
+      </div>
     </div>
   `;
 }
@@ -625,7 +666,6 @@ async function processPdfFile(file) {
     state.currentPdfFile = file;
     $('pdfResult').innerHTML = `<div class="status ok"><span class="dot"></span>${esc(file.name)} · ${bytes(file.size)}</div>`;
     
-    // Verifica pelo nome do arquivo para listar os campos corretos
     if (file.name.includes('AIH')) {
       state.detectedFields = [
         { name: 'patient_name', type: 'Nome do Paciente (Bloco 05)' },
@@ -679,6 +719,7 @@ function renderFields(){
 $('inspectTemplateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate) return toast('Selecione um template primeiro.');
+  if (selectedTemplate === "FICHA_MAE") return toast('Este é um documento interno dinâmico. Selecione um PDF para inspecionar.');
   try {
     toast(`Inspecionando ${selectedTemplate}...`);
     const response = await fetch(`./templates/${selectedTemplate}`);
@@ -691,10 +732,31 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   }
 });
 
-/* MOTOR DE INJEÇÃO EM PDF */
+/* MOTOR DE INJEÇÃO EM PDF E GERAÇÃO DE FICHA MÃE */
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
+
+  if (selectedTemplate === "FICHA_MAE") {
+    toast('Prontuário Completo montado!');
+    const previewArea = $('preview');
+    const currentHTML = previewArea.innerHTML;
+    
+    let cleanHTML = currentHTML;
+    if(cleanHTML.includes('print-btn-wrapper')) {
+        atualizarPreviewEmTempoReal(); 
+        cleanHTML = previewArea.innerHTML;
+    }
+
+    previewArea.innerHTML = `
+      <div id="print-btn-wrapper" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--ok);">
+        <span style="font-size: 13px; color: var(--ok); font-weight: 800;">✓ Prontuário Clínico gerado</span>
+        <button class="btn primary" onclick="window.print()" style="width: auto; background: var(--ok);">🖨️ Imprimir / Salvar PDF</button>
+      </div>
+      ${cleanHTML}
+    `;
+    return;
+  }
 
   try {
     toast('Processando e preenchendo o PDF...');
@@ -718,19 +780,16 @@ $('generateBtn').addEventListener('click', async () => {
 
     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
-    // 1. Descobrir qual mapa de coordenadas usar com base no nome do arquivo
     let mapToUse = null;
     if (fileName.includes('AIH')) mapToUse = STATIC_MAPS.AIH;
     else if (fileName.includes('APAC')) mapToUse = STATIC_MAPS.APAC;
 
-    // 2. Laço de injeção determinística
     if (mapToUse) {
       for (const key in mapToUse) {
         const config = mapToUse[key];
         const value = rawMasterData[config.nativeKey];
         
         if (value && value.trim() !== '') {
-          // Inverte o eixo Y porque o PDF-lib calcula a partir do rodapé da página
           const pdfY = height - config.y;
           
           page.drawText(value, {
@@ -739,13 +798,12 @@ $('generateBtn').addEventListener('click', async () => {
             size: config.max || 9,
             font: font,
             color: PDFLib.rgb(0, 0, 0),
-            maxWidth: config.multi ? config.w : undefined, // Quebra de linha se for multi
+            maxWidth: config.multi ? config.w : undefined, 
             lineHeight: config.max ? config.max * 1.2 : 11
           });
         }
       }
     } else {
-      // Fallback: se não for AIH nem APAC, injeta apenas o nome do paciente no topo
       if (rawMasterData.patient_name) {
         page.drawText(rawMasterData.patient_name, {
           x: 95,
