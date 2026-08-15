@@ -1,9 +1,8 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <!-- Biblioteca para manipulação de PDFs -->
+  <!-- Bibliotecas de manipulação embutidas via CDN -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-  <!-- Biblioteca para compactação e descompactação em arquivo ZIP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -41,10 +40,9 @@
 </style>
 </head>
 <body>
-<header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Motor local disponível</div></div></header>
-<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Clinical Canonical Field Registry</span><span class="chip">v2.0 Tipográfico</span></div></section>
+<header class="site-header"><div class="header-inner"><a class="brand" href="#top"><div class="brand-mark">MD</div><div><div class="brand-title">MedUnity Delyone</div><div class="brand-subtitle">Clinical Document Engine</div></div></a><div class="header-status"><span class="dot"></span>Sistema Autônomo e Resiliente</div></div></header>
+<section class="hero" id="top"><div class="eyebrow">Instituto Delyone</div><h1>Documentos clínicos <span>determinísticos.</span></h1><p>Framework para geração determinística de documentos médicos baseado em campos canônicos, templates institucionais e mapas documentais editáveis.</p><div class="hero-meta"><span class="chip">PDF Engine</span><span class="chip">Shift Manager</span><span class="chip">v2.0 Standalone</span></div></section>
 <main><div class="grid"><section>
-<!-- TERMO DE RESPONSABILIDADE E AVISO DE DESENVOLVIMENTO -->
 <div class="card" style="background: #fffdf5; border: 1px solid #eedaa8; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
   <div style="display: flex; align-items: flex-start; gap: 12px;">
     <div style="font-size: 20px; line-height: 1;">⚠️</div>
@@ -52,77 +50,12 @@
       <strong style="font-size: 13px; color: #85631d; display: block; margin-bottom: 4px;">
         AVISO DE SISTEMA EM DESENVOLVIMENTO & TERMO DE RESPONSABILIDADE
       </strong>
-      O <strong>MedUnity Delyone</strong> é um motor de automação e apoio à gestão documental em fase de desenvolvimento e testes. A verificação, validação técnica, conferência dos dados clínicos, códigos SIGTAP/TUSS e a assinatura dos documentos gerados são de responsabilidade exclusiva do profissional médico solicitante. Este sistema não substitui o julgamento clínico nem os fluxos de validação oficiais das instituições de saúde.
+      O <strong>MedUnity Delyone</strong> é um motor de automação e apoio à gestão documental. A verificação, validação técnica, conferência dos dados clínicos, códigos SIGTAP/TUSS e a assinatura dos documentos gerados são de responsabilidade exclusiva do profissional médico solicitante.
     </div>
   </div>
 </div>
-<!-- GUIA DE USO / PASSO A PASSO -->
-<div class="card" style="margin-bottom: 20px;">
-  <div class="card-head" style="margin-bottom: 15px;">
-    <div>
-      <div class="kicker">Guia Rápido</div>
-      <h2 class="title">Como utilizar o MedUnity</h2>
-      <p class="desc">Entenda o fluxo de preenchimento e o funcionamento dos botões principais.</p>
-    </div>
-  </div>
 
-  <!-- Grade de Passo a Passo -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px;">
-    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
-      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 1</div>
-      <strong style="font-size: 13px; color: var(--dark); display: block;">Preencha os dados</strong>
-      <span style="font-size: 12px; color: var(--muted);">Insira as informações do paciente, anamnese e pedidos de exames na Ficha-Mãe.</span>
-    </div>
-    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
-      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 2 (Opcional)</div>
-      <strong style="font-size: 13px; color: var(--dark); display: block;">Apoio IA (Diagnoses)</strong>
-      <span style="font-size: 12px; color: var(--muted);">Preencha a "Hipótese Diagnóstica" e acione o botão flutuante para obter sugestões de DDxs.</span>
-    </div>
-    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
-      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 3</div>
-      <strong style="font-size: 13px; color: var(--dark); display: block;">Salve a Ficha-Mãe</strong>
-      <span style="font-size: 12px; color: var(--muted);">Clique em "Salvar" para gravar as informações localmente e montar o resumo estruturado.</span>
-    </div>
-    <div style="padding: 14px; background: var(--bsoft); border-radius: 12px; border: 1px solid var(--line);">
-      <div style="font-size: 11px; font-weight: 800; color: var(--brand); margin-bottom: 4px;">PASSO 4</div>
-      <strong style="font-size: 13px; color: var(--dark); display: block;">Gere o Documento</strong>
-      <span style="font-size: 12px; color: var(--muted);">Escolha o template (ex: Receita Especial, Laudo SUS) e clique em "Gerar documento" para obter o PDF.</span>
-    </div>
-  </div>
-
-  <!-- Glossário de Botões -->
-  <div class="kicker" style="margin-bottom: 12px;">Glossário de Botões</div>
-  <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px;">
-    
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <button class="btn primary" style="pointer-events: none; min-width: 165px; font-size: 12px;">💾 Salvar Ficha-Mãe</button>
-      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Grava os dados no navegador para compor o documento em tempo real e liberar a injeção no PDF.</span>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <div style="background: linear-gradient(135deg, var(--brand), var(--dark)); color: #fff; padding: 8px 14px; border-radius: 99px; font-weight: 800; font-size: 12px; min-width: 165px; text-align: center;">💡 Diagnoses (DDxs)</div>
-      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Aciona o motor de Inteligência Artificial para cruzar as evidências clínicas preenchidas e sugerir diagnósticos diferenciais.</span>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <button class="btn primary" style="pointer-events: none; min-width: 165px; font-size: 12px;">Gerar documento</button>
-      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Injeta os dados canônicos da Ficha-Mãe diretamente nas coordenadas mapeadas do Template PDF selecionado.</span>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <button class="btn secondary" style="pointer-events: none; min-width: 165px; font-size: 12px;">🧹 Limpar</button>
-      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Apaga todos os dados da ficha atual e zera a área de trabalho.</span>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <button class="btn gold" style="pointer-events: none; min-width: 165px; font-size: 12px;">⇩ Exportar JSON</button>
-      <span style="font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1;">Faz o download do prontuário atual no formato de dados estruturados.</span>
-    </div>
-
-  </div>
-</div>
-
-<div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">Nesta versão, a persistência é local ao navegador. Para dados identificáveis em ambiente institucional, será necessária uma camada de armazenamento e controle de acesso adequada.</div>
+<div class="card" id="masterCard"><div class="card-head"><div><div class="kicker">Fonte Única da Verdade</div><h2 class="title">Ficha-mãe (Prontuário Mestre)</h2><p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p></div><span class="badge">MASTER RECORD</span></div><div class="notice">A persistência é mantida na memória local da sua máquina. Para preservar os dados entre plantões, utilize o botão de "Gerar ZIP" no painel lateral.</div>
 <form id="masterForm" onsubmit="event.preventDefault();saveMaster()"><div class="form-grid">
 <div class="section">01 · Identificação</div>
 <div><label>Nome completo</label><input id="master_patient_name" type="text" placeholder="Nome do paciente"></div><div><label>Nome social</label><input id="master_social_name" type="text"></div><div><label>CPF</label><input id="master_cpf" type="text" placeholder="000.000.000-00"></div><div><label>CNS</label><input id="master_cns" type="text"></div><div><label>Data de nascimento</label><input id="master_birth" type="date"></div><div><label>Idade</label><input id="master_age" type="number" min="0" max="130"></div><div><label>Sexo</label><select id="master_gender"><option value="">Selecione</option><option>Feminino</option><option>Masculino</option><option>Intersexo</option><option>Não informado</option></select></div><div><label>Nome da mãe</label><input id="master_mother_name" type="text"></div><div><label>Município</label><input id="master_municipality" type="text" placeholder="Goiânia - GO"></div><div><label>Telefone</label><input id="master_phone" type="text"></div><div class="full"><label>Endereço</label><input id="master_address" type="text"></div>
@@ -141,7 +74,6 @@
 <div class="section">08 · Profissional responsável</div>
 <div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
 
-<!-- BLOCO: SOLICITAÇÃO DE PROCEDIMENTOS (APAC) -->
 <div class="section">09 · Solicitação de Procedimentos (APAC)</div>
 <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);">
   <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
@@ -151,7 +83,6 @@
     <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
   </div>
 </div>
-
 <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
   <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
   <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
@@ -160,7 +91,6 @@
     <input id="master_proc2_qty" type="text" placeholder="Qtd">
   </div>
 </div>
-
 <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
   <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
   <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
@@ -170,7 +100,6 @@
   </div>
 </div>
 
-<!-- NOVO MÓDULO: PEDIDOS DE EXAMES COMPLEMENTARES -->
 <div class="full exam-builder-card">
   <div class="exam-header">
     <div class="exam-title">🧪 Pedidos de Exames Complementares</div>
@@ -179,7 +108,6 @@
       <button type="button" class="mode-btn" id="btnModoEditavel" onclick="alternarModoExame('EDITAVEL')">Modelo Particular / Editável</button>
     </div>
   </div>
-
   <div class="exam-input-row">
     <div>
       <input type="text" id="inputNomeExame" placeholder="Digite ou selecione o exame..." list="listaSugestoesExames">
@@ -201,7 +129,6 @@
       <button type="button" class="btn primary" style="width: 100%; padding: 11px 8px;" onclick="adicionarExameNaLista()">+ Adicionar</button>
     </div>
   </div>
-
   <div class="exam-list-box">
     <div id="listaExamesAdicionados">
       <div class="empty" style="padding: 10px 0; text-align: center;">Nenhum exame adicionado ao pedido ainda.</div>
@@ -215,22 +142,20 @@
 <select id="templateSelect">
   <option value="">Selecione um template</option>
   <option value="FICHA_MAE" style="font-weight: bold; color: var(--brand);">000 — Ficha-Mãe (Prontuário Clínico Completo)</option>
-  <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">003 — Laudo AIH (SUS Nacional)</option>
-  <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (SUS Nacional)</option>
+  <option value="TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf">003 — Laudo AIH (Embutido)</option>
+  <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (Embutido)</option>
 </select>
 
 <div class="actions"><button class="btn primary" id="generateBtn">Gerar documento</button><button class="btn secondary" id="inspectTemplateBtn">Inspecionar template</button><button class="btn secondary" id="clearBtn">Limpar área</button></div><div class="status" id="engineStatus"><span class="dot"></span>Carregando motor v2.0...</div></div></div>
 
-<div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue o arquivo para registrar metadados e preparar a camada de inspeção estrutural.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
+<div class="card"><div class="card-head"><div><div class="kicker">Inspeção documental</div><h2 class="title">Inspecionar PDF</h2><p class="desc">Carregue um arquivo externo avulso, caso não queira usar os templates embutidos.</p></div></div><label class="drop" id="dropzone" for="pdfInput">PDF · toque para selecionar ou arraste aqui<input id="pdfInput" type="file" accept="application/pdf,.pdf"></label><div id="pdfResult"></div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Registro canônico</div><h2 class="title">Campos detectados no template</h2></div></div><div class="fields" id="fieldList"><div class="empty">Nenhum campo inspecionado ainda.</div></div></div>
 
-<!-- ÁREA DE PRÉ-VISUALIZAÇÃO DO PDF E DA FICHA-MÃE -->
 <div class="card"><div class="card-head"><div><div class="kicker">Saída</div><h2 class="title">Pré-visualização</h2></div></div><div class="preview" id="preview"><span class="empty">A pré-visualização aparecerá aqui depois da geração ou à medida que preenche a ficha.</span></div></div>
 
 </section>
 <aside>
 
-<!-- NOVO: GESTOR DE PLANTÃO (MEMORY CARD) -->
 <div class="card" id="shiftCard">
   <div class="card-head">
     <div>
@@ -247,7 +172,6 @@
       <button id="btnEndShift" class="btn gold" style="padding: 10px; font-size: 12px; display: none; flex: 1;" onclick="exportShiftZip()">📦 Gerar ZIP</button>
     </div>
 
-    <!-- BOTÃO DE RECUPERAÇÃO DE MEMÓRIA -->
     <label class="btn secondary" style="display: block; margin-top: 10px; font-size: 11px; padding: 8px; cursor: pointer; border: 1px dashed var(--brand); color: var(--brand); background: transparent;">
       <input type="file" id="importShiftZip" accept=".zip" style="display: none;" onchange="importShiftZip(event)">
       📂 Recuperar Plantão (ZIP)
@@ -259,17 +183,46 @@
 
 <div class="card"><div class="card-head"><div><div class="kicker">Registro central</div><h2 class="title">Estado da Ficha-Mãe</h2></div></div><div class="status" id="masterStatus"><span class="dot"></span>Nenhum registro carregado</div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Arquitetura</div><h2 class="title">Como funciona</h2></div></div><div class="architecture"><div class="arch"><div class="num">01</div><strong>Dicionário canônico</strong><span>Define os campos estruturais.</span></div><div class="arch"><div class="num">02</div><strong>Ficha-mãe</strong><span>Concentra o conteúdo clínico central.</span></div><div class="arch"><div class="num">03</div><strong>Mapa documental</strong><span>Conecta campos aos templates.</span></div></div></div>
-<div class="card"><div class="card-head"><div><div class="kicker">Sistema</div><h2 class="title">MedUnity Delyone</h2></div></div><p class="desc">Deterministic Clinical Document Engine</p><div class="status ok"><span class="dot"></span>Motor operacional</div></div>
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="kicker">Sistema</div>
+      <h2 class="title">MedUnity Delyone</h2>
+    </div>
+  </div>
+  <p class="desc">Deterministic Clinical Document Engine</p>
+  <div class="status ok" style="margin-bottom: 15px;"><span class="dot"></span>Motor autônomo offline</div>
+  
+  <button class="btn secondary" style="width: 100%; font-size: 12px; border-color: var(--brand); color: var(--brand);" onclick="baixarGestorOffline()">
+    💾 Baixar Gestor Offline (Pendrive)
+  </button>
+</div>
 </aside></div>
 </main>
-<footer><div class="footer-inner"><span>MedUnity Delyone v2.0 Tipográfico</span><span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span></div></footer><div class="toast" id="toast"></div>
+<footer style="margin-top: 40px; padding: 30px; border-top: 1px solid var(--line); background:#ffffffb8;">
+  <div class="footer-inner" style="flex-direction: column; align-items: center; text-align: center; gap: 8px;">
+    <strong style="font-size: 14px; color: var(--dark);">MedUnity Delyone v2.0 Tipográfico</strong>
+    <span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span>
+    <span style="margin-top: 8px; font-style: italic; color: var(--brand);">Arquitetado pelo Primeiro Meta-Engenheiro da Linguagem</span>
+  </div>
+</footer><div class="toast" id="toast"></div>
 
-<!-- IMPORTA O CÉREBRO DA IA (SE EXISTIR LOCALMENTE) -->
-<script src="brain.js"></script>
+<!-- ====================================================================================
+     ESPAÇO COFRE PARA OS PDFs EM BASE64
+     Instruções:
+     1. Acesse o site base64encode.org
+     2. Converta o seu arquivo PDF de AIH e APAC lá.
+     3. Cole a string gigante gerada entre as aspas duplas abaixo.
+===================================================================================== -->
+<script>
+const EMBEDDED_PDFS = {
+  "TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf": "", // COLE O BASE64 DO AIH AQUI
+  "TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf": "" // COLE O BASE64 DO APAC AQUI
+};
+</script>
 
 <script>
 const MASTER_KEY='medunity_master_record';
-// ARRAY ATUALIZADO COM TODOS OS CAMPOS PARA A FICHA MÃE COMPLETA
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,detectedFields:[],currentPdfFile:null};
@@ -369,7 +322,6 @@ async function importShiftZip(event) {
   try {
     const zip = new JSZip();
     const contents = await zip.loadAsync(file);
-    
     let loadedCount = 0;
     
     if (!shiftActive) {
@@ -390,7 +342,7 @@ async function importShiftZip(event) {
           shiftRecords[nomeIdentificador] = record;
           loadedCount++;
         } catch (e) {
-          console.error("Erro ao extrair JSON do arquivo: ", filename);
+          console.error("Erro ao extrair JSON: ", filename);
         }
       }
     }
@@ -398,16 +350,28 @@ async function importShiftZip(event) {
     $('shiftCount').innerText = Object.keys(shiftRecords).length;
     $('shiftStatusText').innerText = `Memória restaurada. ${loadedCount} fichas importadas.`;
     event.target.value = ''; 
-    
     toast(`Sucesso! ${loadedCount} atendimentos recuperados.`);
-    
   } catch (e) {
     console.error(e);
-    toast('Erro ao ler o ZIP. O arquivo pode estar corrompido.');
+    toast('Erro ao ler o ZIP.');
   }
 }
 
-/* MAPAS ESTÁTICOS COM CHAVEAMENTO NUMÉRICO DO SUS */
+function baixarGestorOffline() {
+  toast('Empacotando sistema. Aguarde...');
+  const htmlContent = "<!doctype html>\n" + document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "MedUnity_Gestor_Offline.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Gestor Offline baixado! Copie para o seu pendrive.');
+}
+
 const STATIC_MAPS = {
   APAC: {
     "3":  { nativeKey: "patient_name", x: 62, y: 145, w: 470, h: 15, max: 9, min: 5 },
@@ -444,19 +408,13 @@ const STATIC_MAPS = {
   }
 };
 
-/* LÓGICA DO MÓDULO DE EXAMES COMPLEMENTARES */
 let examesComplementares = [];
 let modoExameAtual = 'SUS';
-
 const bibliotecaExames = {
-  "HEMOGRAMA COMPLETO": "0202010120",
-  "GLICEMIA DE JEJUM": "0202010317",
-  "URÉIA E CREATININA": "0202010694",
-  "ULTRASSONOGRAFIA DE ABDOMEN TOTAL": "0205020046",
-  "TOMOGRAFIA COMPUTADORIZADA DE TORAX": "0204030188",
-  "RESSONANCIA MAGNETICA DE CRANIO": "0206010079",
-  "RADIOGRAFIA DE TORAX PA E PERFIL": "0204060125",
-  "ELETROCARDIOGRAMA (ECG)": "0211020036"
+  "HEMOGRAMA COMPLETO": "0202010120", "GLICEMIA DE JEJUM": "0202010317",
+  "URÉIA E CREATININA": "0202010694", "ULTRASSONOGRAFIA DE ABDOMEN TOTAL": "0205020046",
+  "TOMOGRAFIA COMPUTADORIZADA DE TORAX": "0204030188", "RESSONANCIA MAGNETICA DE CRANIO": "0206010079",
+  "RADIOGRAFIA DE TORAX PA E PERFIL": "0204060125", "ELETROCARDIOGRAMA (ECG)": "0211020036"
 };
 
 function alternarModoExame(modo) {
@@ -468,34 +426,17 @@ function alternarModoExame(modo) {
 }
 
 function adicionarExameNaLista() {
-  const inputNome = $('inputNomeExame');
-  const inputQtd = $('inputQtdExame');
-  const nomeDigitado = inputNome.value.trim().toUpperCase();
-  const quantidade = parseInt(inputQtd.value) || 1;
-
+  const inputNome = $('inputNomeExame'), inputQtd = $('inputQtdExame');
+  const nomeDigitado = inputNome.value.trim().toUpperCase(), quantidade = parseInt(inputQtd.value) || 1;
   if (!nomeDigitado) return;
-
-  const codigoEncontrado = bibliotecaExames[nomeDigitado] || "";
-
-  examesComplementares.push({
-    nome: nomeDigitado,
-    codigo: codigoEncontrado,
-    qtd: quantidade
-  });
-
-  inputNome.value = "";
-  inputQtd.value = "1";
-  inputNome.focus();
-
-  renderizarListaExames();
-  atualizarPreviewEmTempoReal();
-  toast('Exame adicionado à lista.');
+  examesComplementares.push({ nome: nomeDigitado, codigo: bibliotecaExames[nomeDigitado] || "", qtd: quantidade });
+  inputNome.value = ""; inputQtd.value = "1"; inputNome.focus();
+  renderizarListaExames(); atualizarPreviewEmTempoReal(); toast('Exame adicionado à lista.');
 }
 
 function removerExameDaLista(index) {
   examesComplementares.splice(index, 1);
-  renderizarListaExames();
-  atualizarPreviewEmTempoReal();
+  renderizarListaExames(); atualizarPreviewEmTempoReal();
 }
 
 function renderizarListaExames() {
@@ -505,26 +446,16 @@ function renderizarListaExames() {
     container.innerHTML = '<div class="empty" style="padding: 10px 0; text-align: center;">Nenhum exame adicionado ao pedido ainda.</div>';
     return;
   }
-
   container.innerHTML = examesComplementares.map((exame, idx) => {
     const exibeCodigo = (modoExameAtual === 'SUS' && exame.codigo) ? `<span class="code-badge">[${exame.codigo}]</span>` : '';
-    return `
-      <div class="exam-item">
-        <div>
-          ${exibeCodigo}
-          <strong>${exame.qtd}x</strong> — ${esc(exame.nome)}
-        </div>
-        <button type="button" class="btn-remove" onclick="removerExameDaLista(${idx})">✕</button>
-      </div>
-    `;
+    return `<div class="exam-item"><div>${exibeCodigo}<strong>${exame.qtd}x</strong> — ${esc(exame.nome)}</div>
+            <button type="button" class="btn-remove" onclick="removerExameDaLista(${idx})">✕</button></div>`;
   }).join('');
 }
 
-/* PRÉ-VISUALIZAÇÃO EM TEMPO REAL COMPLETA (FICHA MÃE) */
 function atualizarPreviewEmTempoReal() {
   const previewArea = $('preview');
   if (!previewArea) return;
-
   const d = master();
   const temDados = FIELDS.some(k => d[k] && d[k].trim() !== "") || (d.examesComplementares && d.examesComplementares.length > 0);
 
@@ -538,14 +469,8 @@ function atualizarPreviewEmTempoReal() {
 
   let examesBloco = '';
   if (Array.isArray(d.examesComplementares) && d.examesComplementares.length > 0) {
-    examesBloco = `
-      <div style="margin-top: 10px;">
-        <strong>Pedidos de Exames Complementares:</strong>
-        <ul style="margin: 4px 0 0 18px; padding: 0;">
-          ${d.examesComplementares.map(e => `<li><strong>${e.qtd}x</strong> ${e.codigo ? `[${e.codigo}] ` : ''}${esc(e.nome)}</li>`).join('')}
-        </ul>
-      </div>
-    `;
+    examesBloco = `<div style="margin-top: 10px;"><strong>Pedidos de Exames Complementares:</strong><ul style="margin: 4px 0 0 18px; padding: 0;">
+          ${d.examesComplementares.map(e => `<li><strong>${e.qtd}x</strong> ${e.codigo ? `[${e.codigo}] ` : ''}${esc(e.nome)}</li>`).join('')}</ul></div>`;
   }
 
   let apacBloco = '';
@@ -563,70 +488,39 @@ function atualizarPreviewEmTempoReal() {
         <h2 style="margin: 0; font-size: 18px; text-transform: uppercase; color: var(--ink);">Prontuário Clínico / Evolução</h2>
         <div style="font-size: 11px; color: var(--muted);">Gerado por MedUnity Delyone em ${fmt(d.updatedAt)}</div>
       </div>
-
-      <!-- 1. IDENTIFICAÇÃO E CONTEXTO -->
       <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
-        <div style="margin-bottom: 6px; font-size: 15px; text-transform: uppercase;">
-          <strong>${esc(d.patient_name || 'PACIENTE NÃO IDENTIFICADO')}</strong>
-        </div>
-        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
-          ${inline('Nome Social', d.social_name)} ${inline('Nascimento', d.birth)} ${inline('Idade', d.age ? d.age + ' anos' : '')} ${inline('Sexo', d.gender)}
-        </div>
-        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
-          ${inline('CPF', d.cpf)} ${inline('CNS', d.cns)} ${inline('Mãe', d.mother_name)}
-        </div>
-        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">
-          ${inline('Telefone', d.phone)} ${inline('Município', d.municipality)} ${inline('Endereço', d.address)}
-        </div>
+        <div style="margin-bottom: 6px; font-size: 15px; text-transform: uppercase;"><strong>${esc(d.patient_name || 'PACIENTE NÃO IDENTIFICADO')}</strong></div>
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">${inline('Nome Social', d.social_name)} ${inline('Nascimento', d.birth)} ${inline('Idade', d.age ? d.age + ' anos' : '')} ${inline('Sexo', d.gender)}</div>
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">${inline('CPF', d.cpf)} ${inline('CNS', d.cns)} ${inline('Mãe', d.mother_name)}</div>
+        <div style="margin-bottom: 6px; font-size: 12px; color: #444;">${inline('Telefone', d.phone)} ${inline('Município', d.municipality)} ${inline('Endereço', d.address)}</div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 12px; color: #444;">
-          ${inline('Data Admissão', d.admission)} ${inline('Prontuário', d.record_number)} ${inline('Setor', d.sector)} ${inline('AIH', d.aih)}
-        </div>
+          ${inline('Data Admissão', d.admission)} ${inline('Prontuário', d.record_number)} ${inline('Setor', d.sector)} ${inline('AIH', d.aih)}</div>
       </div>
-
-      <!-- 2. ANAMNESE E HISTÓRIA CLÍNICA -->
       <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
         <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Anamnese e História</div>
-        ${row('Queixa Principal (QPD)', d.qpp)}
-        ${row('História da Doença Atual (HDA)', d.hda)}
-        ${row('Antecedentes Pessoais / Comorbidades', d.antecedents)}
-        ${row('Medicações em Uso', d.medications)}
-        ${row('Alergias', d.allergies)}
-        ${row('História Familiar', d.family_history)}
-        ${row('História Social', d.social_history)}
+        ${row('Queixa Principal (QPD)', d.qpp)} ${row('História da Doença Atual (HDA)', d.hda)}
+        ${row('Antecedentes / Comorbidades', d.antecedents)} ${row('Medicações em Uso', d.medications)}
+        ${row('Alergias', d.allergies)} ${row('História Familiar', d.family_history)} ${row('História Social', d.social_history)}
       </div>
-
-      <!-- 3. EXAME CLÍNICO E EXAMES COMPLEMENTARES -->
       <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
         <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Exame Físico e Complementares</div>
-        ${row('Sinais Vitais', d.vitals)}
-        ${row('Exame Físico', d.physical_exam)}
-        ${row('Laboratório', d.labs)}
-        ${row('Imagem', d.imaging)}
-        ${row('Outros Resultados', d.other_results)}
+        ${row('Sinais Vitais', d.vitals)} ${row('Exame Físico', d.physical_exam)} ${row('Laboratório', d.labs)}
+        ${row('Imagem', d.imaging)} ${row('Outros Resultados', d.other_results)}
       </div>
-
-      <!-- 4. AVALIAÇÃO E CONDUTA -->
       <div style="margin-bottom: 15px;">
         <div style="font-size: 13px; font-weight: 800; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Avaliação e Conduta</div>
         <div style="margin-bottom: 6px; background: var(--soft); padding: 8px; border-left: 3px solid var(--brand);">
           ${inline('Hipótese Diagnóstica', d.hypothesis)} ${inline('CID-10', d.cid10)}
           ${d.differential ? `<br><small style="color: var(--muted); margin-top: 4px; display: inline-block;"><strong>DDxs:</strong> ${esc(d.differential)}</small>` : ''}
         </div>
-        ${row('Impressão Clínica', d.assessment)}
-        ${row('Conduta / Plano Terapêutico', d.plan)}
-        ${row('Evolução', d.evolution)}
-        ${apacBloco}
-        ${examesBloco}
+        ${row('Impressão Clínica', d.assessment)} ${row('Conduta / Plano Terapêutico', d.plan)} ${row('Evolução', d.evolution)}
+        ${apacBloco} ${examesBloco}
       </div>
-
-      <!-- ASSINATURA -->
       <div style="margin-top: 40px; text-align: center; font-size: 12px;">
         _______________________________________________________<br>
-        <strong>${esc(d.doctor_name || 'Assinatura do Profissional')}</strong><br>
-        CRM: ${esc(d.crm || '_________')}
+        <strong>${esc(d.doctor_name || 'Assinatura do Profissional')}</strong><br>CRM: ${esc(d.crm || '_________')}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function vincularLivePreview() {
@@ -639,39 +533,27 @@ function vincularLivePreview() {
   });
 }
 
-/* AUXILIARES DO SISTEMA */
 function toast(m){const t=$('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast.x);toast.x=setTimeout(()=>t.classList.remove('show'),2500)}
 function master(){const d={};FIELDS.forEach(k=>d[k]=$('master_'+k)?.value||'');d.updatedAt=new Date().toISOString();d.examesComplementares=examesComplementares;return d}
 function setMaster(d){
   FIELDS.forEach(k=>{const e=$('master_'+k);if(e)e.value=d?.[k]??''});
-  if(Array.isArray(d?.examesComplementares)) {
-    examesComplementares = d.examesComplementares;
-    renderizarListaExames();
-  }
-  updateMasterUI(d);
-  atualizarPreviewEmTempoReal();
+  if(Array.isArray(d?.examesComplementares)) { examesComplementares = d.examesComplementares; renderizarListaExames(); }
+  updateMasterUI(d); atualizarPreviewEmTempoReal();
 }
 function saveMaster(){
-  const d=master();
-  localStorage.setItem(MASTER_KEY,JSON.stringify(d));
-  
+  const d=master(); localStorage.setItem(MASTER_KEY,JSON.stringify(d));
   if (shiftActive) {
     const nomeIdentificador = d.patient_name || 'Paciente_Anonimo_' + Date.now();
     shiftRecords[nomeIdentificador] = d;
     $('shiftCount').innerText = Object.keys(shiftRecords).length;
     toast('Ficha-Mãe salva e arquivada no Plantão.');
-  } else {
-    toast('Ficha-Mãe salva localmente.');
-  }
-
-  updateMasterUI(d);
-  atualizarPreviewEmTempoReal();
+  } else { toast('Ficha-Mãe salva localmente.'); }
+  updateMasterUI(d); atualizarPreviewEmTempoReal();
 }
 function loadMaster(){try{const d=JSON.parse(localStorage.getItem(MASTER_KEY)||'null');if(d)setMaster(d);else updateMasterUI(null)}catch{updateMasterUI(null)}}
 function clearMaster(){if(!confirm('Limpar a Ficha-Mãe local deste navegador?'))return;localStorage.removeItem(MASTER_KEY);$('masterForm').reset();examesComplementares=[];renderizarListaExames();updateMasterUI(null);atualizarPreviewEmTempoReal();toast('Ficha-Mãe limpa.')}
 function updateMasterUI(d){if(!d){$('masterSummary').textContent='Nenhuma Ficha-Mãe carregada.';$('masterStatus').innerHTML='<span class="dot"></span>Nenhum registro carregado';return}const n=d.patient_name||'Paciente sem identificação';$('masterSummary').innerHTML='<strong>'+esc(n)+'</strong> · última atualização: '+esc(fmt(d.updatedAt));$('masterStatus').innerHTML='<span class="dot"></span>Ficha-Mãe disponível · '+esc(n)}
 
-/* INSPEÇÃO DE PDF */
 $('pdfInput').addEventListener('change', e => { if (e.target.files[0]) processPdfFile(e.target.files[0]); });
 $('dropzone').addEventListener('dragover', e => { e.preventDefault(); $('dropzone').classList.add('drag'); });
 $('dropzone').addEventListener('dragleave', () => $('dropzone').classList.remove('drag'));
@@ -683,47 +565,14 @@ async function processPdfFile(file) {
     $('pdfResult').innerHTML = `<div class="status ok"><span class="dot"></span>${esc(file.name)} · ${bytes(file.size)}</div>`;
     
     if (file.name.includes('AIH')) {
-      state.detectedFields = [
-        { name: 'patient_name', type: 'Nome do Paciente (Bloco 05)' },
-        { name: 'cpf', type: 'CPF (Bloco Identificação)' },
-        { name: 'cns', type: 'Cartão Nacional de Saúde - CNS (Bloco 07)' },
-        { name: 'birth', type: 'Data de Nascimento (Bloco 08)' },
-        { name: 'gender', type: 'Sexo (Bloco 09)' },
-        { name: 'mother_name', type: 'Nome da Mãe (Bloco 11)' },
-        { name: 'address', type: 'Endereço Completo (Bloco 15)' },
-        { name: 'municipality', type: 'Município de Residência (Bloco 16)' },
-        { name: 'qpp / hda', type: 'Principais Sinais e Sintomas (Bloco 20)' },
-        { name: 'physical_exam', type: 'Condições que Justificam (Bloco 21)' },
-        { name: 'hypothesis', type: 'Diagnóstico Inicial (Bloco 23)' },
-        { name: 'cid10', type: 'CID-10 Principal (Bloco 24)' },
-        { name: 'doctor_name', type: 'Profissional Solicitante (Bloco 27)' },
-        { name: 'crm', type: 'CRM / Registro (Bloco 28)' }
-      ];
+      state.detectedFields = [{ name: 'patient_name', type: 'Nome do Paciente (Bloco 05)' }, { name: 'cpf', type: 'CPF (Bloco Identificação)' }, { name: 'cns', type: 'Cartão Nacional de Saúde - CNS (Bloco 07)' }, { name: 'birth', type: 'Data de Nascimento (Bloco 08)' }, { name: 'gender', type: 'Sexo (Bloco 09)' }, { name: 'mother_name', type: 'Nome da Mãe (Bloco 11)' }, { name: 'address', type: 'Endereço Completo (Bloco 15)' }, { name: 'municipality', type: 'Município de Residência (Bloco 16)' }, { name: 'qpp / hda', type: 'Principais Sinais e Sintomas (Bloco 20)' }, { name: 'physical_exam', type: 'Condições que Justificam (Bloco 21)' }, { name: 'hypothesis', type: 'Diagnóstico Inicial (Bloco 23)' }, { name: 'cid10', type: 'CID-10 Principal (Bloco 24)' }, { name: 'doctor_name', type: 'Profissional Solicitante (Bloco 27)' }, { name: 'crm', type: 'CRM / Registro (Bloco 28)' }];
     } else if (file.name.includes('APAC')) {
-      state.detectedFields = [
-        { name: 'patient_name', type: 'Nome do Paciente' },
-        { name: 'cns', type: 'Cartão Nacional de Saúde' },
-        { name: 'birth', type: 'Data de Nascimento' },
-        { name: 'gender', type: 'Sexo' },
-        { name: 'mother_name', type: 'Nome da Mãe' },
-        { name: 'hypothesis', type: 'Diagnóstico Principal' },
-        { name: 'cid10', type: 'CID-10 Principal' },
-        { name: 'proc1_name / code', type: 'Procedimento Principal Solicitado' },
-        { name: 'proc2_name / code', type: 'Procedimento Secundário Solicitado' },
-        { name: 'doctor_name / crm', type: 'Médico Responsável e CRM' }
-      ];
+      state.detectedFields = [{ name: 'patient_name', type: 'Nome do Paciente' }, { name: 'cns', type: 'Cartão Nacional de Saúde' }, { name: 'birth', type: 'Data de Nascimento' }, { name: 'gender', type: 'Sexo' }, { name: 'mother_name', type: 'Nome da Mãe' }, { name: 'hypothesis', type: 'Diagnóstico Principal' }, { name: 'cid10', type: 'CID-10 Principal' }, { name: 'proc1_name / code', type: 'Procedimento Principal Solicitado' }, { name: 'proc2_name / code', type: 'Procedimento Secundário Solicitado' }, { name: 'doctor_name / crm', type: 'Médico Responsável e CRM' }];
     } else {
-      state.detectedFields = [
-        { name: 'Documento Estático', type: 'Pronto para preenchimento via Ficha-Mãe' }
-      ];
+      state.detectedFields = [{ name: 'Documento Estático', type: 'Pronto para preenchimento via Ficha-Mãe' }];
     }
-
-    renderFields();
-    toast('PDF inspecionado!');
-  } catch (err) {
-    console.error(err);
-    toast('Erro ao ler campos do PDF.');
-  }
+    renderFields(); toast('PDF inspecionado!');
+  } catch (err) { console.error(err); toast('Erro ao ler campos do PDF.'); }
 }
 
 function renderFields(){
@@ -738,17 +587,25 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   if (selectedTemplate === "FICHA_MAE") return toast('Este é um documento interno dinâmico. Selecione um PDF para inspecionar.');
   try {
     toast(`Inspecionando ${selectedTemplate}...`);
-    const response = await fetch(`./templates/${selectedTemplate}`);
-    if (!response.ok) throw new Error(`Template não encontrado.`);
-    const arrayBuffer = await response.arrayBuffer();
-    const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
-    await processPdfFile(file);
-  } catch (error) {
-    toast('Erro ao inspecionar template.');
-  }
+    // LÓGICA OFFLINE: Verifica se o PDF está embutido no código
+    if (EMBEDDED_PDFS[selectedTemplate] && EMBEDDED_PDFS[selectedTemplate].length > 100) {
+      const binaryString = window.atob(EMBEDDED_PDFS[selectedTemplate]);
+      const len = binaryString.length;
+      const bytesArr = new Uint8Array(len);
+      for (let i = 0; i < len; i++) { bytesArr[i] = binaryString.charCodeAt(i); }
+      const file = new File([bytesArr.buffer], selectedTemplate, { type: 'application/pdf' });
+      await processPdfFile(file);
+    } else {
+      // Fallback para online/localhost
+      const response = await fetch(`./templates/${selectedTemplate}`);
+      if (!response.ok) throw new Error(`Template não encontrado.`);
+      const arrayBuffer = await response.arrayBuffer();
+      const file = new File([arrayBuffer], selectedTemplate, { type: 'application/pdf' });
+      await processPdfFile(file);
+    }
+  } catch (error) { toast('Erro ao inspecionar template.'); }
 });
 
-/* MOTOR DE INJEÇÃO EM PDF E GERAÇÃO DE FICHA MÃE */
 $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
@@ -757,19 +614,8 @@ $('generateBtn').addEventListener('click', async () => {
     toast('Prontuário Completo montado!');
     const previewArea = $('preview');
     let cleanHTML = previewArea.innerHTML;
-    
-    if(cleanHTML.includes('print-btn-wrapper')) {
-        atualizarPreviewEmTempoReal(); 
-        cleanHTML = previewArea.innerHTML;
-    }
-
-    previewArea.innerHTML = `
-      <div id="print-btn-wrapper" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--ok);">
-        <span style="font-size: 13px; color: var(--ok); font-weight: 800;">✓ Prontuário Clínico gerado</span>
-        <button class="btn primary" onclick="window.print()" style="width: auto; background: var(--ok);">🖨️ Imprimir / Salvar PDF</button>
-      </div>
-      ${cleanHTML}
-    `;
+    if(cleanHTML.includes('print-btn-wrapper')) { atualizarPreviewEmTempoReal(); cleanHTML = previewArea.innerHTML; }
+    previewArea.innerHTML = `<div id="print-btn-wrapper" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--ok);"><span style="font-size: 13px; color: var(--ok); font-weight: 800;">✓ Prontuário Clínico gerado</span><button class="btn primary" onclick="window.print()" style="width: auto; background: var(--ok);">🖨️ Imprimir / Salvar PDF</button></div>${cleanHTML}`;
     return;
   }
 
@@ -782,17 +628,26 @@ $('generateBtn').addEventListener('click', async () => {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
       fileName = state.currentPdfFile.name;
     } else {
-      const response = await fetch(`./templates/${selectedTemplate}`);
-      if (!response.ok) throw new Error(`Template não encontrado.`);
-      pdfBytesBuffer = await response.arrayBuffer();
-      fileName = selectedTemplate;
+      // LÓGICA OFFLINE PARA GERAÇÃO: Tenta pegar o Base64 embutido
+      if (EMBEDDED_PDFS[selectedTemplate] && EMBEDDED_PDFS[selectedTemplate].length > 100) {
+        const binaryString = window.atob(EMBEDDED_PDFS[selectedTemplate]);
+        const len = binaryString.length;
+        const bytesArr = new Uint8Array(len);
+        for (let i = 0; i < len; i++) { bytesArr[i] = binaryString.charCodeAt(i); }
+        pdfBytesBuffer = bytesArr.buffer;
+        fileName = selectedTemplate;
+      } else {
+        const response = await fetch(`./templates/${selectedTemplate}`);
+        if (!response.ok) throw new Error(`Template não encontrado.`);
+        pdfBytesBuffer = await response.arrayBuffer();
+        fileName = selectedTemplate;
+      }
     }
 
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
     const rawMasterData = master();
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize(); 
-
     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
     let mapToUse = null;
@@ -803,30 +658,16 @@ $('generateBtn').addEventListener('click', async () => {
       for (const key in mapToUse) {
         const config = mapToUse[key];
         const value = rawMasterData[config.nativeKey];
-        
         if (value && value.trim() !== '') {
-          const pdfY = height - config.y;
-          
           page.drawText(value, {
-            x: config.x,
-            y: pdfY,
-            size: config.max || 9,
-            font: font,
-            color: PDFLib.rgb(0, 0, 0),
-            maxWidth: config.multi ? config.w : undefined, 
-            lineHeight: config.max ? config.max * 1.2 : 11
+            x: config.x, y: height - config.y, size: config.max || 9,
+            font: font, color: PDFLib.rgb(0, 0, 0), maxWidth: config.multi ? config.w : undefined, lineHeight: config.max ? config.max * 1.2 : 11
           });
         }
       }
     } else {
       if (rawMasterData.patient_name) {
-        page.drawText(rawMasterData.patient_name, {
-          x: 95,
-          y: height - 155,
-          size: 9,
-          font: font,
-          color: PDFLib.rgb(0, 0, 0)
-        });
+        page.drawText(rawMasterData.patient_name, { x: 95, y: height - 155, size: 9, font: font, color: PDFLib.rgb(0, 0, 0) });
       }
     }
 
@@ -834,35 +675,13 @@ $('generateBtn').addEventListener('click', async () => {
     const blob = new Blob([filledPdfBytes], { type: 'application/pdf' });
     const pdfUrl = URL.createObjectURL(blob);
 
-    $('preview').innerHTML = `
-      <iframe src="${pdfUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe>
-      <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:12px; color:var(--ok);">✓ PDF preenchido via Ficha-Mãe</span>
-        <a href="${pdfUrl}" download="documento_preenchido_${Date.now()}.pdf" class="btn primary" style="text-decoration:none;">
-          ⇩ Baixar PDF Preenchido
-        </a>
-      </div>
-    `;
-
+    $('preview').innerHTML = `<iframe src="${pdfUrl}" width="100%" height="500px" style="border:none; border-radius:8px;"></iframe><div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:12px; color:var(--ok);">✓ PDF preenchido via Ficha-Mãe</span><a href="${pdfUrl}" download="documento_preenchido_${Date.now()}.pdf" class="btn primary" style="text-decoration:none;">⇩ Baixar PDF Preenchido</a></div>`;
     toast('Documento PDF gerado com sucesso!');
-  } catch (error) {
-    console.error(error);
-    toast('Erro: ' + error.message);
-  }
+  } catch (error) { console.error(error); toast('Erro: ' + error.message); }
 });
 
 $('clearBtn').addEventListener('click',()=>{
-  $('templateSelect').value='';
-  state.template=null;
-  state.currentPdfFile=null;
-  state.detectedFields=[];
-  examesComplementares=[];
-  renderizarListaExames();
-  $('pdfInput').value='';
-  $('pdfResult').innerHTML='';
-  atualizarPreviewEmTempoReal();
-  renderFields();
-  toast('Área de trabalho limpa.');
+  $('templateSelect').value=''; state.template=null; state.currentPdfFile=null; state.detectedFields=[]; examesComplementares=[]; renderizarListaExames(); $('pdfInput').value=''; $('pdfResult').innerHTML=''; atualizarPreviewEmTempoReal(); renderFields(); toast('Área de trabalho limpa.');
 });
 
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
@@ -871,10 +690,7 @@ function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/10
 
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local'},650);
 
-loadMaster();
-renderFields();
-vincularLivePreview();
-atualizarPreviewEmTempoReal();
+loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
 
 </body>
