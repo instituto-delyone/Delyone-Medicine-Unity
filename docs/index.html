@@ -28,9 +28,31 @@
 
 /* ESTILOS PARA IMPRESSÃO NATIVA E GESTÃO DE PLANTÃO */
 @media print {
-  body * { visibility: hidden; }
-  #print-area, #print-area * { visibility: visible !important; }
-  #print-area { position: absolute; left: 0; top: 0; width: 100%; border: none !important; padding: 0 !important; box-shadow: none !important; }
+  /* 1. Ocultar topos, rodapés e barra lateral */
+  .site-header, .hero, aside, footer { display: none !important; }
+  
+  /* 2. Ocultar TODOS os cards (formulários), exceto aquele que tem a pré-visualização */
+  .card:not(:has(#preview)) { display: none !important; }
+  
+  /* 3. Limpar as bordas, sombras e margens do card que sobrou */
+  body, main, .grid, section, .card, .preview {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* 4. Esconder o título "Saída" e a barra verde de botões */
+  .card-head, #print-btn-wrapper { display: none !important; }
+  
+  /* 5. Consertar a altura do navegador para ele parar de inventar páginas em branco */
+  html, body { height: auto !important; min-height: auto !important; }
+  
+  /* 6. Solta o conteúdo para fluir naturalmente (se tiver 2 páginas, imprime 2 certinho) */
+  #print-area { position: static !important; visibility: visible !important; }
 }
 
 .shift-timer { font-size: 28px; font-weight: 800; color: var(--dark); font-variant-numeric: tabular-nums; margin-bottom: 4px; }
