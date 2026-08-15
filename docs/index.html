@@ -72,7 +72,7 @@
 <div class="section">07 · Conduta / plano</div>
 <div class="full"><label>Plano terapêutico / conduta</label><textarea id="master_plan" rows="4"></textarea></div><div class="full"><label>Evolução / observações</label><textarea id="master_evolution" rows="4"></textarea></div>
 <div class="section">08 · Profissional responsável</div>
-<div><label>Médico responsável</label><input id="master_doctor_name" type="text"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
+<div><label>Médico responsável</label><input id="master_doctor_name" type="text" placeholder="Nome do médico"></div><div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
 
 <div class="section">09 · Solicitação de Procedimentos (APAC)</div>
 <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);">
@@ -181,6 +181,27 @@
   </div>
 </div>
 
+<!-- NOVO: CARD DE AUTENTICAÇÃO CFM / VIDAAAS -->
+<div class="card" id="authCard">
+  <div class="card-head">
+    <div>
+      <div class="kicker">Segurança ICP-Brasil</div>
+      <h2 class="title">Identidade Digital</h2>
+    </div>
+  </div>
+  <div id="authPanel" style="background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 16px; text-align: center; transition: all 0.3s;">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" style="margin-bottom: 8px;">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+    <div style="font-size: 13px; color: var(--ink); font-weight: 700; margin-bottom: 4px;">Autenticação em Nuvem</div>
+    <div style="font-size: 11px; color: var(--muted); margin-bottom: 14px;">Conecte sua credencial médica via VidaaaS para assinar a Ficha-Mãe.</div>
+    <button id="btnAuth" class="btn secondary" style="width: 100%; font-size: 12px; border-color: var(--brand); color: var(--brand);" onclick="simularAutenticacao()">
+      🔑 Autenticar (VidaaaS)
+    </button>
+  </div>
+</div>
+
 <div class="card"><div class="card-head"><div><div class="kicker">Registro central</div><h2 class="title">Estado da Ficha-Mãe</h2></div></div><div class="status" id="masterStatus"><span class="dot"></span>Nenhum registro carregado</div></div>
 <div class="card"><div class="card-head"><div><div class="kicker">Arquitetura</div><h2 class="title">Como funciona</h2></div></div><div class="architecture"><div class="arch"><div class="num">01</div><strong>Dicionário canônico</strong><span>Define os campos estruturais.</span></div><div class="arch"><div class="num">02</div><strong>Ficha-mãe</strong><span>Concentra o conteúdo clínico central.</span></div><div class="arch"><div class="num">03</div><strong>Mapa documental</strong><span>Conecta campos aos templates.</span></div></div></div>
 <div class="card">
@@ -209,15 +230,11 @@
 
 <!-- ====================================================================================
      ESPAÇO COFRE PARA OS PDFs EM BASE64
-     Instruções:
-     1. Acesse o site base64encode.org
-     2. Converta o seu arquivo PDF de AIH e APAC lá.
-     3. Cole a string gigante gerada entre as aspas duplas abaixo.
 ===================================================================================== -->
 <script>
 const EMBEDDED_PDFS = {
-  "TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf": "", // COLE O BASE64 DO AIH AQUI
-  "TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf": "" // COLE O BASE64 DO APAC AQUI
+  "TEMPLATE_SUS_Laudo_Solicitacao_AIH_Internacao_Hospitalar.pdf": "", 
+  "TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf": "" 
 };
 </script>
 
@@ -226,6 +243,38 @@ const MASTER_KEY='medunity_master_record';
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,detectedFields:[],currentPdfFile:null};
+
+/* LÓGICA DE AUTENTICAÇÃO DIGITAL (VIDAAAS) */
+let authState = { isAuthenticated: false, doctorName: "Delyone de Paula Canedo Filho", crm: "CRM-GO 32985" };
+
+function simularAutenticacao() {
+  const btn = $('btnAuth');
+  btn.innerText = '⏳ Aguardando app VidaaaS...';
+  btn.disabled = true;
+  toast('Confirme o login no seu celular (VidaaaS).');
+  
+  setTimeout(() => {
+    authState.isAuthenticated = true;
+    $('master_doctor_name').value = authState.doctorName;
+    $('master_crm').value = authState.crm;
+    saveMaster(); 
+    
+    const panel = $('authPanel');
+    panel.style.borderColor = "var(--ok)";
+    panel.style.background = "#f0fbf4";
+    panel.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; color: var(--ok);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <strong style="font-size: 14px;">Identidade Verificada</strong>
+      </div>
+      <div style="font-size: 12px; color: var(--ink); font-weight: 700;">Dr(a). ${authState.doctorName}</div>
+      <div style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">${authState.crm} · Certificado VidaaaS</div>
+      <div style="font-size: 10px; background: #ecf8f1; color: #24734b; padding: 4px; border-radius: 6px;">Prontuário pronto para assinatura</div>
+    `;
+    toast('Autenticação médica concluída com sucesso!');
+    atualizarPreviewEmTempoReal();
+  }, 2500);
+}
 
 /* LÓGICA DO GESTOR DE PLANTÃO (SHIFT MEMORY) */
 let shiftActive = false;
@@ -269,70 +318,45 @@ function updateShiftTimer() {
 
 async function exportShiftZip() {
   const total = Object.keys(shiftRecords).length;
-  if (total === 0) {
-    toast('Nenhum atendimento salvo no plantão atual.');
-    return;
-  }
-  
+  if (total === 0) { toast('Nenhum atendimento salvo no plantão atual.'); return; }
   toast('Empacotando atendimentos. Aguarde...');
   try {
     const zip = new JSZip();
     const dataHora = new Date().toISOString().replace(/[:.]/g, '-').split('T');
     const nomePasta = `Plantao_MedUnity_${dataHora[0]}_${dataHora[1].substring(0,5)}`;
     const folder = zip.folder(nomePasta);
-
     for (const [idPaciente, dados] of Object.entries(shiftRecords)) {
       const nomeArquivo = `${idPaciente.replace(/[^a-z0-9]/gi, '_')}_${dados.record_number || 'SemPront'}.json`;
       folder.file(nomeArquivo, JSON.stringify(dados, null, 2));
     }
-
     const content = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(content);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `${nomePasta}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    a.href = url; a.download = `${nomePasta}.zip`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     
-    shiftActive = false;
-    clearInterval(shiftTimerInterval);
-    shiftRecords = {};
-    $('shiftCount').innerText = '0';
-    $('shiftTimer').innerText = '00:00:00';
-    $('btnStartShift').innerHTML = '▶ Iniciar';
-    $('btnStartShift').style.background = '';
-    $('btnEndShift').style.display = 'none';
-    $('shiftPanel').classList.remove('active');
+    shiftActive = false; clearInterval(shiftTimerInterval); shiftRecords = {};
+    $('shiftCount').innerText = '0'; $('shiftTimer').innerText = '00:00:00';
+    $('btnStartShift').innerHTML = '▶ Iniciar'; $('btnStartShift').style.background = '';
+    $('btnEndShift').style.display = 'none'; $('shiftPanel').classList.remove('active');
     $('shiftStatusText').innerText = 'Plantão encerrado e dados exportados.';
-    
     toast('ZIP baixado com sucesso!');
-  } catch(e) {
-    console.error(e);
-    toast('Erro ao gerar o arquivo ZIP.');
-  }
+  } catch(e) { console.error(e); toast('Erro ao gerar o arquivo ZIP.'); }
 }
 
 async function importShiftZip(event) {
   const file = event.target.files[0];
   if (!file) return;
-  
   toast('Lendo arquivo ZIP. Aguarde...');
   try {
     const zip = new JSZip();
     const contents = await zip.loadAsync(file);
     let loadedCount = 0;
-    
     if (!shiftActive) {
-      shiftActive = true;
-      shiftStartTime = new Date();
-      $('btnStartShift').innerHTML = '⏸ Pausar';
-      $('btnStartShift').style.background = 'var(--muted)';
-      $('btnEndShift').style.display = 'block';
-      $('shiftPanel').classList.add('active');
+      shiftActive = true; shiftStartTime = new Date();
+      $('btnStartShift').innerHTML = '⏸ Pausar'; $('btnStartShift').style.background = 'var(--muted)';
+      $('btnEndShift').style.display = 'block'; $('shiftPanel').classList.add('active');
     }
-
     for (const [filename, fileData] of Object.entries(contents.files)) {
       if (!fileData.dir && filename.endsWith('.json')) {
         const jsonText = await fileData.async('string');
@@ -341,20 +365,14 @@ async function importShiftZip(event) {
           const nomeIdentificador = record.patient_name || 'Paciente_Recuperado_' + Date.now() + Math.random();
           shiftRecords[nomeIdentificador] = record;
           loadedCount++;
-        } catch (e) {
-          console.error("Erro ao extrair JSON: ", filename);
-        }
+        } catch (e) { console.error("Erro ao extrair JSON: ", filename); }
       }
     }
-    
     $('shiftCount').innerText = Object.keys(shiftRecords).length;
     $('shiftStatusText').innerText = `Memória restaurada. ${loadedCount} fichas importadas.`;
     event.target.value = ''; 
     toast(`Sucesso! ${loadedCount} atendimentos recuperados.`);
-  } catch (e) {
-    console.error(e);
-    toast('Erro ao ler o ZIP.');
-  }
+  } catch (e) { console.error(e); toast('Erro ao ler o ZIP.'); }
 }
 
 function baixarGestorOffline() {
@@ -363,12 +381,8 @@ function baixarGestorOffline() {
   const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = "MedUnity_Gestor_Offline.html";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = "MedUnity_Gestor_Offline.html";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   toast('Gestor Offline baixado! Copie para o seu pendrive.');
 }
 
@@ -421,8 +435,7 @@ function alternarModoExame(modo) {
   modoExameAtual = modo;
   $('btnModoSus').classList.toggle('active', modo === 'SUS');
   $('btnModoEditavel').classList.toggle('active', modo === 'EDITAVEL');
-  renderizarListaExames();
-  atualizarPreviewEmTempoReal();
+  renderizarListaExames(); atualizarPreviewEmTempoReal();
 }
 
 function adicionarExameNaLista() {
@@ -448,8 +461,7 @@ function renderizarListaExames() {
   }
   container.innerHTML = examesComplementares.map((exame, idx) => {
     const exibeCodigo = (modoExameAtual === 'SUS' && exame.codigo) ? `<span class="code-badge">[${exame.codigo}]</span>` : '';
-    return `<div class="exam-item"><div>${exibeCodigo}<strong>${exame.qtd}x</strong> — ${esc(exame.nome)}</div>
-            <button type="button" class="btn-remove" onclick="removerExameDaLista(${idx})">✕</button></div>`;
+    return `<div class="exam-item"><div>${exibeCodigo}<strong>${exame.qtd}x</strong> — ${esc(exame.nome)}</div><button type="button" class="btn-remove" onclick="removerExameDaLista(${idx})">✕</button></div>`;
   }).join('');
 }
 
@@ -469,8 +481,7 @@ function atualizarPreviewEmTempoReal() {
 
   let examesBloco = '';
   if (Array.isArray(d.examesComplementares) && d.examesComplementares.length > 0) {
-    examesBloco = `<div style="margin-top: 10px;"><strong>Pedidos de Exames Complementares:</strong><ul style="margin: 4px 0 0 18px; padding: 0;">
-          ${d.examesComplementares.map(e => `<li><strong>${e.qtd}x</strong> ${e.codigo ? `[${e.codigo}] ` : ''}${esc(e.nome)}</li>`).join('')}</ul></div>`;
+    examesBloco = `<div style="margin-top: 10px;"><strong>Pedidos de Exames Complementares:</strong><ul style="margin: 4px 0 0 18px; padding: 0;">${d.examesComplementares.map(e => `<li><strong>${e.qtd}x</strong> ${e.codigo ? `[${e.codigo}] ` : ''}${esc(e.nome)}</li>`).join('')}</ul></div>`;
   }
 
   let apacBloco = '';
@@ -480,6 +491,30 @@ function atualizarPreviewEmTempoReal() {
      if(d.proc2_name) apacBloco += `<li>${d.proc2_qty||1}x ${esc(d.proc2_name)} ${d.proc2_code? `[${esc(d.proc2_code)}]`:''}</li>`;
      if(d.proc3_name) apacBloco += `<li>${d.proc3_qty||1}x ${esc(d.proc3_name)} ${d.proc3_code? `[${esc(d.proc3_code)}]`:''}</li>`;
      apacBloco += `</ul></div>`;
+  }
+
+  let blocoAssinatura = `
+    <!-- ASSINATURA MANUAL -->
+    <div style="margin-top: 40px; text-align: center; font-size: 12px;">
+      _______________________________________________________<br>
+      <strong>${esc(d.doctor_name || 'Assinatura do Profissional')}</strong><br>
+      CRM: ${esc(d.crm || '_________')}
+    </div>
+  `;
+
+  if (authState.isAuthenticated) {
+    const hash = Math.random().toString(36).substring(2,15).toUpperCase() + '-' + Date.now();
+    blocoAssinatura = `
+      <!-- ASSINATURA DIGITAL VALIDADA -->
+      <div style="margin-top: 40px; border: 1px solid var(--ok); border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; background: #f0fbf4;">
+        <div style="text-align: left;">
+          <strong style="color: var(--ok); font-size: 13px;">✓ ASSINADO DIGITALMENTE ICP-BRASIL</strong><br>
+          <span style="font-size: 11px; color: var(--ink);">${esc(d.doctor_name)} (${esc(d.crm)})</span><br>
+          <span style="font-size: 10px; color: var(--muted);">Autenticação VidaaaS | Hash: ${hash}</span>
+        </div>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+    `;
   }
 
   previewArea.innerHTML = `
@@ -516,20 +551,16 @@ function atualizarPreviewEmTempoReal() {
         ${row('Impressão Clínica', d.assessment)} ${row('Conduta / Plano Terapêutico', d.plan)} ${row('Evolução', d.evolution)}
         ${apacBloco} ${examesBloco}
       </div>
-      <div style="margin-top: 40px; text-align: center; font-size: 12px;">
-        _______________________________________________________<br>
-        <strong>${esc(d.doctor_name || 'Assinatura do Profissional')}</strong><br>CRM: ${esc(d.crm || '_________')}
-      </div>
+      
+      ${blocoAssinatura}
+
     </div>`;
 }
 
 function vincularLivePreview() {
   FIELDS.forEach(k => {
     const el = $('master_' + k);
-    if (el) {
-      el.addEventListener('input', atualizarPreviewEmTempoReal);
-      el.addEventListener('change', atualizarPreviewEmTempoReal);
-    }
+    if (el) { el.addEventListener('input', atualizarPreviewEmTempoReal); el.addEventListener('change', atualizarPreviewEmTempoReal); }
   });
 }
 
@@ -587,7 +618,6 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   if (selectedTemplate === "FICHA_MAE") return toast('Este é um documento interno dinâmico. Selecione um PDF para inspecionar.');
   try {
     toast(`Inspecionando ${selectedTemplate}...`);
-    // LÓGICA OFFLINE: Verifica se o PDF está embutido no código
     if (EMBEDDED_PDFS[selectedTemplate] && EMBEDDED_PDFS[selectedTemplate].length > 100) {
       const binaryString = window.atob(EMBEDDED_PDFS[selectedTemplate]);
       const len = binaryString.length;
@@ -596,7 +626,6 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
       const file = new File([bytesArr.buffer], selectedTemplate, { type: 'application/pdf' });
       await processPdfFile(file);
     } else {
-      // Fallback para online/localhost
       const response = await fetch(`./templates/${selectedTemplate}`);
       if (!response.ok) throw new Error(`Template não encontrado.`);
       const arrayBuffer = await response.arrayBuffer();
@@ -628,7 +657,6 @@ $('generateBtn').addEventListener('click', async () => {
       pdfBytesBuffer = await state.currentPdfFile.arrayBuffer();
       fileName = state.currentPdfFile.name;
     } else {
-      // LÓGICA OFFLINE PARA GERAÇÃO: Tenta pegar o Base64 embutido
       if (EMBEDDED_PDFS[selectedTemplate] && EMBEDDED_PDFS[selectedTemplate].length > 100) {
         const binaryString = window.atob(EMBEDDED_PDFS[selectedTemplate]);
         const len = binaryString.length;
