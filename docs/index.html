@@ -241,6 +241,63 @@
   </button>
 </div>
 </aside></div>
+  <!-- NOTA TÉCNICA: CAMPOS ATUALMENTE FUNCIONAIS NO LAUDO AIH -->
+<div class="card" style="margin-top: 25px; border-left: 4px solid var(--brand); background: #fdfefe;">
+  <div class="card-head" style="margin-bottom: 12px;">
+    <div>
+      <div class="kicker">Guia de Preenchimento</div>
+      <h2 class="title" style="font-size: 17px;">📌 Dicas: Campos Mapeados no Laudo AIH (SUS)</h2>
+      <p class="desc">Relação dos campos da Ficha-Mãe que são injetados automaticamente no PDF oficial.</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; font-size: 12.5px; line-height: 1.5;">
+    
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">01. Identificação Completa</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Injeta automaticamente: <b>Nome Completo</b> (Bloco 05), <b>Prontuário</b> (Bloco 06), <b>CNS</b> (Bloco 07), <b>Nascimento</b> (Bloco 08), <b>Nome da Mãe</b> (Bloco 11), <b>Telefone</b> (Bloco 12), <b>Endereço</b> (Bloco 15) e <b>Município</b> (Bloco 16).
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">02. Sinais e Sintomas (Bloco 20)</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Alimentado diretamente pelos campos <b>Queixa Principal (QPD)</b> e <b>História da Doença Atual (HDA)</b>.
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">03. Justificativa Clínica (Bloco 21)</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Recebe os dados integrados de <b>Exame Físico</b>, <b>Sinais Vitais</b> e <b>Impressão/Avaliação Clínica</b>.
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">04. Diagnóstico e CID-10 (Blocos 23 e 24)</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Injeta a <b>Hipótese Diagnóstica</b> e o código <b>CID-10 Principal</b> informados no formulário.
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">05. Destino / Internação (Bloco 27)</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Alimentado pelo campo <b>Plano Terapêutico / Conduta</b>. Descreva aqui a indicação de leito (ex: <em>"Internação em enfermaria clínica"</em> ou <em>"Transferência para UTI"</em>).
+      </div>
+    </div>
+
+    <div style="padding: 10px; background: var(--soft); border-radius: 9px; border: 1px solid var(--line);">
+      <strong style="color: var(--brand);">06. Profissional Solicitante (Blocos 33 e 35)</strong>
+      <div style="color: var(--muted); margin-top: 4px;">
+        Preenche o <b>Nome do Médico Responsável</b> e o registro <b>CRM / UF</b>.
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </main>
 <footer style="margin-top: 40px; padding: 30px; border-top: 1px solid var(--line); background:#ffffffb8;">
   <div class="footer-inner" style="flex-direction: column; align-items: center; text-align: center; gap: 8px;">
