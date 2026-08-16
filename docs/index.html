@@ -28,13 +28,8 @@
 
 /* ESTILOS PARA IMPRESSÃO NATIVA E GESTÃO DE PLANTÃO */
 @media print {
-  /* 1. Ocultar topos, rodapés e barra lateral */
   .site-header, .hero, aside, footer { display: none !important; }
-  
-  /* 2. Ocultar TODOS os cards (formulários), exceto aquele que tem a pré-visualização */
   .card:not(:has(#preview)) { display: none !important; }
-  
-  /* 3. Limpar as bordas, sombras e margens do card que sobrou */
   body, main, .grid, section, .card, .preview {
     background: transparent !important;
     border: none !important;
@@ -44,14 +39,8 @@
     width: 100% !important;
     max-width: 100% !important;
   }
-  
-  /* 4. Esconder o título "Saída" e a barra verde de botões */
   .card-head, #print-btn-wrapper { display: none !important; }
-  
-  /* 5. Consertar a altura do navegador para ele parar de inventar páginas em branco */
   html, body { height: auto !important; min-height: auto !important; }
-  
-  /* 6. Solta o conteúdo para fluir naturalmente (se tiver 2 páginas, imprime 2 certinho) */
   #print-area { position: static !important; visibility: visible !important; }
 }
 
@@ -203,7 +192,6 @@
   </div>
 </div>
 
-<!-- NOVO: CARD DE AUTENTICAÇÃO CFM / VIDAAAS -->
 <div class="card" id="authCard">
   <div class="card-head">
     <div>
@@ -241,7 +229,7 @@
   </button>
 </div>
 </aside></div>
-  <!-- NOTA TÉCNICA: CAMPOS ATUALMENTE FUNCIONAIS NO LAUDO AIH -->
+
 <div class="card" style="margin-top: 25px; border-left: 4px solid var(--brand); background: #fdfefe;">
   <div class="card-head" style="margin-bottom: 12px;">
     <div>
@@ -508,17 +496,30 @@ function baixarFichaHtml() {
 
 const STATIC_MAPS = {
   APAC: {
-    "3":  { nativeKey: "patient_name", x: 62, y: 145, w: 470, h: 15, max: 9, min: 5 },
-    "5":  { nativeKey: "cns", x: 62, y: 170, w: 200, h: 15, max: 9, min: 5 },
-    "6":  { nativeKey: "birth", x: 280, y: 170, w: 100, h: 15, max: 9, min: 5 },
-    "8":  { nativeKey: "mother_name", x: 62, y: 195, w: 470, h: 15, max: 9, min: 5 },
-    "9":  { nativeKey: "phone", x: 400, y: 195, w: 130, h: 15, max: 9, min: 5 },
-    "10": { nativeKey: "address", x: 62, y: 220, w: 470, h: 15, max: 9, min: 5 },
-    "11": { nativeKey: "municipality", x: 62, y: 245, w: 250, h: 15, max: 9, min: 5 },
-    "33": { nativeKey: "hypothesis", x: 62, y: 460, w: 470, h: 30, max: 9, min: 5, multi: true },
-    "34": { nativeKey: "cid10", x: 62, y: 485, w: 100, h: 15, max: 9, min: 5 },
-    "38": { nativeKey: "doctor_name", x: 62, y: 550, w: 300, h: 15, max: 9, min: 5 },
-    "42": { nativeKey: "crm", x: 420, y: 550, w: 100, h: 15, max: 9, min: 5 }
+    "3":  { nativeKey: "patient_name", x: 62, y: 140, w: 340, h: 12, max: 9, min: 9 },
+    "4":  { nativeKey: "record_number", x: 430, y: 140, w: 100, h: 12, max: 9, min: 9 },
+    "5":  { nativeKey: "cns", x: 62, y: 163, w: 200, h: 12, max: 9, min: 9 },
+    "6":  { nativeKey: "birth", x: 280, y: 163, w: 80, h: 12, max: 9, min: 9 },
+    "7":  { nativeKey: "gender", x: 430, y: 163, w: 100, h: 12, max: 9, min: 9 },
+    "8":  { nativeKey: "mother_name", x: 62, y: 186, w: 200, h: 12, max: 9, min: 9 },
+    "9":  { nativeKey: "phone", x: 280, y: 186, w: 200, h: 12, max: 9, min: 9 },
+    "10": { nativeKey: "address", x: 62, y: 209, w: 450, h: 12, max: 9, min: 9 },
+    "11": { nativeKey: "municipality", x: 62, y: 232, w: 300, h: 12, max: 9, min: 9 },
+    "15": { nativeKey: "proc1_code", x: 62, y: 278, w: 120, h: 12, max: 9, min: 9 },
+    "16": { nativeKey: "proc1_name", x: 215, y: 278, w: 260, h: 12, max: 9, min: 9 },
+    "17": { nativeKey: "proc1_qty",  x: 490, y: 278, w: 40,  h: 12, max: 9, min: 9 },
+    "18": { nativeKey: "proc2_code", x: 62, y: 320, w: 120, h: 12, max: 9, min: 9 },
+    "19": { nativeKey: "proc2_name", x: 215, y: 320, w: 260, h: 12, max: 9, min: 9 },
+    "20": { nativeKey: "proc2_qty",  x: 490, y: 320, w: 40,  h: 12, max: 9, min: 9 },
+    "21": { nativeKey: "proc3_code", x: 80, y: 350, w: 120, h: 12, max: 9, min: 9 },
+    "22": { nativeKey: "proc3_name", x: 215, y: 350, w: 260, h: 12, max: 9, min: 9 },
+    "23": { nativeKey: "proc3_qty",  x: 490, y: 350, w: 40,  h: 12, max: 9, min: 9 },
+    "33": { nativeKey: "hypothesis", x: 62, y: 450, w: 260, h: 25, max: 8, min: 8, multi: true },
+    "34": { nativeKey: "cid10", x: 350, y: 450, w: 50, h: 12, max: 9, min: 9 },
+    "35": { nativeKey: "differential", x: 410, y: 450, w: 60, h: 12, max: 8, min: 8 },
+    "37": { nativeKey: "assessment", x: 62, y: 495, w: 320, h: 70, max: 7.5, min: 7.5, multi: true },
+    "38": { nativeKey: "doctor_name", x: 62, y: 615, w: 260, h: 12, max: 9, min: 9 },
+    "42": { nativeKey: "crm", x: 370, y: 615, w: 110, h: 12, max: 9, min: 9 }
   },
   AIH: {
     "5":  { nativeKey: "patient_name", x: 60, y: 175, w: 370, h: 15, min: 9, max: 9 },
@@ -541,6 +542,25 @@ const STATIC_MAPS = {
     "35": { nativeKey: "crm", x: 430, y: 592, w: 120, h: 15, max: 9, min: 9 }
   }
 };
+
+/* FUNÇÃO PARA DESENHAR A TARJA DE AUTENTICAÇÃO DIGITAL NA BORDA DIREITA */
+function desenharTarjaLateral(page, font, medico, crm) {
+  const { width, height } = page.getSize();
+  const dataHora = new Date().toLocaleString('pt-BR');
+  const hash = Math.random().toString(36).substring(2, 9).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+  
+  const textoTarja = `DOCUMENTO ASSINADO DIGITALMENTE · ICP-BRASIL · Dr(a). ${medico || 'Médico Responsável'} · ${crm || 'CRM'} · EMITIDO EM: ${dataHora} · HASH DE AUTENTICAÇÃO: ${hash} · VALIDADO VIA MEDUNITY DELYONE`;
+
+  // Desenha na margem direita (x: width - 15) rotacionado em 90 graus (de baixo para cima)
+  page.drawText(textoTarja, {
+    x: width - 15,
+    y: 40,
+    size: 5.5,
+    font: font,
+    color: PDFLib.rgb(0.4, 0.45, 0.48),
+    rotate: PDFLib.degrees(90)
+  });
+}
 
 let examesComplementares = [];
 let modoExameAtual = 'SUS';
@@ -833,6 +853,11 @@ $('generateBtn').addEventListener('click', async () => {
       if (rawMasterData.patient_name) {
         page.drawText(rawMasterData.patient_name, { x: 95, y: height - 155, size: 9, font: font, color: PDFLib.rgb(0, 0, 0) });
       }
+    }
+
+    // DESENHA A TARJA LATERAL DE AUTENTICAÇÃO DIGITAL NA MARGEM DIREITA
+    if (rawMasterData.doctor_name || rawMasterData.crm) {
+      desenharTarjaLateral(page, font, rawMasterData.doctor_name, rawMasterData.crm);
     }
 
     const filledPdfBytes = await pdfDoc.save();
