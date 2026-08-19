@@ -993,9 +993,9 @@ function gerarHTMLReceitaSUS(d) {
           </svg>
         </div>
         <div style="text-align: center; line-height: 1.2;">
-          <div style="font-weight: 800; font-size: 11px;">PREFEITURA MUNICIPAL DE GOIÂNIA</div>
-          <div style="font-size: 10px; color: #333;">SECRETARIA MUNICIPAL DE SAÚDE</div>
-          <div style="font-weight: 900; font-size: 12px; color: #005CA9;">CENTRO DE SAÚDE DA FAMÍLIA (CSF)</div>
+          <div style="font-weight: 800; font-size: 11px;">SISTEMA ÚNICO DE SAÚDE</div>
+          <div style="font-size: 10px; color: #333;">ATENÇÃO À SAÚDE</div>
+          <div style="font-weight: 900; font-size: 12px; color: #005CA9;">UNIDADE DE ATENDIMENTO</div>
         </div>
         <div style="text-align: right; line-height: 1.1;">
           <strong style="font-size: 10px; text-transform: uppercase;">Ministério da Saúde</strong><br>
@@ -1032,13 +1032,13 @@ function gerarHTMLReceitaSUS(d) {
 
       <div style="border-top: 2px solid #000; padding-top: 14px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; align-items: flex-end;">
         <div>
-          <div>Goiânia - GO, <strong>${new Date().toLocaleDateString('pt-BR')}</strong></div>
+          <div>${esc(d.municipality || 'Local de Atendimento')}, <strong>${new Date().toLocaleDateString('pt-BR')}</strong></div>
           <div style="font-size: 9px; color: #666; margin-top: 4px;">* Válido por 30 dias a contar da data de emissão.</div>
         </div>
         <div style="text-align: center;">
           <div style="border-bottom: 1px solid #000; margin-bottom: 3px; width: 85%; margin-left: auto; margin-right: auto;"></div>
-          <strong>${esc(d.doctor_name || 'Dr. Delyone de Paula Canedo Filho')}</strong><br>
-          <span style="font-size: 10px;">Médico · ${esc(d.crm || 'CRM-GO 32985')}</span>
+          <strong>${esc(d.doctor_name || 'Dr. Médico Responsável')}</strong><br>
+          <span style="font-size: 10px;">Médico · ${esc(d.crm || 'CRM-UF 00000')}</span>
         </div>
       </div>
 
@@ -1048,7 +1048,7 @@ function gerarHTMLReceitaSUS(d) {
     </div>
   `;
 }
-
+  
 function gerarHTMLReceitaControle(d) {
   const lista = (d.prescricoesLista && d.prescricoesLista.length > 0) ? d.prescricoesLista : [
     { nome: 'CLONAZEPAM 2,5 MG/ML', dose: '01 frasco 20mL', posologia: 'Tomar 5 gotas via oral à noite.' }
@@ -1063,10 +1063,10 @@ function gerarHTMLReceitaControle(d) {
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 12px;">
         <div style="border: 2px solid #000; padding: 8px; font-size: 10.5px; line-height: 1.4;">
           <div style="text-align: center; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Identificação do Emitente</div>
-          <div>Nome: <strong>${esc(d.doctor_name || 'Dr. Delyone de Paula Canedo Filho')}</strong></div>
-          <div>CRM: <strong>${esc(d.crm || 'CRM-GO 32985')}</strong></div>
-          <div>Endereço: <span>Goiânia - GO</span></div>
-          <div>Telefone: <span>(62) 99999-9999</span></div>
+          <div>Nome: <strong>${esc(d.doctor_name || 'Dr. Médico Responsável')}</strong></div>
+          <div>CRM: <strong>${esc(d.crm || 'CRM-UF 00000')}</strong></div>
+          <div>Endereço: <span>${esc(d.municipality || 'Local de Atendimento')}</span></div>
+          <div>Telefone: <span>(  ) _____-____</span></div>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-weight: bold; font-size: 11px; line-height: 1.8;">
           <div>1ª VIA FARMÁCIA</div>
@@ -1123,7 +1123,7 @@ function gerarHTMLReceitaControle(d) {
     </div>
   `;
 }
-
+  
 function vincularLivePreview() {
   FIELDS.forEach(k => {
     const el = $('master_' + k);
