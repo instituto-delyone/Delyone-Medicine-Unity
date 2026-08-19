@@ -103,6 +103,23 @@
       letter-spacing: .08em;
       text-transform: uppercase;
     }
+    /* NOVO BOTÃO DO HEADER */
+    .header-link {
+      font-size: 11px;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 800;
+      padding: 6px 14px;
+      background: var(--soft);
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .header-link:hover {
+      background: var(--bsoft);
+      color: var(--dark);
+    }
     .header-status { font-size: 12px; color: var(--muted); }
     .dot {
       display: inline-block;
@@ -377,7 +394,10 @@
         <div class="brand-subtitle">Clinical Document Engine</div>
       </div>
     </a>
-    <div class="header-status"><span class="dot"></span>Sistema Autônomo e Resiliente</div>
+    
+    <!-- NOVO BOTÃO DE VOLTAR PARA O SITE -->
+    <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
+    
   </div>
 </header>
 
