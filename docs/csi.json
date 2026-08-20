@@ -1,0 +1,53 @@
+================================================================================
+CSI - CODIFICADOR SEMIOLÓGICO DE CLASSES (NÚCLEO DIAGNOSIS)
+================================================================================
+
+[DOMÍNIO 000 - IDENTIFICAÇÃO E DADOS DEMOGRÁFICOS DO PACIENTE]
+000.000. Classe: Identificação Geral do Paciente
+000.001. Classe: Nome Civil / Identificador Nominal do Paciente
+000.002. Classe: Idade Cronológica / Faixa Etária
+000.003. Classe: Sexo Biológico / Gênero
+000.004. Classe: Nome da Genitora / Filiação
+000.005. Classe: Ocupação / Atividade Profissional
+000.006. Classe: Procedência / Localização Geográfica
+
+[DOMÍNIO 001 - CONTEXTO ASSISTENCIAL E UNIDADE DE SAÚDE]
+001.000. Classe: Identificação da Unidade Assistencial
+001.001. Classe: Tipo / Nível de Atenção da Unidade de Saúde (UBS, UPA, UTI, Enfermaria)
+001.002. Classe: Especialidade / Área Médica de Admissão (Clínica Médica, Pediatria, GO, Cirurgia)
+001.003. Classe: Tempo de Permanência / Internação Hospitalar
+
+[DOMÍNIO 002 - ANAMNESE E HISTÓRIA CLÍNICA]
+002.000. Classe: História Clínica e Anamnese
+002.001. Classe: Queixa Principal (QP) / Motivo do Atendimento
+002.002. Classe: História da Doença Atual (HDA) / Vigneta Clínica de Entrada
+002.003. Classe: Antecedentes Pessoais / Comorbidades Prévias
+002.004. Classe: Hábitos de Vida / Fatores de Risco
+002.005. Classe: Medicamentos em Uso Prévio
+
+[DOMÍNIO 003 - EXAME FÍSICO E PROPEDÊUTICA ARMADA]
+003.000. Classe: Exame Físico / Sinais Vitais e Ectoscopia
+003.001. Classe: Sinais Vitais (FC, PA, FR, SpO2, Temperatura Axilar)
+003.002. Classe: Estado Geral e Ectoscopia Geral (Hidratação, Coloração, Nível de Consciência)
+003.003. Classe: Propedêutica por Aparelhos e Sistemas (Respiratório, Cardiovascular, Abdome, Neurológico)
+003.004. Classe: Sinais Semiológicos Específicos (ex: Giordano, Murphy, Blumberg)
+
+[DOMÍNIO 004 - RACIOCÍNIO DIAGNÓSTICO (PASSO 1 DO MOTOR)]
+004.000. Classe: Hipótese Diagnóstica e Síndrome Clínica
+004.001. Classe: Diagnóstico Nosológico Principal
+004.002. Classe: Diagnóstico Sindrômico / Fisiopatológico
+004.003. Classe: Diagnósticos Diferenciais Concorrentes
+
+[DOMÍNIO 005 - PROPEDÊUTICA COMPLEMENTAR (PASSO 2 DO MOTOR)]
+005.000. Classe: Investigação Diagnóstica Complementar
+005.001. Classe: Exames Laboratoriais Gerais (Bioquímica, Hemograma)
+005.002. Classe: Exames Microbiológicos e Culturas (Hemocultura, Urinocultura, Escarro)
+005.003. Classe: Exames de Imagem (Radiografia, TC, Ultrassonografia)
+005.004. Classe: Marcadores Específicos e Biomarcadores
+
+[DOMÍNIO 006 - CONDUTA E TERAPÊUTICA (PASSO 3 DO MOTOR)]
+006.000. Classe: Plano Terapêutico e Intervenção
+006.001. Classe: Medidas de Suporte / Emergência Imediata (Oxigenioterapia, Ressuscitação Volêmica)
+006.002. Classe: Terapia Farmacológica Específica / Antimicrobianos / Antídotos
+006.003. Classe: Procedimentos Invasivos / Cirúrgicos
+006.004. Classe: Destino e Disposição do Paciente (Alta, Enfermaria, UTI)
