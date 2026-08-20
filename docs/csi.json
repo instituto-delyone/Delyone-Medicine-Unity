@@ -1,53 +1,190 @@
-================================================================================
-CSI - CODIFICADOR SEMIOLÓGICO DE CLASSES (NÚCLEO DIAGNOSIS)
-================================================================================
-
-[DOMÍNIO 000 - IDENTIFICAÇÃO E DADOS DEMOGRÁFICOS DO PACIENTE]
-000.000. Classe: Identificação Geral do Paciente
-000.001. Classe: Nome Civil / Identificador Nominal do Paciente
-000.002. Classe: Idade Cronológica / Faixa Etária
-000.003. Classe: Sexo Biológico / Gênero
-000.004. Classe: Nome da Genitora / Filiação
-000.005. Classe: Ocupação / Atividade Profissional
-000.006. Classe: Procedência / Localização Geográfica
-
-[DOMÍNIO 001 - CONTEXTO ASSISTENCIAL E UNIDADE DE SAÚDE]
-001.000. Classe: Identificação da Unidade Assistencial
-001.001. Classe: Tipo / Nível de Atenção da Unidade de Saúde (UBS, UPA, UTI, Enfermaria)
-001.002. Classe: Especialidade / Área Médica de Admissão (Clínica Médica, Pediatria, GO, Cirurgia)
-001.003. Classe: Tempo de Permanência / Internação Hospitalar
-
-[DOMÍNIO 002 - ANAMNESE E HISTÓRIA CLÍNICA]
-002.000. Classe: História Clínica e Anamnese
-002.001. Classe: Queixa Principal (QP) / Motivo do Atendimento
-002.002. Classe: História da Doença Atual (HDA) / Vigneta Clínica de Entrada
-002.003. Classe: Antecedentes Pessoais / Comorbidades Prévias
-002.004. Classe: Hábitos de Vida / Fatores de Risco
-002.005. Classe: Medicamentos em Uso Prévio
-
-[DOMÍNIO 003 - EXAME FÍSICO E PROPEDÊUTICA ARMADA]
-003.000. Classe: Exame Físico / Sinais Vitais e Ectoscopia
-003.001. Classe: Sinais Vitais (FC, PA, FR, SpO2, Temperatura Axilar)
-003.002. Classe: Estado Geral e Ectoscopia Geral (Hidratação, Coloração, Nível de Consciência)
-003.003. Classe: Propedêutica por Aparelhos e Sistemas (Respiratório, Cardiovascular, Abdome, Neurológico)
-003.004. Classe: Sinais Semiológicos Específicos (ex: Giordano, Murphy, Blumberg)
-
-[DOMÍNIO 004 - RACIOCÍNIO DIAGNÓSTICO (PASSO 1 DO MOTOR)]
-004.000. Classe: Hipótese Diagnóstica e Síndrome Clínica
-004.001. Classe: Diagnóstico Nosológico Principal
-004.002. Classe: Diagnóstico Sindrômico / Fisiopatológico
-004.003. Classe: Diagnósticos Diferenciais Concorrentes
-
-[DOMÍNIO 005 - PROPEDÊUTICA COMPLEMENTAR (PASSO 2 DO MOTOR)]
-005.000. Classe: Investigação Diagnóstica Complementar
-005.001. Classe: Exames Laboratoriais Gerais (Bioquímica, Hemograma)
-005.002. Classe: Exames Microbiológicos e Culturas (Hemocultura, Urinocultura, Escarro)
-005.003. Classe: Exames de Imagem (Radiografia, TC, Ultrassonografia)
-005.004. Classe: Marcadores Específicos e Biomarcadores
-
-[DOMÍNIO 006 - CONDUTA E TERAPÊUTICA (PASSO 3 DO MOTOR)]
-006.000. Classe: Plano Terapêutico e Intervenção
-006.001. Classe: Medidas de Suporte / Emergência Imediata (Oxigenioterapia, Ressuscitação Volêmica)
-006.002. Classe: Terapia Farmacológica Específica / Antimicrobianos / Antídotos
-006.003. Classe: Procedimentos Invasivos / Cirúrgicos
-006.004. Classe: Destino e Disposição do Paciente (Alta, Enfermaria, UTI)
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "meta": {
+    "titulo": "Classificação Semiológica Institucional (CSI)",
+    "versao": "1.0.0",
+    "autor": "Instituto Delyone de Medicina e Tecnologia",
+    "descricao": "Dicionário canônico codificador de classes semiológicas, propedêuticas e procedurais para motores clínicos."
+  },
+  "dominios": {
+    "000": {
+      "nome": "Identificação e Dados Demográficos do Paciente",
+      "classes": {
+        "000.000.": {
+          "label": "Identificação Geral",
+          "descricao": "Conjunto de metadados demográficos básicos do paciente."
+        },
+        "000.001.": {
+          "label": "Nome Civil",
+          "descricao": "Identificador nominal ou social do paciente."
+        },
+        "000.002.": {
+          "label": "Idade Cronológica",
+          "descricao": "Idade em anos, meses ou dias para estratificação de risco etário."
+        },
+        "000.003.": {
+          "label": "Sexo Biológico / Gênero",
+          "descricao": "Variável biológica para calibração epidemiológica."
+        },
+        "000.004.": {
+          "label": "Filiação / Nome da Mãe",
+          "descricao": "Identificador de segurança do paciente e rastreabilidade."
+        },
+        "000.005.": {
+          "label": "Ocupação",
+          "descricao": "Atividade profissional para correlação com patologias ocupacionais."
+        },
+        "000.006.": {
+          "label": "Procedência",
+          "descricao": "Origem geográfica para correlação endêmica/epidemiológica."
+        }
+      }
+    },
+    "001": {
+      "nome": "Contexto Assistencial e Unidade de Saúde",
+      "classes": {
+        "001.000.": {
+          "label": "Unidade Assistencial",
+          "descricao": "Estrutura física ou nível de complexidade do atendimento."
+        },
+        "001.001.": {
+          "label": "Nível de Atenção",
+          "descricao": "Tipo de ponto na rede (UBS, UPA, Enfermaria, UTI, Domiciliar)."
+        },
+        "001.002.": {
+          "label": "Especialidade de Admissão",
+          "descricao": "Área clínica responsável pelo caso (Clínica Médica, Pediatria, GO, Cirurgia)."
+        },
+        "001.003.": {
+          "label": "Tempo de Permanência",
+          "descricao": "Duração da internação ou ventilação mecânica prévia."
+        }
+      }
+    },
+    "002": {
+      "nome": "Anamnese e História Clínica",
+      "classes": {
+        "002.000.": {
+          "label": "História Clínica Global",
+          "descricao": "Conjunto da narrativa relatada pelo paciente ou acompanhante."
+        },
+        "002.001.": {
+          "label": "Queixa Principal (QP)",
+          "descricao": "Sintoma cardinal ou motivo imediato da busca por assistência."
+        },
+        "002.002.": {
+          "label": "História da Doença Atual (HDA)",
+          "descricao": "Evolução cronológica e caracterização dos sintomas (Vigneta clínica)."
+        },
+        "002.003.": {
+          "label": "Antecedentes Pessoais",
+          "descricao": "Comorbidades, cirurgias prévias e alergias."
+        },
+        "002.004.": {
+          "label": "Hábitos e Fatores de Risco",
+          "descricao": "Tabagismo, etilismo, exposições ambientais."
+        },
+        "002.005.": {
+          "label": "Medicamentos em Uso",
+          "descricao": "Farmacoterapia prévia de uso contínuo."
+        }
+      }
+    },
+    "003": {
+      "nome": "Exame Físico e Propedêutica Armada",
+      "classes": {
+        "003.000.": {
+          "label": "Exame Físico Geral",
+          "descricao": "Avaliação ectoscópica e sinais vitais basais."
+        },
+        "003.001.": {
+          "label": "Sinais Vitais",
+          "descricao": "Parâmetros hemodinâmicos e ventilatórios (PA, FC, FR, SpO2, Temp)."
+        },
+        "003.002.": {
+          "label": "Ectoscopia e Estado Geral",
+          "descricao": "Hidratação, coloração, perfusão, nível de consciência."
+        },
+        "003.003.": {
+          "label": "Propedêutica Segmentar",
+          "descricao": "Ausculta pulmonar/cardíaca, palpação abdominal, exame neurológico."
+        },
+        "003.004.": {
+          "label": "Sinais Semiológicos Específicos",
+          "descricao": "Manobras clássicas (ex: Murphy, Blumberg, Giordano)."
+        }
+      }
+    },
+    "004": {
+      "nome": "Raciocínio Diagnóstico (Passo 1 do Motor)",
+      "classes": {
+        "004.000.": {
+          "label": "Impressão Diagnóstica",
+          "descricao": "Hipótese clínica formulada com base no conjunto propedêutico."
+        },
+        "004.001.": {
+          "label": "Diagnóstico Nosológico Principal",
+          "descricao": "Entidade patológica definida (ex: Pneumonia Nosocomial, Cistite)."
+        },
+        "004.002.": {
+          "label": "Diagnóstico Sindrômico",
+          "descricao": "Agrupamento fisiopatológico de sinais e sintomas."
+        },
+        "004.003.": {
+          "label": "Diagnósticos Diferenciais",
+          "descricao": "Patologias concorrentes a serem descartadas."
+        }
+      }
+    },
+    "005": {
+      "nome": "Propedêutica Complementar (Passo 2 do Motor)",
+      "classes": {
+        "005.000.": {
+          "label": "Investigação Complementar",
+          "descricao": "Conjunto de exames subsidiários solicitados."
+        },
+        "005.001.": {
+          "label": "Exames Laboratoriais Gerais",
+          "descricao": "Bioquímica sérica, hemograma, eletrólitos, gasometria."
+        },
+        "005.002.": {
+          "label": "Exames Microbiológicos",
+          "descricao": "Culturas, bacterioscopias, painéis moleculares."
+        },
+        "005.003.": {
+          "label": "Exames de Imagem",
+          "descricao": "Radiografia, ultrassonografia, tomografia, ressonância."
+        },
+        "005.004.": {
+          "label": "Biomarcadores e Específicos",
+          "descricao": "Enzimas cardíacas, marcadores inflamatórios (PCR, VHS, Procalcitonina)."
+        }
+      }
+    },
+    "006": {
+      "nome": "Conduta e Terapêutica (Passo 3 do Motor)",
+      "classes": {
+        "006.000.": {
+          "label": "Plano Terapêutico",
+          "descricao": "Estratégia clínica global de intervenção."
+        },
+        "006.001.": {
+          "label": "Medidas de Suporte Imediato",
+          "descricao": "Estabilização inicial, via aérea, expansão volêmica."
+        },
+        "006.002.": {
+          "label": "Terapia Farmacológica Específica",
+          "descricao": "Prescrição direcionada (antimicrobianos, antídotos, broncodilatadores)."
+        },
+        "006.003.": {
+          "label": "Procedimentos Invasivos / Cirúrgicos",
+          "descricao": "Intubação, drenagem torácica, intervenção cirúrgica de urgência."
+        },
+        "006.004.": {
+          "label": "Disposição e Encaminhamento",
+          "descricao": "Destino do paciente (alta supervisionada, enfermaria, leito de UTI)."
+        }
+      }
+    }
+  }
+}
