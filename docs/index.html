@@ -6,6 +6,8 @@
  * Licenciado sob a Licença Creative Commons Atribuição-NãoComercial 4.0 Internacional (CC BY-NC 4.0).
  * Uso comercial estritamente proibido sem autorização expressa do autor.
  * Detalhes em: https://creativecommons.org/licenses/by-nc/4.0/
+ *
+ * CSI INTEGRATION: Demarcado conforme Classificação Semiológica Institucional v1.0.0
 -->
 <html lang="pt-BR">
 <head>
@@ -409,6 +411,7 @@
     <span class="chip">PDF Engine</span>
     <span class="chip">Shift Manager</span>
     <span class="chip">v2.0 Standalone</span>
+    <span class="chip" style="background: var(--bsoft); color: var(--brand); font-weight: 700;">CSI Enabled</span>
   </div>
 </section>
 
@@ -429,11 +432,11 @@
         </div>
       </div>
 
-      <!-- Ficha Master -->
-      <div class="card" id="masterCard">
+      <!-- Ficha Master Demarcada com CSI -->
+      <div class="card" id="masterCard" data-csi="000.000.">
         <div class="card-head">
           <div>
-            <div class="kicker">Fonte Única da Verdade</div>
+            <div class="kicker">Fonte Única da Verdade · CSI Integrated</div>
             <h2 class="title">Ficha-mãe (Prontuário Mestre)</h2>
             <p class="desc">Registro clínico central. Os documentos derivados consultam estes dados no momento da geração.</p>
           </div>
@@ -443,61 +446,166 @@
         
         <form id="masterForm" onsubmit="event.preventDefault();saveMaster()">
           <div class="form-grid">
-            <div class="section">01 · Identificação</div>
-            <div><label>Nome completo</label><input id="master_patient_name" type="text" placeholder="Nome do paciente"></div>
-            <div><label>Nome social</label><input id="master_social_name" type="text"></div>
-            <div><label>CPF</label><input id="master_cpf" type="text" placeholder="000.000.000-00"></div>
-            <div><label>CNS</label><input id="master_cns" type="text"></div>
-            <div><label>Data de nascimento</label><input id="master_birth" type="date"></div>
-            <div><label>Idade</label><input id="master_age" type="number" min="0" max="130"></div>
-            <div><label>Sexo</label>
-              <select id="master_gender">
+            
+            <!-- DOMÍNIO 000: IDENTIFICAÇÃO E DADOS DEMOGRÁFICOS -->
+            <div class="section" data-csi-domain="000">01 · Identificação</div>
+            <div>
+              <label>Nome completo</label>
+              <input id="master_patient_name" type="text" placeholder="Nome do paciente" data-csi="000.001." data-csi-label="Nome Civil">
+            </div>
+            <div>
+              <label>Nome social</label>
+              <input id="master_social_name" type="text" data-csi="000.001." data-csi-label="Nome Social">
+            </div>
+            <div>
+              <label>CPF</label>
+              <input id="master_cpf" type="text" placeholder="000.000.000-00" data-csi="000.000." data-csi-label="Documento CPF">
+            </div>
+            <div>
+              <label>CNS</label>
+              <input id="master_cns" type="text" data-csi="000.000." data-csi-label="Cartão Nacional de Saúde">
+            </div>
+            <div>
+              <label>Data de nascimento</label>
+              <input id="master_birth" type="date" data-csi="000.002." data-csi-label="Data de Nascimento">
+            </div>
+            <div>
+              <label>Idade</label>
+              <input id="master_age" type="number" min="0" max="130" data-csi="000.002." data-csi-label="Idade Cronológica">
+            </div>
+            <div>
+              <label>Sexo</label>
+              <select id="master_gender" data-csi="000.003." data-csi-label="Sexo Biológico / Gênero">
                 <option value="">Selecione</option>
                 <option>Feminino</option><option>Masculino</option>
                 <option>Intersexo</option><option>Não informado</option>
               </select>
             </div>
-            <div><label>Nome da mãe</label><input id="master_mother_name" type="text"></div>
-            <div><label>Município</label><input id="master_municipality" type="text" placeholder="Goiânia - GO"></div>
-            <div><label>Telefone</label><input id="master_phone" type="text"></div>
-            <div class="full"><label>Endereço</label><input id="master_address" type="text"></div>
+            <div>
+              <label>Nome da mãe</label>
+              <input id="master_mother_name" type="text" data-csi="000.004." data-csi-label="Filiação / Genitora">
+            </div>
+            <div>
+              <label>Município</label>
+              <input id="master_municipality" type="text" placeholder="Goiânia - GO" data-csi="000.006." data-csi-label="Procedência / Município">
+            </div>
+            <div>
+              <label>Telefone</label>
+              <input id="master_phone" type="text" data-csi="000.000." data-csi-label="Contato Telefônico">
+            </div>
+            <div class="full">
+              <label>Endereço</label>
+              <input id="master_address" type="text" data-csi="000.006." data-csi-label="Endereço Residencial">
+            </div>
 
-            <div class="section">02 · Contexto assistencial</div>
-            <div><label>Prontuário / registro</label><input id="master_record_number" type="text"></div>
-            <div><label>Data de atendimento / internação</label><input id="master_admission" type="date"></div>
-            <div><label>Setor / unidade</label><input id="master_sector" type="text" placeholder="PS, enfermaria, UTI..."></div>
-            <div><label>AIH / atendimento</label><input id="master_aih" type="text"></div>
+            <!-- DOMÍNIO 001: CONTEXTO ASSISTENCIAL -->
+            <div class="section" data-csi-domain="001">02 · Contexto assistencial</div>
+            <div>
+              <label>Prontuário / registro</label>
+              <input id="master_record_number" type="text" data-csi="001.000." data-csi-label="Número de Prontuário">
+            </div>
+            <div>
+              <label>Data de atendimento / internação</label>
+              <input id="master_admission" type="date" data-csi="001.003." data-csi-label="Data Admissional">
+            </div>
+            <div>
+              <label>Setor / unidade</label>
+              <input id="master_sector" type="text" placeholder="PS, enfermaria, UTI..." data-csi="001.001." data-csi-label="Unidade / Nível de Atenção">
+            </div>
+            <div>
+              <label>AIH / atendimento</label>
+              <input id="master_aih" type="text" data-csi="001.000." data-csi-label="Identificador AIH">
+            </div>
 
-            <div class="section">03 · Anamnese</div>
-            <div class="full"><label>Queixa principal e duração (QPD)</label><input id="master_qpp" type="text"></div>
-            <div class="full"><label>História da doença atual (HDA)</label><textarea id="master_hda" rows="4"></textarea></div>
-            <div class="full"><label>Antecedentes pessoais / comorbidades</label><textarea id="master_antecedents"></textarea></div>
-            <div class="full"><label>Medicações em uso</label><textarea id="master_medications"></textarea></div>
-            <div class="full"><label>Alergias / reações adversas</label><textarea id="master_allergies"></textarea></div>
-            <div class="full"><label>História familiar</label><textarea id="master_family_history"></textarea></div>
-            <div class="full"><label>História social / hábitos</label><textarea id="master_social_history"></textarea></div>
+            <!-- DOMÍNIO 002: ANAMNESE E HISTÓRIA CLÍNICA -->
+            <div class="section" data-csi-domain="002">03 · Anamnese</div>
+            <div class="full">
+              <label>Queixa principal e duração (QPD)</label>
+              <input id="master_qpp" type="text" data-csi="002.001." data-csi-label="Queixa Principal (QP)">
+            </div>
+            <div class="full">
+              <label>História da doença atual (HDA)</label>
+              <textarea id="master_hda" rows="4" data-csi="002.002." data-csi-label="História da Doença Atual (HDA)"></textarea>
+            </div>
+            <div class="full">
+              <label>Antecedentes pessoais / comorbidades</label>
+              <textarea id="master_antecedents" data-csi="002.003." data-csi-label="Antecedentes Pessoais"></textarea>
+            </div>
+            <div class="full">
+              <label>Medicações em uso</label>
+              <textarea id="master_medications" data-csi="002.005." data-csi-label="Medicamentos em Uso Prévio"></textarea>
+            </div>
+            <div class="full">
+              <label>Alergias / reações adversas</label>
+              <textarea id="master_allergies" data-csi="002.003." data-csi-label="Alergias e Reações Adversas"></textarea>
+            </div>
+            <div class="full">
+              <label>História familiar</label>
+              <textarea id="master_family_history" data-csi="002.003." data-csi-label="História Familiar"></textarea>
+            </div>
+            <div class="full">
+              <label>História social / hábitos</label>
+              <textarea id="master_social_history" data-csi="002.004." data-csi-label="Hábitos e Fatores de Risco"></textarea>
+            </div>
 
-            <div class="section">04 · Exame clínico</div>
-            <div class="full"><label>Sinais vitais</label><input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C"></div>
-            <div class="full"><label>Exame físico</label><textarea id="master_physical_exam" rows="4"></textarea></div>
+            <!-- DOMÍNIO 003: EXAME FÍSICO E PROPEDÊUTICA ARMADA -->
+            <div class="section" data-csi-domain="003">04 · Exame clínico</div>
+            <div class="full">
+              <label>Sinais vitais</label>
+              <input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C" data-csi="003.001." data-csi-label="Sinais Vitais">
+            </div>
+            <div class="full">
+              <label>Exame físico</label>
+              <textarea id="master_physical_exam" rows="4" data-csi="003.000." data-csi-label="Exame Físico Geral e Segmentar"></textarea>
+            </div>
 
-            <div class="section">05 · Exames complementares e resultados</div>
-            <div class="full"><label>Exames laboratoriais</label><textarea id="master_labs" rows="4"></textarea></div>
-            <div class="full"><label>Imagem / exames complementares</label><textarea id="master_imaging" rows="4" placeholder="USG, TC, RM, RX, ECG etc."></textarea></div>
-            <div class="full"><label>Outros resultados / documentos</label><textarea id="master_other_results"></textarea></div>
+            <!-- DOMÍNIO 005: INVESTIGAÇÃO COMPLEMENTAR E RESULTADOS -->
+            <div class="section" data-csi-domain="005">05 · Exames complementares e resultados</div>
+            <div class="full">
+              <label>Exames laboratoriais</label>
+              <textarea id="master_labs" rows="4" data-csi="005.001." data-csi-label="Exames Laboratoriais"></textarea>
+            </div>
+            <div class="full">
+              <label>Imagem / exames complementares</label>
+              <textarea id="master_imaging" rows="4" placeholder="USG, TC, RM, RX, ECG etc." data-csi="005.003." data-csi-label="Exames de Imagem"></textarea>
+            </div>
+            <div class="full">
+              <label>Outros resultados / documentos</label>
+              <textarea id="master_other_results" data-csi="005.004." data-csi-label="Biomarcadores e Outros"></textarea>
+            </div>
 
-            <div class="section">06 · Avaliação clínica</div>
-            <div class="full"><label>Hipótese diagnóstica / diagnóstico</label><input id="master_hypothesis" type="text"></div>
-            <div><label>CID-10</label><input id="master_cid10" type="text"></div>
-            <div><label>Diagnósticos diferenciais</label><input id="master_differential" type="text"></div>
-            <div class="full"><label>Impressão / avaliação clínica</label><textarea id="master_assessment"></textarea></div>
+            <!-- DOMÍNIO 004: RACIOCÍNIO DIAGNÓSTICO -->
+            <div class="section" data-csi-domain="004">06 · Avaliação clínica</div>
+            <div class="full">
+              <label>Hipótese diagnóstica / diagnóstico</label>
+              <input id="master_hypothesis" type="text" data-csi="004.001." data-csi-label="Diagnóstico Nosológico Principal">
+            </div>
+            <div>
+              <label>CID-10</label>
+              <input id="master_cid10" type="text" data-csi="004.001." data-csi-label="Classificação CID-10">
+            </div>
+            <div>
+              <label>Diagnósticos diferenciais</label>
+              <input id="master_differential" type="text" data-csi="004.003." data-csi-label="Diagnósticos Diferenciais">
+            </div>
+            <div class="full">
+              <label>Impressão / avaliação clínica</label>
+              <textarea id="master_assessment" data-csi="004.000." data-csi-label="Impressão Diagnóstica / Raciocínio"></textarea>
+            </div>
 
-            <div class="section">07 · Conduta / Plano & Prescrição Integrada</div>
-            <div class="full"><label>Plano terapêutico / conduta geral</label><textarea id="master_plan" rows="3"></textarea></div>
-            <div class="full"><label>Evolução / observações diárias</label><textarea id="master_evolution" rows="3"></textarea></div>
+            <!-- DOMÍNIO 006: CONDUTA E TERAPÊUTICA INTEGRADA -->
+            <div class="section" data-csi-domain="006">07 · Conduta / Plano & Prescrição Integrada</div>
+            <div class="full">
+              <label>Plano terapêutico / conduta geral</label>
+              <textarea id="master_plan" rows="3" data-csi="006.000." data-csi-label="Plano Terapêutico Global"></textarea>
+            </div>
+            <div class="full">
+              <label>Evolução / observações diárias</label>
+              <textarea id="master_evolution" rows="3" data-csi="006.000." data-csi-label="Evolução Clínica Diária"></textarea>
+            </div>
 
-            <!-- CONSTRUTOR DINÂMICO DE PRESCRIÇÃO MÉDICA -->
-            <div class="full exam-builder-card" style="border-left: 4px solid var(--brand);">
+            <!-- CONSTRUTOR DINÂMICO DE PRESCRIÇÃO MÉDICA (CSI 006.002) -->
+            <div class="full exam-builder-card" style="border-left: 4px solid var(--brand);" data-csi="006.002." data-csi-label="Terapia Farmacológica Específica">
               <div class="exam-header">
                 <div class="exam-title">💊 Prescrição Médica & Medicamentos</div>
                 <div style="display:flex; gap:6px;">
@@ -535,12 +643,20 @@
               </div>
             </div>
 
-            <div class="section">08 · Profissional responsável</div>
-            <div><label>Médico responsável</label><input id="master_doctor_name" type="text" placeholder="Nome do médico"></div>
-            <div><label>CRM / UF</label><input id="master_crm" type="text" placeholder="CRM-GO 00000"></div>
+            <!-- RESPONSÁVEL TÉCNICO -->
+            <div class="section" data-csi-domain="001">08 · Profissional responsável</div>
+            <div>
+              <label>Médico responsável</label>
+              <input id="master_doctor_name" type="text" placeholder="Nome do médico" data-csi="001.000." data-csi-label="Profissional Solicitante">
+            </div>
+            <div>
+              <label>CRM / UF</label>
+              <input id="master_crm" type="text" placeholder="CRM-GO 00000" data-csi="001.000." data-csi-label="Registro Profissional CRM">
+            </div>
 
-            <div class="section">09 · Solicitação de Procedimentos (APAC)</div>
-            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);">
+            <!-- DOMÍNIO 006.003: PROCEDIMENTOS (APAC) -->
+            <div class="section" data-csi-domain="006">09 · Solicitação de Procedimentos (APAC)</div>
+            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
               <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
                 <input id="master_proc1_name" type="text" placeholder="Nome do Procedimento 1">
@@ -548,7 +664,7 @@
                 <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
               </div>
             </div>
-            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
+            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
               <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
                 <input id="master_proc2_name" type="text" placeholder="Nome do Procedimento 2">
@@ -556,7 +672,7 @@
                 <input id="master_proc2_qty" type="text" placeholder="Qtd">
               </div>
             </div>
-            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;">
+            <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
               <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
                 <input id="master_proc3_name" type="text" placeholder="Nome do Procedimento 3">
@@ -565,8 +681,8 @@
               </div>
             </div>
 
-            <!-- EXAMES COMPLEMENTARES -->
-            <div class="full exam-builder-card">
+            <!-- EXAMES COMPLEMENTARES SOLICITADOS (CSI 005.000) -->
+            <div class="full exam-builder-card" data-csi="005.000." data-csi-label="Investigação Complementar Solicitada">
               <div class="exam-header">
                 <div class="exam-title">🧪 Pedidos de Exames Complementares</div>
                 <div class="mode-toggle-group">
@@ -733,7 +849,7 @@
           </div>
         </div>
         <div class="architecture">
-          <div class="arch"><div class="num">01</div><strong>Dicionário canônico</strong><span>Define os campos estruturais.</span></div>
+          <div class="arch"><div class="num">01</div><strong>Dicionário canônico</strong><span>Define os campos estruturais via CSI.</span></div>
           <div class="arch"><div class="num">02</div><strong>Ficha-mãe</strong><span>Concentra o conteúdo clínico central.</span></div>
           <div class="arch"><div class="num">03</div><strong>Mapa documental</strong><span>Conecta campos aos templates.</span></div>
         </div>
@@ -747,7 +863,7 @@
           </div>
         </div>
         <p class="desc">Deterministic Clinical Document Engine</p>
-        <div class="status ok" style="margin-bottom: 15px;"><span class="dot"></span>Motor autônomo offline</div>
+        <div class="status ok" style="margin-bottom: 15px;"><span class="dot"></span>Motor autônomo offline · CSI v1.0</div>
         <button class="btn secondary" style="width: 100%; font-size: 12px;" onclick="baixarGestorOffline()">
           💾 Baixar Gestor Offline
         </button>
@@ -808,7 +924,7 @@
 
 <footer style="margin-top: 40px; padding: 30px; border-top: 1px solid var(--line);">
   <div class="footer-inner" style="flex-direction: column; align-items: center; text-align: center; gap: 8px;">
-    <strong style="font-size: 14px; color: var(--ink);">MedUnity Delyone v2.0 Tipográfico</strong>
+    <strong style="font-size: 14px; color: var(--ink);">MedUnity Delyone v2.0 Tipográfico · CSI Engine Enabled</strong>
     <span>Instituto Delyone · Medicina · Tecnologia · Pesquisa</span>
     <span style="margin-top: 8px; font-style: italic; color: var(--brand);">Arquitetado pelo Primeiro Meta-Engenheiro da Linguagem</span>
   </div>
@@ -825,6 +941,59 @@ const EMBEDDED_PDFS = {
 </script>
 
 <script>
+/**
+ * ==========================================
+ * CSI (CLASSIFICAÇÃO SEMIOLÓGICA INSTITUCIONAL)
+ * MAPEAMENTO CANÔNICO DOS CAMPOS UNIVERSAIS
+ * ==========================================
+ */
+const CSI_MAP = {
+  "patient_name": "000.001.",
+  "social_name":  "000.001.",
+  "cpf":          "000.000.",
+  "cns":          "000.000.",
+  "birth":        "000.002.",
+  "age":          "000.002.",
+  "gender":       "000.003.",
+  "mother_name":  "000.004.",
+  "municipality": "000.006.",
+  "phone":        "000.000.",
+  "address":      "000.006.",
+  "record_number":"001.000.",
+  "admission":    "001.003.",
+  "sector":       "001.001.",
+  "aih":          "001.000.",
+  "qpp":          "002.001.",
+  "hda":          "002.002.",
+  "antecedents":  "002.003.",
+  "medications":  "002.005.",
+  "allergies":    "002.003.",
+  "family_history":"002.003.",
+  "social_history":"002.004.",
+  "vitals":       "003.001.",
+  "physical_exam":"003.000.",
+  "labs":         "005.001.",
+  "imaging":      "005.003.",
+  "other_results":"005.004.",
+  "hypothesis":   "004.001.",
+  "cid10":        "004.001.",
+  "differential": "004.003.",
+  "assessment":   "004.000.",
+  "plan":         "006.000.",
+  "evolution":    "006.000.",
+  "doctor_name":  "001.000.",
+  "crm":          "001.000.",
+  "proc1_name":   "006.003.",
+  "proc1_code":   "006.003.",
+  "proc1_qty":    "006.003.",
+  "proc2_name":   "006.003.",
+  "proc2_code":   "006.003.",
+  "proc2_qty":    "006.003.",
+  "proc3_name":   "006.003.",
+  "proc3_code":   "006.003.",
+  "proc3_qty":    "006.003."
+};
+
 const MASTER_KEY='medunity_master_record';
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
@@ -1295,7 +1464,7 @@ function gerarHTMLFichaEvolucao(d) {
       </div>
 
       <div style="border: 1px solid #000; padding: 6px; margin-bottom: 6px;">
-        <div style="font-weight: bold; margin-bottom: 2px;">Hipóteses Diagnósticas:</div>
+        <div style="font-weight: bold; margin-btom: 2px;">Hipóteses Diagnósticas:</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-weight: 600;">
           <div>(1) ${esc(d.hypothesis || '_______________________')}</div>
           <div>(2) ${esc(d.differential || '_______________________')}</div>
@@ -1768,7 +1937,7 @@ function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}
 function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 
-setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local'},650);
+setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local · CSI v1.0'},650);
 
 loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
