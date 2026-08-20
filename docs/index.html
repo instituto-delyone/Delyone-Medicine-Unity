@@ -1140,16 +1140,16 @@ function baixarFichaHtml() {
 
 /* MAPAS ESTÁTICOS OFICIAIS */
 const STATIC_MAPS = {
-  APAC: {
+   APAC: {
     // [DOMÍNIO 000: IDENTIFICAÇÃO DO PACIENTE]
     "000.001._nome":      { nativeKey: "patient_name",   x: 62,  y: 140, w: 340, h: 12, max: 9, min: 9 },
     "001.000._prontuario":{ nativeKey: "record_number",  x: 430, y: 140, w: 100, h: 12, max: 9, min: 9 },
     "000.000._cns":       { nativeKey: "cns",            x: 62,  y: 163, w: 200, h: 12, max: 9, min: 9 },    
-    "000.002._nascimento":{ nativeKey: "birth",          x: 310, y: 163, w: 80,  h: 12, max: 9, min: 9 }, // Movido para direita
-    "000.003._sexo":      { nativeKey: "gender",         x: 430, y: 163, w: 100, h: 12, max: 9, min: 9 }, // Lógica controlada no gerador
+    "000.002._nascimento":{ nativeKey: "birth",          x: 330, y: 163, w: 80,  h: 12, max: 9, min: 9 }, // Empurrado p/ direita
+    "000.003._sexo":      { nativeKey: "gender",         x: 430, y: 163, w: 100, h: 12, max: 9, min: 9 }, 
     "000.004._mae":       { nativeKey: "mother_name",    x: 62,  y: 186, w: 200, h: 12, max: 9, min: 9 },
 
-    "000.000._telefone":  { nativeKey: "phone",          x: 280, y: 186, w: 200, h: 12, max: 9, min: 9 },
+    "000.000._telefone":  { nativeKey: "phone",          x: 300, y: 186, w: 200, h: 12, max: 9, min: 9 }, // Empurrado p/ direita
     "000.006._endereco":  { nativeKey: "address",        x: 62,  y: 209, w: 450, h: 12, max: 9, min: 9 },
     "000.006._municipio": { nativeKey: "municipality",   x: 62,  y: 232, w: 300, h: 12, max: 9, min: 9 },
 
@@ -1166,13 +1166,13 @@ const STATIC_MAPS = {
 
     // [DOMÍNIO 004: RACIOCÍNIO DIAGNÓSTICO]
     "004.001._hipot":     { nativeKey: "hypothesis",     x: 62,  y: 440, w: 260, h: 25,  max: 8, min: 8, multi: true },
-    "004.001._cid10":     { nativeKey: "cid10",          x: 370, y: 440, w: 50,  h: 12,  max: 9, min: 9 },
+    "004.001._cid10":     { nativeKey: "cid10",          x: 370, y: 475, w: 50,  h: 12,  max: 9, min: 9 }, // Desceu para a linha do CID
     "004.003._ddx":       { nativeKey: "differential",   x: 425, y: 440, w: 60,  h: 12,  max: 8, min: 8 },
-    "004.000._obs":       { nativeKey: "assessment",     x: 62,  y: 475, w: 450, h: 100, max: 7.5, min: 7.5, multi: true }, // Campo ampliado e formatado no gerador
+    "004.000._obs":       { nativeKey: "assessment",     x: 75,  y: 495, w: 430, h: 100, max: 7.5, min: 7.5, multi: true }, // Desceu e empurrou p/ direita
 
     // [DOMÍNIO 001: PROFISSIONAL SOLICITANTE]
     "001.000._medico":    { nativeKey: "doctor_name",    x: 62,  y: 615, w: 260, h: 12, max: 9, min: 9 },
-    "001.000._crm":       { nativeKey: "crm",            x: 370, y: 615, w: 110, h: 12, max: 9, min: 9 }
+    "001.000._crm":       { nativeKey: "crm",            x: 410, y: 630, w: 110, h: 12, max: 9, min: 9 } // Desceu e empurrou p/ direita
   },
 
   AIH: {
