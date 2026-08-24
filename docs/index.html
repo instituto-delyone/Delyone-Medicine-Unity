@@ -16,47 +16,57 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- OTIMIZAÇÃO: Bloqueio de zoom automático no mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MedUnity Delyone — Clinical Document Engine</title>
   
   <style>
     /* PALETA RIO CRISTALINO (LIGHT MODE) */
     :root {
-      --bg: #f0f7fc;       /* Fundo geral: branco levemente azulado (água cristalina) */
-      --surface: #ffffff;  /* Cartões: 100% brancos para dar contraste */
-      --soft: #e1edf5;     /* Painéis e inputs: um azul bem aguado e transparente */
-      --bsoft: #cbe0ee;    /* Detalhes de fundo suaves */
-      --line: #b9d2e5;     /* Bordas limpas e cristalinas */
+      --bg: #f0f7fc;       
+      --surface: #ffffff;  
+      --soft: #e1edf5;     
+      --bsoft: #cbe0ee;    
+      --line: #b9d2e5;     
       
-      --ink: #0d2b45;      /* Azul escuro original agora usado APENAS no texto para leitura perfeita */
-      --muted: #5b7b97;    /* Textos secundários (idade, dicas) em azul acinzentado */
+      --ink: #0d2b45;      
+      --muted: #5b7b97;    
       
-      --brand: #007bb5;    /* Azul vivo para ícones, títulos e links */
-      --dark: #005a8b;     /* Azul profundo para os botões principais */
+      --brand: #007bb5;    
+      --dark: #005a8b;     
       
-      --gold: #d49a2a;     /* Alertas de sistema */
+      --gold: #d49a2a;     
       --gsoft: #fdf5e6;
       
-      --ok: #28a745;       /* Sucesso / Autenticação */
+      --ok: #28a745;       
       --ok-soft: #eafaf1;
       
-      --danger: #dc3545;   /* Excluir / Fechar */
+      --danger: #dc3545;   
       --danger-soft: #fdf0f1;
       
       --r: 14px;
       --max: 1180px;
     }
 
+    /* OTIMIZAÇÃO: Trava geral de vazamento lateral e ajuste de texto */
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: 100%;
+    }
+
     * { box-sizing: border-box; }
 
     body {
-      margin: 0;
       background: var(--bg);
       color: var(--ink);
       font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
-    button, input, select, textarea { font: inherit; }
+    /* OTIMIZAÇÃO: Limite de largura para evitar quebra de layout */
+    button, input, select, textarea { font: inherit; max-width: 100%; }
     button { cursor: pointer; }
 
     /* LAYOUT BASE */
@@ -65,14 +75,17 @@
       margin: auto;
     }
 
-    /* HEADER */
+    /* HEADER - OTIMIZADO PARA FICAR FIXO */
     .site-header {
+      position: -webkit-sticky;
       position: sticky;
       top: 0;
-      z-index: 5;
-      background: rgba(240, 247, 252, 0.85); /* Fundo claro translúcido */
+      z-index: 9999;
+      background: rgba(240, 247, 252, 0.85); 
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .header-inner {
       min-height: 76px;
@@ -105,7 +118,6 @@
       letter-spacing: .08em;
       text-transform: uppercase;
     }
-    /* NOVO BOTÃO DO HEADER */
     .header-link {
       font-size: 11px;
       color: var(--brand);
@@ -219,6 +231,12 @@
     textarea { resize: vertical; min-height: 82px; }
     input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15); }
     
+    /* GRIDS RESPONSIVOS (Substituindo estilos inline) */
+    .responsive-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .responsive-grid-presc { display: grid; grid-template-columns: 80px 2fr 110px; gap: 8px; margin-bottom: 12px; }
+    .responsive-grid-apac { display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px; }
+    .exam-input-row { display: grid; grid-template-columns: 1fr 80px 110px; gap: 8px; margin-bottom: 12px; }
+
     /* BUTTONS */
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
     .btn { border: 0; border-radius: 11px; padding: 10px 14px; font-weight: 700; font-size: 13px; transition: background 0.2s; }
@@ -313,7 +331,7 @@
     .mode-toggle-group { display: flex; gap: 4px; background: var(--soft); padding: 3px; border-radius: 9px; }
     .mode-btn { border: 0; background: transparent; padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 7px; color: var(--muted); }
     .mode-btn.active { background: var(--bsoft); color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-    .exam-input-row { display: grid; grid-template-columns: 1fr 80px 110px; gap: 8px; margin-bottom: 12px; }
+    
     .exam-list-box { background: var(--soft); border: 1px solid var(--line); border-radius: 11px; padding: 8px 12px; min-height: 60px; max-height: 250px; overflow-y: auto; }
     .exam-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 12px; }
     .exam-item:last-child { border-bottom: none; }
@@ -321,29 +339,19 @@
     .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
     .btn-remove:hover { background: var(--danger-soft); }
 
-    /* Botões de mover ordem na prescrição */
     .btn-move {
       background: transparent;
       border: 1px solid var(--line);
       color: var(--brand);
       font-size: 11px;
-      padding: 6px 12px; /* Área de toque maior para o mobile */
+      padding: 6px 12px; 
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-move:hover:not(:disabled) {
-      background: var(--bsoft);
-    }
-    .btn-move:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-    .action-group {
-      display: flex;
-      gap: 6px;
-      flex-shrink: 0;
-    }
+    .btn-move:hover:not(:disabled) { background: var(--bsoft); }
+    .btn-move:disabled { opacity: 0.3; cursor: not-allowed; }
+    .action-group { display: flex; gap: 6px; flex-shrink: 0; }
     
     /* SHIFT MANAGER */
     .shift-timer { font-size: 28px; font-weight: 800; color: var(--brand); font-variant-numeric: tabular-nums; margin-bottom: 4px; }
@@ -361,13 +369,21 @@
       .full, .section { grid-column: auto; }
       .fields { grid-template-columns: 1fr; }
     }
+    /* OTIMIZAÇÃO: Tratamento para telas pequenas e reajuste dos grids complexos */
+    @media (max-width: 600px) {
+      .responsive-grid-3, .responsive-grid-presc, .responsive-grid-apac, .exam-input-row {
+        grid-template-columns: 1fr !important;
+      }
+      .responsive-grid-presc { gap: 12px; }
+      .action-group { flex-direction: column; }
+    }
     @media (max-width: 560px) {
       .header-status { display: none; }
       .card { padding: 18px; }
       .footer-inner { flex-direction: column; }
     }
 
-    /* PRINT STYLES (Preserves White Background and Black text) */
+    /* PRINT STYLES */
     @media print {
       .site-header, .hero, aside, footer, .notice, #masterCard, #shiftCard, #authCard, .card-head, #print-btn-wrapper { display: none !important; }
       .card:not(:has(#preview)) { display: none !important; }
@@ -396,10 +412,7 @@
         <div class="brand-subtitle">Clinical Document Engine</div>
       </div>
     </a>
-    
-    <!-- NOVO BOTÃO DE VOLTAR PARA O SITE -->
     <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
-    
   </div>
 </header>
 
@@ -614,7 +627,8 @@
                 </div>
               </div>
               
-              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
+              <div class="responsive-grid-3">
                 <input type="text" id="inputPrescNome" placeholder="Medicamento / Princípio Ativo (Ex: Noradrenalina)" list="listaSugestoesPresc">
                 <datalist id="listaSugestoesPresc">
                   <option value="DIPIRONA SÓDICA 1G + AD 10ML">
@@ -630,7 +644,8 @@
                 <input type="text" id="inputPrescQtd" placeholder="Qtd / Volume">
               </div>
 
-              <div style="display: grid; grid-template-columns: 80px 2fr 110px; gap: 8px; margin-bottom: 12px;">
+              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
+              <div class="responsive-grid-presc">
                 <input type="text" id="inputPrescVia" placeholder="Via (EV...)" style="text-align: center; text-transform: uppercase;">
                 <input type="text" id="inputPrescPosologia" placeholder="Posologia / Horários">
                 <button type="button" class="btn primary" style="width: 100%; padding: 11px 8px;" onclick="adicionarItemPrescricao()">+ Adicionar</button>
@@ -658,7 +673,8 @@
             <div class="section" data-csi-domain="006">09 · Solicitação de Procedimentos (APAC)</div>
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
-              <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
+              <div class="responsive-grid-apac">
                 <input id="master_proc1_name" type="text" placeholder="Nome do Procedimento 1">
                 <input id="master_proc1_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
@@ -666,7 +682,8 @@
             </div>
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
-              <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
+              <div class="responsive-grid-apac">
                 <input id="master_proc2_name" type="text" placeholder="Nome do Procedimento 2">
                 <input id="master_proc2_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc2_qty" type="text" placeholder="Qtd">
@@ -674,7 +691,8 @@
             </div>
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
-              <div style="display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px;">
+              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
+              <div class="responsive-grid-apac">
                 <input id="master_proc3_name" type="text" placeholder="Nome do Procedimento 3">
                 <input id="master_proc3_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc3_qty" type="text" placeholder="Qtd">
@@ -1007,7 +1025,6 @@ let shiftTimerInterval = null;
 let shiftRecords = {}; 
 
 function moverItemPrescricao(index, direcao) {
-  // direcao: -1 (sobe) ou 1 (desce)
   if (direcao === -1 && index > 0) {
     const temp = prescricoesLista[index];
     prescricoesLista[index] = prescricoesLista[index - 1];
@@ -1141,19 +1158,15 @@ function baixarFichaHtml() {
 /* MAPAS ESTÁTICOS OFICIAIS */
 const STATIC_MAPS = {
    APAC: {
-    // [DOMÍNIO 000: IDENTIFICAÇÃO DO PACIENTE]
     "000.001._nome":      { nativeKey: "patient_name",   x: 62,  y: 140, w: 340, h: 12, max: 9, min: 9 },
     "001.000._prontuario":{ nativeKey: "record_number",  x: 430, y: 140, w: 100, h: 12, max: 9, min: 9 },
     "000.000._cns":       { nativeKey: "cns",            x: 62,  y: 163, w: 200, h: 12, max: 9, min: 9 },    
-    "000.002._nascimento":{ nativeKey: "birth",          x: 330, y: 163, w: 80,  h: 12, max: 9, min: 9 }, // Empurrado p/ direita
+    "000.002._nascimento":{ nativeKey: "birth",          x: 330, y: 163, w: 80,  h: 12, max: 9, min: 9 }, 
     "000.003._sexo":      { nativeKey: "gender",         x: 430, y: 163, w: 100, h: 12, max: 9, min: 9 }, 
     "000.004._mae":       { nativeKey: "mother_name",    x: 62,  y: 186, w: 200, h: 12, max: 9, min: 9 },
-
-    "000.000._telefone":  { nativeKey: "phone",          x: 300, y: 186, w: 200, h: 12, max: 9, min: 9 }, // Empurrado p/ direita
+    "000.000._telefone":  { nativeKey: "phone",          x: 300, y: 186, w: 200, h: 12, max: 9, min: 9 }, 
     "000.006._endereco":  { nativeKey: "address",        x: 62,  y: 209, w: 450, h: 12, max: 9, min: 9 },
     "000.006._municipio": { nativeKey: "municipality",   x: 62,  y: 232, w: 300, h: 12, max: 9, min: 9 },
-
-    // [DOMÍNIO 006.003: PROCEDIMENTOS SOLICITADOS]
     "006.003._proc1_cod": { nativeKey: "proc1_code",     x: 62,  y: 278, w: 120, h: 12, max: 9, min: 9 },
     "006.003._proc1_nom": { nativeKey: "proc1_name",     x: 215, y: 278, w: 260, h: 12, max: 9, min: 9 },
     "006.003._proc1_qtd": { nativeKey: "proc1_qty",      x: 490, y: 278, w: 40,  h: 12, max: 9, min: 9 },
@@ -1163,20 +1176,14 @@ const STATIC_MAPS = {
     "006.003._proc3_cod": { nativeKey: "proc3_code",     x: 80,  y: 350, w: 120, h: 12, max: 9, min: 9 },
     "006.003._proc3_nom": { nativeKey: "proc3_name",     x: 215, y: 350, w: 260, h: 12, max: 9, min: 9 },
     "006.003._proc3_qtd": { nativeKey: "proc3_qty",      x: 490, y: 350, w: 40,  h: 12, max: 9, min: 9 },
-
-    // [DOMÍNIO 004: RACIOCÍNIO DIAGNÓSTICO]
     "004.001._hipot":     { nativeKey: "hypothesis",     x: 62,  y: 440, w: 260, h: 25,  max: 8, min: 8, multi: true },
-    "004.001._cid10":     { nativeKey: "cid10",          x: 370, y: 475, w: 50,  h: 12,  max: 9, min: 9 }, // Desceu para a linha do CID
+    "004.001._cid10":     { nativeKey: "cid10",          x: 370, y: 475, w: 50,  h: 12,  max: 9, min: 9 }, 
     "004.003._ddx":       { nativeKey: "differential",   x: 425, y: 440, w: 60,  h: 12,  max: 8, min: 8 },
-    "004.000._obs":       { nativeKey: "assessment",     x: 75,  y: 495, w: 430, h: 100, max: 7.5, min: 7.5, multi: true }, // Desceu e empurrou p/ direita
-
-    // [DOMÍNIO 001: PROFISSIONAL SOLICITANTE]
+    "004.000._obs":       { nativeKey: "assessment",     x: 75,  y: 495, w: 430, h: 100, max: 7.5, min: 7.5, multi: true }, 
     "001.000._medico":    { nativeKey: "doctor_name",    x: 62,  y: 615, w: 260, h: 12, max: 9, min: 9 },
-    "001.000._crm":       { nativeKey: "crm",            x: 410, y: 630, w: 110, h: 12, max: 9, min: 9 } // Desceu e empurrou p/ direita
+    "001.000._crm":       { nativeKey: "crm",            x: 410, y: 630, w: 110, h: 12, max: 9, min: 9 } 
   },
-
   AIH: {
-    // [DOMÍNIO 000: IDENTIFICAÇÃO DO PACIENTE]
     "000.001._nome":      { nativeKey: "patient_name",   x: 60,  y: 175, w: 370, h: 15, min: 9, max: 9 },
     "001.000._prontuario":{ nativeKey: "record_number",  x: 450, y: 175, w: 100, h: 15, min: 9, max: 9 },
     "000.000._cns":       { nativeKey: "cns",            x: 60,  y: 205, w: 200, h: 15, max: 9, min: 9 },
@@ -1185,27 +1192,18 @@ const STATIC_MAPS = {
     "000.000._telefone":  { nativeKey: "phone",          x: 440, y: 236, w: 100, h: 15, max: 9, min: 9 },
     "000.006._endereco":  { nativeKey: "address",        x: 60,  y: 270, w: 480, h: 15, max: 9, min: 9 },
     "000.006._municipio": { nativeKey: "municipality",   x: 60,  y: 298, w: 300, h: 15, max: 9, min: 9 },
-
-    // [DOMÍNIO 002: ANAMNESE E HISTÓRIA]
     "002.001._qp":        { nativeKey: "qpp",            x: 60,  y: 338, w: 480, h: 12, min: 9, max: 9 },
     "002.002._hda":       { nativeKey: "hda",            x: 60,  y: 350, w: 480, h: 53, min: 9, max: 9, multi: true },
-
-    // [DOMÍNIO 003 E 004: JUSTIFICATIVA CLÍNICA]
     "003.000._exame":     { nativeKey: "physical_exam",  x: 60,  y: 415, w: 480, h: 20, min: 4.5, max: 4.5, multi: true },
     "003.001._vitais":    { nativeKey: "vitals",         x: 60,  y: 435, w: 480, h: 15, min: 4.5, max: 4.5, multi: true },
     "004.000._aval":      { nativeKey: "assessment",     x: 60,  y: 445, w: 480, h: 25, min: 4.5, max: 4.5, multi: true },
     "004.001._hipot":     { nativeKey: "hypothesis",     x: 60,  y: 520, w: 220, h: 15, max: 9, min: 9 },
     "004.001._cid10":     { nativeKey: "cid10",          x: 290, y: 520, w: 80,  h: 15, max: 9, min: 9 },
-
-    // [DOMÍNIO 006: PLANO E DESTINO]
     "006.000._plano":     { nativeKey: "plan",           x: 60,  y: 560, w: 350, h: 15, max: 9, min: 9 },
-
-    // [DOMÍNIO 001: PROFISSIONAL SOLICITANTE]
     "001.000._medico":    { nativeKey: "doctor_name",    x: 60,  y: 609, w: 350, h: 15, max: 9, min: 9 },
     "001.000._crm":       { nativeKey: "crm",            x: 430, y: 592, w: 120, h: 15, max: 9, min: 9 }
   }
 };
-
 
 function desenharTarjaLateral(page, font, medico, crm) {
   const { width, height } = page.getSize();
@@ -1440,8 +1438,6 @@ function atualizarPreviewEmTempoReal() {
     </div>`;
 }
 
-
-/* GERADORES VISUAIS NATIVOS IMPRESSÃO (Mantidos com fundo branco e texto preto) */
 function gerarHTMLFichaEvolucao(d) {
   const d1 = d.admission ? new Date(d.admission) : new Date();
   const d2 = new Date();
@@ -1923,27 +1919,15 @@ $('generateBtn').addEventListener('click', async () => {
         const config = mapToUse[key];
         let value = rawMasterData[config.nativeKey];
 
-        // --- INTERCEPTAÇÃO E FORMATAÇÃO AUTOMÁTICA ---
         if (value && value.trim() !== '') {
-          // 1. Formatar Data de Nascimento (Inverte de AAAA-MM-DD para DD/MM/AAAA)
           if (config.nativeKey === 'birth' && value.includes('-')) {
             value = value.split('-').reverse().join('/');
           }
-
-          // 2. Lógica do Sexo (Marcar 'X' no APAC)
           if (config.nativeKey === 'gender' && mapToUse === STATIC_MAPS.APAC) {
-            if (value === 'Masculino') {
-              config.x = 435; // Posição do 'X' Masculino
-              value = 'X';
-            } else if (value === 'Feminino') {
-              config.x = 485; // Posição do 'X' Feminino
-              value = 'X';
-            } else {
-              value = '';
-            }
+            if (value === 'Masculino') { config.x = 435; value = 'X'; } 
+            else if (value === 'Feminino') { config.x = 485; value = 'X'; } 
+            else { value = ''; }
           }
-
-          // 3. Montar Justificativa Completa (HDA + Ex Físico + Labs) no APAC
           if (config.nativeKey === 'assessment' && mapToUse === STATIC_MAPS.APAC) {
             const hda = rawMasterData['hda'] ? `HDA: ${rawMasterData['hda']}\n` : '';
             const ef = rawMasterData['physical_exam'] ? `Exame Físico: ${rawMasterData['physical_exam']}\n` : '';
@@ -1951,7 +1935,6 @@ $('generateBtn').addEventListener('click', async () => {
             value = (hda + ef + labs).trim(); 
           }
         }
-        // ---------------------------------------------
 
         if (value && value.trim() !== '') {
           page.drawText(value, {
