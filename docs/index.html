@@ -16,8 +16,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <meta charset="utf-8">
-  <!-- OTIMIZAÇÃO: Bloqueio de zoom automático no mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- OTIMIZAÇÃO: Tag Meta padrão restaurada para permitir zoom livre e rolagem -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MedUnity Delyone — Clinical Document Engine</title>
   
   <style>
@@ -48,25 +48,19 @@
       --max: 1180px;
     }
 
-    /* OTIMIZAÇÃO: Trava geral de vazamento lateral e ajuste de texto */
-    html, body {
-      overflow-x: hidden;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      -webkit-text-size-adjust: 100%;
-    }
-
     * { box-sizing: border-box; }
 
+    /* OTIMIZAÇÃO: overflow-x: hidden removido para devolver a fluidez lateral */
     body {
+      margin: 0;
+      padding: 0;
       background: var(--bg);
       color: var(--ink);
       font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-text-size-adjust: 100%;
     }
 
-    /* OTIMIZAÇÃO: Limite de largura para evitar quebra de layout */
-    button, input, select, textarea { font: inherit; max-width: 100%; }
+    button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
 
     /* LAYOUT BASE */
@@ -75,15 +69,15 @@
       margin: auto;
     }
 
-    /* HEADER - OTIMIZADO PARA FICAR FIXO */
+    /* HEADER FIXO MANTIDO (Funciona bem e ajuda na navegação) */
     .site-header {
       position: -webkit-sticky;
       position: sticky;
       top: 0;
       z-index: 9999;
-      background: rgba(240, 247, 252, 0.85); 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(240, 247, 252, 0.9); 
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line);
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
@@ -130,41 +124,21 @@
       transition: all 0.2s;
       white-space: nowrap;
     }
-    .header-link:hover {
-      background: var(--bsoft);
-      color: var(--dark);
-    }
+    .header-link:hover { background: var(--bsoft); color: var(--dark); }
     .header-status { font-size: 12px; color: var(--muted); }
     .dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--ok);
-      margin-right: 8px;
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--ok); margin-right: 8px;
     }
 
     /* HERO SECTION */
     .hero { padding: 55px 22px 32px; }
     .eyebrow, .chip, .badge {
-      display: inline-flex;
-      padding: 7px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 750;
+      display: inline-flex; padding: 7px 12px; border-radius: 999px;
+      font-size: 11px; font-weight: 750;
     }
-    .eyebrow {
-      background: var(--bsoft);
-      color: var(--brand);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .hero h1 {
-      font-size: clamp(32px, 5vw, 54px);
-      line-height: 1.04;
-      letter-spacing: -.045em;
-      margin: 18px 0 10px;
-    }
+    .eyebrow { background: var(--bsoft); color: var(--brand); letter-spacing: .08em; text-transform: uppercase; }
+    .hero h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.04; letter-spacing: -.045em; margin: 18px 0 10px; }
     .hero h1 span { color: var(--brand); }
     .hero p { max-width: 760px; color: var(--muted); font-size: 18px; }
     .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -182,60 +156,33 @@
       margin-bottom: 20px;
     }
     .card-head { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
-    .kicker {
-      font-size: 11px;
-      color: var(--brand);
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
+    .kicker { font-size: 11px; color: var(--brand); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
     .title { margin: 2px 0; font-size: 19px; color: var(--ink); }
     .desc { margin: 4px 0; color: var(--muted); font-size: 13px; }
     .badge { background: var(--gsoft); color: var(--gold); border: 1px solid var(--gold); }
     
-    .notice {
-      padding: 11px 13px;
-      border-radius: 11px;
-      background: var(--soft);
-      border: 1px solid var(--brand);
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 15px;
-    }
+    .notice { padding: 11px 13px; border-radius: 11px; background: var(--soft); border: 1px solid var(--brand); color: var(--muted); font-size: 12px; margin-bottom: 15px; }
 
-    /* FORMS */
+    /* FORMS & GRIDS ORIGINAIS RESTAURADOS */
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .full, .section { grid-column: 1 / -1; }
     .section {
-      margin-top: 7px;
-      padding: 10px 12px;
-      border-radius: 11px;
-      background: var(--bsoft);
-      color: var(--brand);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .05em;
-      text-transform: uppercase;
+      margin-top: 7px; padding: 10px 12px; border-radius: 11px; background: var(--bsoft);
+      color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
     }
     label { display: block; margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
     input, select, textarea {
       width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: var(--soft);
-      color: var(--ink);
-      padding: 11px 12px;
-      outline: 0;
-      transition: border-color 0.2s;
+      border: 1px solid var(--line); border-radius: 11px; background: var(--soft);
+      color: var(--ink); padding: 11px 12px; outline: 0; transition: border-color 0.2s;
     }
     textarea { resize: vertical; min-height: 82px; }
     input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15); }
     
-    /* GRIDS RESPONSIVOS (Substituindo estilos inline) */
-    .responsive-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .responsive-grid-presc { display: grid; grid-template-columns: 80px 2fr 110px; gap: 8px; margin-bottom: 12px; }
-    .responsive-grid-apac { display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px; }
-    .exam-input-row { display: grid; grid-template-columns: 1fr 80px 110px; gap: 8px; margin-bottom: 12px; }
+    .row-presc { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .row-presc-act { display: grid; grid-template-columns: 80px 2fr 110px; gap: 8px; margin-bottom: 12px; }
+    .row-apac { display: grid; grid-template-columns: 2fr 1fr 80px; gap: 8px; margin-top: 6px; }
+    .row-exam { display: grid; grid-template-columns: 1fr 80px 110px; gap: 8px; margin-bottom: 12px; }
 
     /* BUTTONS */
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
@@ -247,84 +194,33 @@
     .gold { background: var(--gsoft); color: var(--gold); border: 1px solid var(--gold); }
     .danger { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger); }
 
-    /* STATUS & SUMMARIES */
-    .status {
-      margin-top: 14px;
-      padding: 11px 13px;
-      border-radius: 11px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      font-size: 12px;
-      color: var(--muted);
-    }
+    /* STATUS, SUMMARIES & DROPS */
+    .status { margin-top: 14px; padding: 11px 13px; border-radius: 11px; background: var(--soft); border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
     .status.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
-    .summary {
-      margin-top: 13px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: var(--soft);
-      color: var(--muted);
-      font-size: 12px;
-    }
-    
-    /* PDF DROPZONE */
-    .drop {
-      display: block;
-      border: 1.5px dashed var(--line);
-      border-radius: 15px;
-      padding: 28px;
-      text-align: center;
-      background: var(--soft);
-      cursor: pointer;
-      color: var(--muted);
-    }
+    .summary { margin-top: 13px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--soft); color: var(--muted); font-size: 12px; }
+    .drop { display: block; border: 1.5px dashed var(--line); border-radius: 15px; padding: 28px; text-align: center; background: var(--soft); cursor: pointer; color: var(--muted); }
     .drop.drag { border-color: var(--brand); background: var(--bsoft); color: var(--ink); }
     .drop input { display: none; }
-    
     .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
     .field { padding: 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 12px; background: var(--soft); }
     .field small { color: var(--muted); }
     
-    /* PREVIEW BLOCK */
-    .preview {
-      min-height: 170px;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--soft);
-      font-family: Georgia, serif;
-    }
+    /* PREVIEW & ARCHITECTURE */
+    .preview { min-height: 170px; padding: 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--soft); font-family: Georgia, serif; }
     .empty { color: var(--muted); font-size: 13px; }
-    
-    /* ARCHITECTURE */
     .architecture { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
     .arch { padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: var(--soft); }
-    .num {
-      width: 28px;
-      height: 28px;
-      border-radius: 99px;
-      background: var(--bsoft);
-      color: var(--brand);
-      display: grid;
-      place-items: center;
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
+    .num { width: 28px; height: 28px; border-radius: 99px; background: var(--bsoft); color: var(--brand); display: grid; place-items: center; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
     .arch strong { display: block; font-size: 13px; color: var(--ink); }
     .arch span { font-size: 12px; color: var(--muted); }
     
     /* FOOTER & TOAST */
     footer { border-top: 1px solid var(--line); background: var(--surface); }
     .footer-inner { padding: 24px 22px; display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
-    .toast {
-      position: fixed; right: 18px; bottom: 18px; background: #000; color: #fff; padding: 12px 15px;
-      border-radius: 12px; opacity: 0; transform: translateY(10px); transition: .25s; z-index: 20;
-    }
+    .toast { position: fixed; right: 18px; bottom: 18px; background: #000; color: #fff; padding: 12px 15px; border-radius: 12px; opacity: 0; transform: translateY(10px); transition: .25s; z-index: 20; }
     .toast.show { opacity: 1; transform: none; }
 
-    /* MODULES (PRESCRIPTION & EXAMS) */
+    /* EXAMS & PRESCRIPTION LISTS */
     .exam-builder-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-top: 15px; }
     .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
     .exam-title { font-size: 13px; font-weight: 800; color: var(--brand); letter-spacing: 0.05em; text-transform: uppercase; }
@@ -339,16 +235,7 @@
     .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
     .btn-remove:hover { background: var(--danger-soft); }
 
-    .btn-move {
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--brand);
-      font-size: 11px;
-      padding: 6px 12px; 
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+    .btn-move { background: transparent; border: 1px solid var(--line); color: var(--brand); font-size: 11px; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
     .btn-move:hover:not(:disabled) { background: var(--bsoft); }
     .btn-move:disabled { opacity: 0.3; cursor: not-allowed; }
     .action-group { display: flex; gap: 6px; flex-shrink: 0; }
@@ -359,24 +246,20 @@
     .shift-panel.active { border-color: var(--ok); background: var(--ok-soft); }
     .shift-panel.active .shift-timer { color: var(--ok); }
 
-    /* RESPONSIVENESS */
+    /* ========================================================
+       MEDIA QUERIES - RESTAURADAS PARA FLUIDEZ
+       ======================================================== */
     @media (max-width: 850px) {
       .grid { grid-template-columns: 1fr; }
       .architecture { grid-template-columns: 1fr; }
     }
+    
     @media (max-width: 700px) {
       .form-grid { grid-template-columns: 1fr; }
       .full, .section { grid-column: auto; }
       .fields { grid-template-columns: 1fr; }
     }
-    /* OTIMIZAÇÃO: Tratamento para telas pequenas e reajuste dos grids complexos */
-    @media (max-width: 600px) {
-      .responsive-grid-3, .responsive-grid-presc, .responsive-grid-apac, .exam-input-row {
-        grid-template-columns: 1fr !important;
-      }
-      .responsive-grid-presc { gap: 12px; }
-      .action-group { flex-direction: column; }
-    }
+
     @media (max-width: 560px) {
       .header-status { display: none; }
       .card { padding: 18px; }
@@ -388,15 +271,10 @@
       .site-header, .hero, aside, footer, .notice, #masterCard, #shiftCard, #authCard, .card-head, #print-btn-wrapper { display: none !important; }
       .card:not(:has(#preview)) { display: none !important; }
       body, main, .grid, section, .card, .preview {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        background: transparent !important; border: none !important; box-shadow: none !important;
+        margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important;
       }
-      html, body { height: auto !important; min-height: auto !important; }
+      html, body { height: auto !important; min-height: auto !important; overflow: visible !important; }
       #print-area { position: static !important; visibility: visible !important; width: 100% !important; margin: 0 !important; }
     }
   </style>
