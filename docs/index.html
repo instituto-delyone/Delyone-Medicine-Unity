@@ -16,7 +16,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <meta charset="utf-8">
-  <!-- OTIMIZAÇÃO: Tag Meta padrão restaurada para permitir zoom livre e rolagem -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MedUnity Delyone — Clinical Document Engine</title>
   
@@ -50,7 +49,6 @@
 
     * { box-sizing: border-box; }
 
-    /* OTIMIZAÇÃO: overflow-x: hidden removido para devolver a fluidez lateral */
     body {
       margin: 0;
       padding: 0;
@@ -69,7 +67,7 @@
       margin: auto;
     }
 
-    /* HEADER FIXO MANTIDO (Funciona bem e ajuda na navegação) */
+    /* HEADER FIXO */
     .site-header {
       position: -webkit-sticky;
       position: sticky;
@@ -88,55 +86,18 @@
       align-items: center;
       justify-content: space-between;
     }
-    .brand {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-    }
-    .brand-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(145deg, var(--brand), var(--dark));
-      color: #fff;
-      font-weight: 800;
-    }
+    .brand { display: flex; gap: 14px; align-items: center; text-decoration: none; color: inherit; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(145deg, var(--brand), var(--dark)); color: #fff; font-weight: 800; }
     .brand-title { font-weight: 750; }
-    .brand-subtitle {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .header-link {
-      font-size: 11px;
-      color: var(--brand);
-      text-decoration: none;
-      font-weight: 800;
-      padding: 6px 14px;
-      background: var(--soft);
-      border-radius: 99px;
-      border: 1px solid var(--line);
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
+    .brand-subtitle { font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+    .header-link { font-size: 11px; color: var(--brand); text-decoration: none; font-weight: 800; padding: 6px 14px; background: var(--soft); border-radius: 99px; border: 1px solid var(--line); transition: all 0.2s; white-space: nowrap; }
     .header-link:hover { background: var(--bsoft); color: var(--dark); }
     .header-status { font-size: 12px; color: var(--muted); }
-    .dot {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-      background: var(--ok); margin-right: 8px;
-    }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 8px; }
 
     /* HERO SECTION */
     .hero { padding: 55px 22px 32px; }
-    .eyebrow, .chip, .badge {
-      display: inline-flex; padding: 7px 12px; border-radius: 999px;
-      font-size: 11px; font-weight: 750;
-    }
+    .eyebrow, .chip, .badge { display: inline-flex; padding: 7px 12px; border-radius: 999px; font-size: 11px; font-weight: 750; }
     .eyebrow { background: var(--bsoft); color: var(--brand); letter-spacing: .08em; text-transform: uppercase; }
     .hero h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.04; letter-spacing: -.045em; margin: 18px 0 10px; }
     .hero h1 span { color: var(--brand); }
@@ -147,35 +108,53 @@
     /* MAIN GRID & CARDS */
     main { padding: 0 22px 70px; }
     .grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr); gap: 20px; }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
-    }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05); margin-bottom: 20px; }
     .card-head { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
     .kicker { font-size: 11px; color: var(--brand); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
     .title { margin: 2px 0; font-size: 19px; color: var(--ink); }
     .desc { margin: 4px 0; color: var(--muted); font-size: 13px; }
     .badge { background: var(--gsoft); color: var(--gold); border: 1px solid var(--gold); }
-    
     .notice { padding: 11px 13px; border-radius: 11px; background: var(--soft); border: 1px solid var(--brand); color: var(--muted); font-size: 12px; margin-bottom: 15px; }
 
-    /* FORMS & GRIDS ORIGINAIS RESTAURADOS */
+    /* NOVO SISTEMA DE ACCORDIONS (GAVETAS EXPANSÍVEIS) */
+    .toggle-header {
+      margin-top: 20px; 
+      padding: 12px 16px; 
+      border-radius: 11px; 
+      background: var(--bsoft);
+      color: var(--brand); 
+      font-size: 11px; 
+      font-weight: 800; 
+      letter-spacing: .05em; 
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s, filter 0.2s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .toggle-header:hover { filter: brightness(0.95); }
+    .toggle-icon { font-size: 11px; transition: transform 0.3s ease; }
+    .toggle-header:not(.active) .toggle-icon { transform: rotate(-90deg); }
+    
+    .toggle-content {
+      margin-top: 12px;
+      margin-bottom: 15px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .toggle-content.collapsed { display: none; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* FORMS & GRIDS */
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .full, .section { grid-column: 1 / -1; }
-    .section {
-      margin-top: 7px; padding: 10px 12px; border-radius: 11px; background: var(--bsoft);
-      color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
-    }
+    .full { grid-column: 1 / -1; }
     label { display: block; margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line); border-radius: 11px; background: var(--soft);
-      color: var(--ink); padding: 11px 12px; outline: 0; transition: border-color 0.2s;
-    }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 11px; background: var(--soft); color: var(--ink); padding: 11px 12px; outline: 0; transition: border-color 0.2s; }
     textarea { resize: vertical; min-height: 82px; }
     input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15); }
     
@@ -185,7 +164,7 @@
     .row-exam { display: grid; grid-template-columns: 1fr 80px 110px; gap: 8px; margin-bottom: 12px; }
 
     /* BUTTONS */
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
     .btn { border: 0; border-radius: 11px; padding: 10px 14px; font-weight: 700; font-size: 13px; transition: background 0.2s; }
     .primary { background: var(--dark); color: #fff; }
     .primary:hover { background: #0056b3; }
@@ -234,7 +213,6 @@
     .exam-item .code-badge { background: var(--bsoft); color: var(--brand); font-weight: 700; padding: 2px 6px; border-radius: 6px; font-size: 10px; margin-right: 6px; }
     .btn-remove { background: none; border: none; color: var(--danger); font-weight: bold; padding: 2px 6px; border-radius: 6px; }
     .btn-remove:hover { background: var(--danger-soft); }
-
     .btn-move { background: transparent; border: 1px solid var(--line); color: var(--brand); font-size: 11px; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
     .btn-move:hover:not(:disabled) { background: var(--bsoft); }
     .btn-move:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -247,33 +225,27 @@
     .shift-panel.active .shift-timer { color: var(--ok); }
 
     /* ========================================================
-       MEDIA QUERIES - RESTAURADAS PARA FLUIDEZ
+       MEDIA QUERIES 
        ======================================================== */
     @media (max-width: 850px) {
       .grid { grid-template-columns: 1fr; }
       .architecture { grid-template-columns: 1fr; }
     }
-    
     @media (max-width: 700px) {
       .form-grid { grid-template-columns: 1fr; }
-      .full, .section { grid-column: auto; }
+      .full { grid-column: auto; }
       .fields { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 560px) {
       .header-status { display: none; }
       .card { padding: 18px; }
       .footer-inner { flex-direction: column; }
     }
-
     /* PRINT STYLES */
     @media print {
-      .site-header, .hero, aside, footer, .notice, #masterCard, #shiftCard, #authCard, .card-head, #print-btn-wrapper { display: none !important; }
+      .site-header, .hero, aside, footer, .notice, #masterCard, #shiftCard, #authCard, .card-head, #print-btn-wrapper, .toggle-icon { display: none !important; }
       .card:not(:has(#preview)) { display: none !important; }
-      body, main, .grid, section, .card, .preview {
-        background: transparent !important; border: none !important; box-shadow: none !important;
-        margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important;
-      }
+      body, main, .grid, section, .card, .preview { background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       html, body { height: auto !important; min-height: auto !important; overflow: visible !important; }
       #print-area { position: static !important; visibility: visible !important; width: 100% !important; margin: 0 !important; }
     }
@@ -336,166 +308,213 @@
         <div class="notice">A persistência é mantida na memória local da sua máquina. Para preservar os dados entre plantões, utilize o botão de "Gerar ZIP" no painel lateral.</div>
         
         <form id="masterForm" onsubmit="event.preventDefault();saveMaster()">
-          <div class="form-grid">
-            
-            <!-- DOMÍNIO 000: IDENTIFICAÇÃO E DADOS DEMOGRÁFICOS -->
-            <div class="section" data-csi-domain="000">01 · Identificação</div>
-            <div>
-              <label>Nome completo</label>
-              <input id="master_patient_name" type="text" placeholder="Nome do paciente" data-csi="000.001." data-csi-label="Nome Civil">
+          
+          <!-- DOMÍNIO 000: IDENTIFICAÇÃO E DADOS DEMOGRÁFICOS -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="000">
+            <span>01 · Identificação</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div>
+                <label>Nome completo</label>
+                <input id="master_patient_name" type="text" placeholder="Nome do paciente" data-csi="000.001." data-csi-label="Nome Civil">
+              </div>
+              <div>
+                <label>Nome social</label>
+                <input id="master_social_name" type="text" data-csi="000.001." data-csi-label="Nome Social">
+              </div>
+              <div>
+                <label>CPF</label>
+                <input id="master_cpf" type="text" placeholder="000.000.000-00" data-csi="000.000." data-csi-label="Documento CPF">
+              </div>
+              <div>
+                <label>CNS</label>
+                <input id="master_cns" type="text" data-csi="000.000." data-csi-label="Cartão Nacional de Saúde">
+              </div>
+              <div>
+                <label>Data de nascimento</label>
+                <input id="master_birth" type="date" data-csi="000.002." data-csi-label="Data de Nascimento">
+              </div>
+              <div>
+                <label>Idade</label>
+                <input id="master_age" type="number" min="0" max="130" data-csi="000.002." data-csi-label="Idade Cronológica">
+              </div>
+              <div>
+                <label>Sexo</label>
+                <select id="master_gender" data-csi="000.003." data-csi-label="Sexo Biológico / Gênero">
+                  <option value="">Selecione</option>
+                  <option>Feminino</option><option>Masculino</option>
+                  <option>Intersexo</option><option>Não informado</option>
+                </select>
+              </div>
+              <div>
+                <label>Nome da mãe</label>
+                <input id="master_mother_name" type="text" data-csi="000.004." data-csi-label="Filiação / Genitora">
+              </div>
+              <div>
+                <label>Município</label>
+                <input id="master_municipality" type="text" placeholder="Goiânia - GO" data-csi="000.006." data-csi-label="Procedência / Município">
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input id="master_phone" type="text" data-csi="000.000." data-csi-label="Contato Telefônico">
+              </div>
+              <div class="full">
+                <label>Endereço</label>
+                <input id="master_address" type="text" data-csi="000.006." data-csi-label="Endereço Residencial">
+              </div>
             </div>
-            <div>
-              <label>Nome social</label>
-              <input id="master_social_name" type="text" data-csi="000.001." data-csi-label="Nome Social">
+          </div>
+
+          <!-- DOMÍNIO 001: CONTEXTO ASSISTENCIAL -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="001">
+            <span>02 · Contexto assistencial</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div>
+                <label>Prontuário / registro</label>
+                <input id="master_record_number" type="text" data-csi="001.000." data-csi-label="Número de Prontuário">
+              </div>
+              <div>
+                <label>Data de atendimento / internação</label>
+                <input id="master_admission" type="date" data-csi="001.003." data-csi-label="Data Admissional">
+              </div>
+              <div>
+                <label>Setor / unidade</label>
+                <input id="master_sector" type="text" placeholder="PS, enfermaria, UTI..." data-csi="001.001." data-csi-label="Unidade / Nível de Atenção">
+              </div>
+              <div>
+                <label>AIH / atendimento</label>
+                <input id="master_aih" type="text" data-csi="001.000." data-csi-label="Identificador AIH">
+              </div>
             </div>
-            <div>
-              <label>CPF</label>
-              <input id="master_cpf" type="text" placeholder="000.000.000-00" data-csi="000.000." data-csi-label="Documento CPF">
+          </div>
+
+          <!-- DOMÍNIO 002: ANAMNESE E HISTÓRIA CLÍNICA -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="002">
+            <span>03 · Anamnese</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div class="full">
+                <label>Queixa principal e duração (QPD)</label>
+                <input id="master_qpp" type="text" data-csi="002.001." data-csi-label="Queixa Principal (QP)">
+              </div>
+              <div class="full">
+                <label>História da doença atual (HDA)</label>
+                <textarea id="master_hda" rows="4" data-csi="002.002." data-csi-label="História da Doença Atual (HDA)"></textarea>
+              </div>
+              <div class="full">
+                <label>Antecedentes pessoais / comorbidades</label>
+                <textarea id="master_antecedents" data-csi="002.003." data-csi-label="Antecedentes Pessoais"></textarea>
+              </div>
+              <div class="full">
+                <label>Medicações em uso</label>
+                <textarea id="master_medications" data-csi="002.005." data-csi-label="Medicamentos em Uso Prévio"></textarea>
+              </div>
+              <div class="full">
+                <label>Alergias / reações adversas</label>
+                <textarea id="master_allergies" data-csi="002.003." data-csi-label="Alergias e Reações Adversas"></textarea>
+              </div>
+              <div class="full">
+                <label>História familiar</label>
+                <textarea id="master_family_history" data-csi="002.003." data-csi-label="História Familiar"></textarea>
+              </div>
+              <div class="full">
+                <label>História social / hábitos</label>
+                <textarea id="master_social_history" data-csi="002.004." data-csi-label="Hábitos e Fatores de Risco"></textarea>
+              </div>
             </div>
-            <div>
-              <label>CNS</label>
-              <input id="master_cns" type="text" data-csi="000.000." data-csi-label="Cartão Nacional de Saúde">
+          </div>
+
+          <!-- DOMÍNIO 003: EXAME FÍSICO E PROPEDÊUTICA ARMADA -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="003">
+            <span>04 · Exame clínico</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div class="full">
+                <label>Sinais vitais</label>
+                <input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C" data-csi="003.001." data-csi-label="Sinais Vitais">
+              </div>
+              <div class="full">
+                <label>Exame físico</label>
+                <textarea id="master_physical_exam" rows="4" data-csi="003.000." data-csi-label="Exame Físico Geral e Segmentar"></textarea>
+              </div>
             </div>
-            <div>
-              <label>Data de nascimento</label>
-              <input id="master_birth" type="date" data-csi="000.002." data-csi-label="Data de Nascimento">
+          </div>
+
+          <!-- DOMÍNIO 005: INVESTIGAÇÃO COMPLEMENTAR E RESULTADOS -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="005">
+            <span>05 · Resultados de Exames</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div class="full">
+                <label>Exames laboratoriais</label>
+                <textarea id="master_labs" rows="4" data-csi="005.001." data-csi-label="Exames Laboratoriais"></textarea>
+              </div>
+              <div class="full">
+                <label>Imagem / exames complementares</label>
+                <textarea id="master_imaging" rows="4" placeholder="USG, TC, RM, RX, ECG etc." data-csi="005.003." data-csi-label="Exames de Imagem"></textarea>
+              </div>
+              <div class="full">
+                <label>Outros resultados / documentos</label>
+                <textarea id="master_other_results" data-csi="005.004." data-csi-label="Biomarcadores e Outros"></textarea>
+              </div>
             </div>
-            <div>
-              <label>Idade</label>
-              <input id="master_age" type="number" min="0" max="130" data-csi="000.002." data-csi-label="Idade Cronológica">
+          </div>
+
+          <!-- DOMÍNIO 004: RACIOCÍNIO DIAGNÓSTICO -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="004">
+            <span>06 · Avaliação clínica</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div class="full">
+                <label>Hipótese diagnóstica / diagnóstico</label>
+                <input id="master_hypothesis" type="text" data-csi="004.001." data-csi-label="Diagnóstico Nosológico Principal">
+              </div>
+              <div>
+                <label>CID-10</label>
+                <input id="master_cid10" type="text" data-csi="004.001." data-csi-label="Classificação CID-10">
+              </div>
+              <div>
+                <label>Diagnósticos diferenciais</label>
+                <input id="master_differential" type="text" data-csi="004.003." data-csi-label="Diagnósticos Diferenciais">
+              </div>
+              <div class="full">
+                <label>Impressão / avaliação clínica</label>
+                <textarea id="master_assessment" data-csi="004.000." data-csi-label="Impressão Diagnóstica / Raciocínio"></textarea>
+              </div>
             </div>
-            <div>
-              <label>Sexo</label>
-              <select id="master_gender" data-csi="000.003." data-csi-label="Sexo Biológico / Gênero">
-                <option value="">Selecione</option>
-                <option>Feminino</option><option>Masculino</option>
-                <option>Intersexo</option><option>Não informado</option>
-              </select>
-            </div>
-            <div>
-              <label>Nome da mãe</label>
-              <input id="master_mother_name" type="text" data-csi="000.004." data-csi-label="Filiação / Genitora">
-            </div>
-            <div>
-              <label>Município</label>
-              <input id="master_municipality" type="text" placeholder="Goiânia - GO" data-csi="000.006." data-csi-label="Procedência / Município">
-            </div>
-            <div>
-              <label>Telefone</label>
-              <input id="master_phone" type="text" data-csi="000.000." data-csi-label="Contato Telefônico">
-            </div>
-            <div class="full">
-              <label>Endereço</label>
-              <input id="master_address" type="text" data-csi="000.006." data-csi-label="Endereço Residencial">
+          </div>
+
+          <!-- DOMÍNIO 006: CONDUTA E TERAPÊUTICA INTEGRADA -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="006">
+            <span>07 · Conduta e Prescrição</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div class="full">
+                <label>Plano terapêutico / conduta geral</label>
+                <textarea id="master_plan" rows="3" data-csi="006.000." data-csi-label="Plano Terapêutico Global"></textarea>
+              </div>
+              <div class="full">
+                <label>Evolução / observações diárias</label>
+                <textarea id="master_evolution" rows="3" data-csi="006.000." data-csi-label="Evolução Clínica Diária"></textarea>
+              </div>
             </div>
 
-            <!-- DOMÍNIO 001: CONTEXTO ASSISTENCIAL -->
-            <div class="section" data-csi-domain="001">02 · Contexto assistencial</div>
-            <div>
-              <label>Prontuário / registro</label>
-              <input id="master_record_number" type="text" data-csi="001.000." data-csi-label="Número de Prontuário">
-            </div>
-            <div>
-              <label>Data de atendimento / internação</label>
-              <input id="master_admission" type="date" data-csi="001.003." data-csi-label="Data Admissional">
-            </div>
-            <div>
-              <label>Setor / unidade</label>
-              <input id="master_sector" type="text" placeholder="PS, enfermaria, UTI..." data-csi="001.001." data-csi-label="Unidade / Nível de Atenção">
-            </div>
-            <div>
-              <label>AIH / atendimento</label>
-              <input id="master_aih" type="text" data-csi="001.000." data-csi-label="Identificador AIH">
-            </div>
-
-            <!-- DOMÍNIO 002: ANAMNESE E HISTÓRIA CLÍNICA -->
-            <div class="section" data-csi-domain="002">03 · Anamnese</div>
-            <div class="full">
-              <label>Queixa principal e duração (QPD)</label>
-              <input id="master_qpp" type="text" data-csi="002.001." data-csi-label="Queixa Principal (QP)">
-            </div>
-            <div class="full">
-              <label>História da doença atual (HDA)</label>
-              <textarea id="master_hda" rows="4" data-csi="002.002." data-csi-label="História da Doença Atual (HDA)"></textarea>
-            </div>
-            <div class="full">
-              <label>Antecedentes pessoais / comorbidades</label>
-              <textarea id="master_antecedents" data-csi="002.003." data-csi-label="Antecedentes Pessoais"></textarea>
-            </div>
-            <div class="full">
-              <label>Medicações em uso</label>
-              <textarea id="master_medications" data-csi="002.005." data-csi-label="Medicamentos em Uso Prévio"></textarea>
-            </div>
-            <div class="full">
-              <label>Alergias / reações adversas</label>
-              <textarea id="master_allergies" data-csi="002.003." data-csi-label="Alergias e Reações Adversas"></textarea>
-            </div>
-            <div class="full">
-              <label>História familiar</label>
-              <textarea id="master_family_history" data-csi="002.003." data-csi-label="História Familiar"></textarea>
-            </div>
-            <div class="full">
-              <label>História social / hábitos</label>
-              <textarea id="master_social_history" data-csi="002.004." data-csi-label="Hábitos e Fatores de Risco"></textarea>
-            </div>
-
-            <!-- DOMÍNIO 003: EXAME FÍSICO E PROPEDÊUTICA ARMADA -->
-            <div class="section" data-csi-domain="003">04 · Exame clínico</div>
-            <div class="full">
-              <label>Sinais vitais</label>
-              <input id="master_vitals" type="text" placeholder="PA 120/80 · FC 80 · FR 16 · SpO₂ 98% · T 36,5°C" data-csi="003.001." data-csi-label="Sinais Vitais">
-            </div>
-            <div class="full">
-              <label>Exame físico</label>
-              <textarea id="master_physical_exam" rows="4" data-csi="003.000." data-csi-label="Exame Físico Geral e Segmentar"></textarea>
-            </div>
-
-            <!-- DOMÍNIO 005: INVESTIGAÇÃO COMPLEMENTAR E RESULTADOS -->
-            <div class="section" data-csi-domain="005">05 · Exames complementares e resultados</div>
-            <div class="full">
-              <label>Exames laboratoriais</label>
-              <textarea id="master_labs" rows="4" data-csi="005.001." data-csi-label="Exames Laboratoriais"></textarea>
-            </div>
-            <div class="full">
-              <label>Imagem / exames complementares</label>
-              <textarea id="master_imaging" rows="4" placeholder="USG, TC, RM, RX, ECG etc." data-csi="005.003." data-csi-label="Exames de Imagem"></textarea>
-            </div>
-            <div class="full">
-              <label>Outros resultados / documentos</label>
-              <textarea id="master_other_results" data-csi="005.004." data-csi-label="Biomarcadores e Outros"></textarea>
-            </div>
-
-            <!-- DOMÍNIO 004: RACIOCÍNIO DIAGNÓSTICO -->
-            <div class="section" data-csi-domain="004">06 · Avaliação clínica</div>
-            <div class="full">
-              <label>Hipótese diagnóstica / diagnóstico</label>
-              <input id="master_hypothesis" type="text" data-csi="004.001." data-csi-label="Diagnóstico Nosológico Principal">
-            </div>
-            <div>
-              <label>CID-10</label>
-              <input id="master_cid10" type="text" data-csi="004.001." data-csi-label="Classificação CID-10">
-            </div>
-            <div>
-              <label>Diagnósticos diferenciais</label>
-              <input id="master_differential" type="text" data-csi="004.003." data-csi-label="Diagnósticos Diferenciais">
-            </div>
-            <div class="full">
-              <label>Impressão / avaliação clínica</label>
-              <textarea id="master_assessment" data-csi="004.000." data-csi-label="Impressão Diagnóstica / Raciocínio"></textarea>
-            </div>
-
-            <!-- DOMÍNIO 006: CONDUTA E TERAPÊUTICA INTEGRADA -->
-            <div class="section" data-csi-domain="006">07 · Conduta / Plano & Prescrição Integrada</div>
-            <div class="full">
-              <label>Plano terapêutico / conduta geral</label>
-              <textarea id="master_plan" rows="3" data-csi="006.000." data-csi-label="Plano Terapêutico Global"></textarea>
-            </div>
-            <div class="full">
-              <label>Evolução / observações diárias</label>
-              <textarea id="master_evolution" rows="3" data-csi="006.000." data-csi-label="Evolução Clínica Diária"></textarea>
-            </div>
-
-            <!-- CONSTRUTOR DINÂMICO DE PRESCRIÇÃO MÉDICA (CSI 006.002) -->
+            <!-- CONSTRUTOR DINÂMICO DE PRESCRIÇÃO MÉDICA -->
             <div class="full exam-builder-card" style="border-left: 4px solid var(--brand);" data-csi="006.002." data-csi-label="Terapia Farmacológica Específica">
               <div class="exam-header">
                 <div class="exam-title">💊 Prescrição Médica & Medicamentos</div>
@@ -505,8 +524,7 @@
                 </div>
               </div>
               
-              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
-              <div class="responsive-grid-3">
+              <div class="row-presc">
                 <input type="text" id="inputPrescNome" placeholder="Medicamento / Princípio Ativo (Ex: Noradrenalina)" list="listaSugestoesPresc">
                 <datalist id="listaSugestoesPresc">
                   <option value="DIPIRONA SÓDICA 1G + AD 10ML">
@@ -522,11 +540,10 @@
                 <input type="text" id="inputPrescQtd" placeholder="Qtd / Volume">
               </div>
 
-              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
-              <div class="responsive-grid-presc">
+              <div class="row-presc-act">
                 <input type="text" id="inputPrescVia" placeholder="Via (EV...)" style="text-align: center; text-transform: uppercase;">
                 <input type="text" id="inputPrescPosologia" placeholder="Posologia / Horários">
-                <button type="button" class="btn primary" style="width: 100%; padding: 11px 8px;" onclick="adicionarItemPrescricao()">+ Adicionar</button>
+                <button type="button" class="btn primary" style="padding: 11px 8px;" onclick="adicionarItemPrescricao()">+ Adicionar</button>
               </div>
 
               <div class="exam-list-box">
@@ -535,24 +552,35 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- RESPONSÁVEL TÉCNICO -->
-            <div class="section" data-csi-domain="001">08 · Profissional responsável</div>
-            <div>
-              <label>Médico responsável</label>
-              <input id="master_doctor_name" type="text" placeholder="Nome do médico" data-csi="001.000." data-csi-label="Profissional Solicitante">
+          <!-- RESPONSÁVEL TÉCNICO -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="001">
+            <span>08 · Profissional responsável</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="form-grid">
+              <div>
+                <label>Médico responsável</label>
+                <input id="master_doctor_name" type="text" placeholder="Nome do médico" data-csi="001.000." data-csi-label="Profissional Solicitante">
+              </div>
+              <div>
+                <label>CRM / UF</label>
+                <input id="master_crm" type="text" placeholder="CRM-GO 00000" data-csi="001.000." data-csi-label="Registro Profissional CRM">
+              </div>
             </div>
-            <div>
-              <label>CRM / UF</label>
-              <input id="master_crm" type="text" placeholder="CRM-GO 00000" data-csi="001.000." data-csi-label="Registro Profissional CRM">
-            </div>
+          </div>
 
-            <!-- DOMÍNIO 006.003: PROCEDIMENTOS (APAC) -->
-            <div class="section" data-csi-domain="006">09 · Solicitação de Procedimentos (APAC)</div>
+          <!-- DOMÍNIO 006.003: PROCEDIMENTOS (APAC) -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="006">
+            <span>09 · Solicitação de Procedimentos (APAC)</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line);" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Principal (01)</strong>
-              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
-              <div class="responsive-grid-apac">
+              <div class="row-apac">
                 <input id="master_proc1_name" type="text" placeholder="Nome do Procedimento 1">
                 <input id="master_proc1_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc1_qty" type="text" placeholder="Qtd" value="1">
@@ -560,8 +588,7 @@
             </div>
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (02)</strong>
-              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
-              <div class="responsive-grid-apac">
+              <div class="row-apac">
                 <input id="master_proc2_name" type="text" placeholder="Nome do Procedimento 2">
                 <input id="master_proc2_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc2_qty" type="text" placeholder="Qtd">
@@ -569,16 +596,21 @@
             </div>
             <div class="full" style="background: var(--soft); padding: 12px; border-radius: 11px; border: 1px solid var(--line); margin-top: 8px;" data-csi="006.003.">
               <strong style="font-size: 12px; color: var(--brand);">Procedimento Secundário (03)</strong>
-              <!-- OTIMIZAÇÃO: Classe inserida para responsividade -->
-              <div class="responsive-grid-apac">
+              <div class="row-apac">
                 <input id="master_proc3_name" type="text" placeholder="Nome do Procedimento 3">
                 <input id="master_proc3_code" type="text" placeholder="Código SIGTAP / TUSS">
                 <input id="master_proc3_qty" type="text" placeholder="Qtd">
               </div>
             </div>
+          </div>
 
-            <!-- EXAMES COMPLEMENTARES SOLICITADOS (CSI 005.000) -->
-            <div class="full exam-builder-card" data-csi="005.000." data-csi-label="Investigação Complementar Solicitada">
+          <!-- EXAMES COMPLEMENTARES SOLICITADOS -->
+          <div class="toggle-header active" onclick="toggleSection(this)" data-csi-domain="005">
+            <span>10 · Pedidos de Exames</span>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div class="toggle-content">
+            <div class="full exam-builder-card" style="margin-top: 0;" data-csi="005.000." data-csi-label="Investigação Complementar Solicitada">
               <div class="exam-header">
                 <div class="exam-title">🧪 Pedidos de Exames Complementares</div>
                 <div class="mode-toggle-group">
@@ -586,26 +618,20 @@
                   <button type="button" class="mode-btn" id="btnModoEditavel" onclick="alternarModoExame('EDITAVEL')">Modelo Particular</button>
                 </div>
               </div>
-              <div class="exam-input-row">
-                <div>
-                  <input type="text" id="inputNomeExame" placeholder="Digite ou selecione o exame..." list="listaSugestoesExames">
-                  <datalist id="listaSugestoesExames">
-                    <option value="HEMOGRAMA COMPLETO">[0202010120]</option>
-                    <option value="GLICEMIA DE JEJUM">[0202010317]</option>
-                    <option value="URÉIA E CREATININA">[0202010694]</option>
-                    <option value="ULTRASSONOGRAFIA DE ABDOMEN TOTAL">[0205020046]</option>
-                    <option value="TOMOGRAFIA COMPUTADORIZADA DE TORAX">[0204030188]</option>
-                    <option value="RESSONANCIA MAGNETICA DE CRANIO">[0206010079]</option>
-                    <option value="RADIOGRAFIA DE TORAX PA E PERFIL">[0204060125]</option>
-                    <option value="ELETROCARDIOGRAMA (ECG)">[0211020036]</option>
-                  </datalist>
-                </div>
-                <div>
-                  <input type="number" id="inputQtdExame" value="1" min="1" max="99" style="text-align: center;">
-                </div>
-                <div>
-                  <button type="button" class="btn primary" style="width: 100%; padding: 11px 8px;" onclick="adicionarExameNaLista()">+ Adicionar</button>
-                </div>
+              <div class="row-exam">
+                <input type="text" id="inputNomeExame" placeholder="Digite ou selecione o exame..." list="listaSugestoesExames">
+                <datalist id="listaSugestoesExames">
+                  <option value="HEMOGRAMA COMPLETO">[0202010120]</option>
+                  <option value="GLICEMIA DE JEJUM">[0202010317]</option>
+                  <option value="URÉIA E CREATININA">[0202010694]</option>
+                  <option value="ULTRASSONOGRAFIA DE ABDOMEN TOTAL">[0205020046]</option>
+                  <option value="TOMOGRAFIA COMPUTADORIZADA DE TORAX">[0204030188]</option>
+                  <option value="RESSONANCIA MAGNETICA DE CRANIO">[0206010079]</option>
+                  <option value="RADIOGRAFIA DE TORAX PA E PERFIL">[0204060125]</option>
+                  <option value="ELETROCARDIOGRAMA (ECG)">[0211020036]</option>
+                </datalist>
+                <input type="number" id="inputQtdExame" value="1" min="1" max="99" style="text-align: center;">
+                <button type="button" class="btn primary" style="padding: 11px 8px;" onclick="adicionarExameNaLista()">+ Adicionar</button>
               </div>
               <div class="exam-list-box">
                 <div id="listaExamesAdicionados">
@@ -613,7 +639,6 @@
                 </div>
               </div>
             </div>
-
           </div>
           
           <div class="actions">
@@ -839,8 +864,20 @@ const EMBEDDED_PDFS = {
 <script>
 /**
  * ==========================================
+ * ACCORDION SCRIPT (FUNÇÃO DE ABRIR/FECHAR)
+ * ==========================================
+ */
+function toggleSection(element) {
+  element.classList.toggle('active');
+  const content = element.nextElementSibling;
+  if (content && content.classList.contains('toggle-content')) {
+    content.classList.toggle('collapsed');
+  }
+}
+
+/**
+ * ==========================================
  * CSI (CLASSIFICAÇÃO SEMIOLÓGICA INSTITUCIONAL)
- * MAPEAMENTO CANÔNICO DOS CAMPOS UNIVERSAIS
  * ==========================================
  */
 const CSI_MAP = {
@@ -894,7 +931,6 @@ const MASTER_KEY='medunity_master_record';
 const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,detectedFields:[],currentPdfFile:null};
-
 
 /* LÓGICA DO GESTOR DE PLANTÃO (SHIFT MEMORY) */
 let shiftActive = false;
@@ -1047,13 +1083,13 @@ const STATIC_MAPS = {
     "000.006._municipio": { nativeKey: "municipality",   x: 62,  y: 232, w: 300, h: 12, max: 9, min: 9 },
     "006.003._proc1_cod": { nativeKey: "proc1_code",     x: 62,  y: 278, w: 120, h: 12, max: 9, min: 9 },
     "006.003._proc1_nom": { nativeKey: "proc1_name",     x: 215, y: 278, w: 260, h: 12, max: 9, min: 9 },
-    "006.003._proc1_qtd": { nativeKey: "proc1_qty",      x: 490, y: 278, w: 40,  h: 12, max: 9, min: 9 },
+    "006.003._proc1_qty": { nativeKey: "proc1_qty",      x: 490, y: 278, w: 40,  h: 12, max: 9, min: 9 },
     "006.003._proc2_cod": { nativeKey: "proc2_code",     x: 62,  y: 320, w: 120, h: 12, max: 9, min: 9 },
     "006.003._proc2_nom": { nativeKey: "proc2_name",     x: 215, y: 320, w: 260, h: 12, max: 9, min: 9 },
-    "006.003._proc2_qtd": { nativeKey: "proc2_qty",      x: 490, y: 320, w: 40,  h: 12, max: 9, min: 9 },
+    "006.003._proc2_qty": { nativeKey: "proc2_qty",      x: 490, y: 320, w: 40,  h: 12, max: 9, min: 9 },
     "006.003._proc3_cod": { nativeKey: "proc3_code",     x: 80,  y: 350, w: 120, h: 12, max: 9, min: 9 },
     "006.003._proc3_nom": { nativeKey: "proc3_name",     x: 215, y: 350, w: 260, h: 12, max: 9, min: 9 },
-    "006.003._proc3_qtd": { nativeKey: "proc3_qty",      x: 490, y: 350, w: 40,  h: 12, max: 9, min: 9 },
+    "006.003._proc3_qty": { nativeKey: "proc3_qty",      x: 490, y: 350, w: 40,  h: 12, max: 9, min: 9 },
     "004.001._hipot":     { nativeKey: "hypothesis",     x: 62,  y: 440, w: 260, h: 25,  max: 8, min: 8, multi: true },
     "004.001._cid10":     { nativeKey: "cid10",          x: 370, y: 475, w: 50,  h: 12,  max: 9, min: 9 }, 
     "004.003._ddx":       { nativeKey: "differential",   x: 425, y: 440, w: 60,  h: 12,  max: 8, min: 8 },
@@ -1855,4 +1891,3 @@ loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal
 
 </body>
 </html>
-
