@@ -508,9 +508,18 @@
                 <label>Plano terapêutico / conduta geral</label>
                 <textarea id="master_plan" rows="3" data-csi="006.000." data-csi-label="Plano Terapêutico Global"></textarea>
               </div>
+              
+              <!-- NOVO BLOCO DA EVOLUÇÃO COM BOTÕES -->
               <div class="full">
-                <label>Evolução / observações diárias</label>
-                <textarea id="master_evolution" rows="3" data-csi="006.000." data-csi-label="Evolução Clínica Diária"></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                  <label style="margin: 0;">Evolução / observações diárias</label>
+                  <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <button type="button" class="btn secondary" style="font-size: 10px; padding: 4px 8px;" onclick="repetirDadosIniciais()">🔄 Repetir Iniciais</button>
+                    <button type="button" class="btn secondary" style="font-size: 10px; padding: 4px 8px;" onclick="carregarEvolucaoEnfermaria()">📝 Padrão Enfermaria</button>
+                    <button type="button" class="btn secondary" style="font-size: 10px; padding: 4px 8px;" onclick="carregarEvolucaoUTI()">⚡ Padrão UTI</button>
+                  </div>
+                </div>
+                <textarea id="master_evolution" rows="5" data-csi="006.000." data-csi-label="Evolução Clínica Diária"></textarea>
               </div>
             </div>
 
@@ -1883,6 +1892,42 @@ $('clearBtn').addEventListener('click',()=>{
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 function fmt(v){try{return v?new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}catch{return v||''}}
 function bytes(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
+
+/**
+ * BOTÕES DE AUTOMAÇÃO DA EVOLUÇÃO
+ */
+function repetirDadosIniciais() {
+  const vitais = $('master_vitals').value.trim();
+  const exFisico = $('master_physical_exam').value.trim();
+  let texto = '';
+  if (vitais) texto += `Sinais vitais: ${vitais}\n`;
+  if (exFisico) texto += `Exame Físico: ${exFisico}`;
+  
+  if (!texto) return toast('Preencha os Sinais Vitais ou Exame Físico primeiro.');
+  
+  const el = $('master_evolution');
+  el.value = el.value ? el.value + '\n\n' + texto.trim() : texto.trim();
+  atualizarPreviewEmTempoReal();
+  toast('Dados clínicos copiados para a evolução!');
+}
+
+function carregarEvolucaoEnfermaria() {
+  const padrao = "Paciente evolui clinicamente estável.\nQueixas: Nega novas queixas no plantão.\n\nAo exame físico:\nAR: MV+ bilateral, sem ruídos adventícios.\nACV: RCR em 2T, BNF, sem sopros.\nABD: Plano, flácido, RHA+, indolor à palpação.\nEXT: Bem perfundidas, sem edemas, panturrilhas livres.";
+  
+  const el = $('master_evolution');
+  el.value = el.value ? el.value + '\n\n' + padrao : padrao;
+  atualizarPreviewEmTempoReal();
+  toast('Padrão de Enfermaria inserido!');
+}
+
+function carregarEvolucaoUTI() {
+  const padrao = "Paciente grave, sob cuidados intensivos.\n- Neurológico: Sedação contínua (RASS -4), pupilas isocóricas.\n- Hemodinâmico: Dependente de drogas vasoativas.\n- Respiratório: Ventilação mecânica invasiva.\n- Gastrointestinal: Abdome globoso, dieta enteral em curso com boa tolerância.\n- Infeccioso: Afebril nas últimas 24h, em uso de ATB amplo espectro.";
+  
+  const el = $('master_evolution');
+  el.value = el.value ? el.value + '\n\n' + padrao : padrao;
+  atualizarPreviewEmTempoReal();
+  toast('Padrão de UTI inserido!');
+}
 
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local · CSI v1.0'},650);
 
