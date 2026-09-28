@@ -75,3 +75,12 @@ Author
 
 Dr. Delyone de Paula Canedo Filho
 Medical Doctor · Independent Researcher · Language Meta-engineer
+
+security:
+Decisões que vamos adotar
+1. Uma conta administradora na primeira versão. Nada de cadastro público de usuários.
+2. Estrutura preparada para múltiplos usuários. Cada conta terá identidade própria e um perfil de acesso, mesmo que inicialmente exista só uma.
+3. Senha e chave criptográfica separadas. A senha não será a chave do banco, nem ficará armazenada em texto puro.
+4. Chave de dados aleatória. A senha será usada para proteger essa chave, com uma função própria para derivação de chave.
+5. Sessão com bloqueio e logout. O backend verificará a autenticação nas operações protegidas.
+6. Sem acesso público nesta fase.
