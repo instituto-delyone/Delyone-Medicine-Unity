@@ -84,3 +84,9 @@ Decisões que vamos adotar
 4. Chave de dados aleatória. A senha será usada para proteger essa chave, com uma função própria para derivação de chave.
 5. Sessão com bloqueio e logout. O backend verificará a autenticação nas operações protegidas.
 6. Sem acesso público nesta fase.
+
+Como preparar para vários profissionais depois
+Quando chegar a hora, cada profissional terá login próprio e permissões. A arquitetura poderá permitir que usuários autorizados desbloqueiem a chave de dados sem compartilhar senhas entre si. Também teremos que implementar auditoria de acessos e regras para quem pode visualizar, criar ou alterar registros.
+Isso não significa que todos terão acesso automático a todos os pacientes: essa será uma decisão de permissões, não apenas de criptografia.
+Atenção à recuperação de senha
+Se a senha for esquecida, não podemos simplesmente “recuperar” a chave criptográfica sem um mecanismo previamente planejado. Precisaremos decidir entre uma chave de recuperação guardada com segurança ou outro procedimento controlado. Sem isso, uma falha de senha pode tornar os dados inacessíveis.
