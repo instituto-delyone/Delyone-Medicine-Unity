@@ -1,7 +1,9 @@
+import { pbkdf2 } from "node:crypto";
+
 const encoder = new TextEncoder();
 
 const JWT_TTL_SECONDS = 30 * 60;
-const PBKDF2_ITERATIONS = 120000;
+const PBKDF2_ITERATIONS = 100000;
 const ALLOWED_ORIGINS = new Set([
   "https://medunity.delyone.com",
   "http://127.0.0.1:5500",
@@ -33,80 +35,6 @@ function json(data, status = 200, request) {
   };
 
   return new Response(JSON.stringify(data), { status, headers });
-}
-
-function bootstrapPage(request) {
-  const headers = {
-    "Content-Type": "text/html; charset=utf-8",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self';",
-    ...corsHeaders(request),
-  };
-
-  const html = `<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MedUnity — Bootstrap ADM</title>
-<style>
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:520px;margin:40px auto;padding:20px;background:#f7f7f8;color:#171717}
-main{background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
-h1{font-size:22px}label{display:block;margin:16px 0 6px;font-weight:600}
-input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px}
-button{margin-top:20px;width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:600}
-#status{margin-top:16px;white-space:pre-wrap}
-small{color:#666}
-</style>
-</head>
-<body>
-<main>
-<h1>MedUnity — Configuração inicial</h1>
-<small>Esta página é temporária e serve apenas para criar o primeiro administrador.</small>
-<form id="form">
-<label for="secret">Bootstrap Secret</label>
-<input id="secret" type="password" autocomplete="off" required>
-<label for="user">Nome de usuário</label>
-<input id="user" type="text" autocomplete="username" minlength="3" required>
-<label for="pass">Senha do ADM</label>
-<input id="pass" type="password" autocomplete="new-password" minlength="12" required>
-<button type="submit">Criar administrador</button>
-</form>
-<div id="status"></div>
-</main>
-<script>
-document.getElementById("form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const status = document.getElementById("status");
-  status.textContent = "Configurando...";
-  try {
-    const response = await fetch("/setup/admin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Bootstrap-Secret": document.getElementById("secret").value
-      },
-      body: JSON.stringify({
-        nome_usuario: document.getElementById("user").value,
-        senha: document.getElementById("pass").value
-      })
-    });
-    const raw = await response.text();
-    let data = {};
-    try { data = JSON.parse(raw); } catch {}
-    status.textContent = response.ok
-      ? "Administrador criado com sucesso. Esta página deve ser removida após o uso."
-      : (data.detail || ("Falha HTTP " + response.status + (raw ? ": " + raw.slice(0, 300) : "")));
-  } catch (error) {
-    status.textContent = "Erro de conexão.";
-  }
-});
-</script>
-</body>
-</html>`;
-
-  return new Response(html, { status: 200, headers });
 }
 
 function empty(status, request) {
@@ -209,89 +137,6 @@ async function verifyJwt(token, secret) {
   return payload;
 }
 
-function randomBytes(length) {
-  const bytes = new Uint8Array(length);
-  crypto.getRandomValues(bytes);
-  return bytes;
-}
-
-async function derivePasswordHash(password, salt) {
-  const baseKey = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"],
-  );
-
-  const bits = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: salt.buffer,
-      iterations: PBKDF2_ITERATIONS,
-      hash: "SHA-256",
-    },
-    baseKey,
-    256,
-  );
-
-  return new Uint8Array(bits);
-}
-
-async function createPasswordRecord(password) {
-  const salt = randomBytes(16);
-  const hash = await derivePasswordHash(password, salt);
-
-  return [
-    "pbkdf2",
-    "sha256",
-    String(PBKDF2_ITERATIONS),
-    base64url(salt),
-    base64url(hash),
-  ].join("$");
-}
-
-async function verifyPassword(password, record) {
-  const parts = record.split("$");
-  if (parts.length !== 5 || parts[0] !== "pbkdf2" || parts[1] !== "sha256") {
-    return false;
-  }
-
-  const iterations = Number(parts[2]);
-  if (!Number.isInteger(iterations) || iterations < 10000) {
-    return false;
-  }
-
-  const salt = fromBase64url(parts[3]);
-  const expected = fromBase64url(parts[4]);
-  const actual = await derivePasswordHashWithIterations(password, salt, iterations);
-
-  return constantTimeBytesEqual(actual, expected);
-}
-
-async function derivePasswordHashWithIterations(password, salt, iterations) {
-  const baseKey = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"],
-  );
-
-  const bits = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: salt.buffer,
-      iterations,
-      hash: "SHA-256",
-    },
-    baseKey,
-    256,
-  );
-
-  return new Uint8Array(bits);
-}
-
 function extractBearer(request) {
   const value = request.headers.get("Authorization") || "";
   if (!value.startsWith("Bearer ")) {
@@ -333,112 +178,6 @@ async function getAuthenticatedUser(request, env) {
     nome_usuario: row.nome_usuario,
     perfil: row.perfil,
   };
-}
-
-async function handleBootstrap(request, env) {
-  try {
-    if (!env.BOOTSTRAP_SECRET) {
-      return json({ detail: "Bootstrap não configurado.", code: "bootstrap_secret_missing" }, 503, request);
-    }
-
-    const providedSecret = request.headers.get("X-Bootstrap-Secret") || "";
-    if (!constantTimeEqual(providedSecret, env.BOOTSTRAP_SECRET)) {
-      return json({ detail: "Não autorizado.", code: "bootstrap_secret_invalid" }, 401, request);
-    }
-
-    const body = await request.json().catch(() => null);
-    if (!body || typeof body.nome_usuario !== "string" || typeof body.senha !== "string") {
-      return json({ detail: "Informe nome_usuario e senha.", code: "bootstrap_payload_invalid" }, 400, request);
-    }
-
-    const username = body.nome_usuario.trim();
-    const password = body.senha;
-
-    if (username.length < 3 || password.length < 12) {
-      return json(
-        { detail: "Usuário inválido ou senha muito curta.", code: "bootstrap_validation_failed" },
-        400,
-        request,
-      );
-    }
-
-    let existing;
-    try {
-      existing = await env.DB
-        .prepare("SELECT COUNT(*) AS total FROM usuarios WHERE perfil = 'admin' AND ativo = 1")
-        .first();
-    } catch (error) {
-      console.error("Bootstrap D1 check error", error);
-      return json(
-        { detail: "Falha ao consultar o banco.", code: "bootstrap_db_check_failed" },
-        500,
-        request,
-      );
-    }
-
-    if (Number(existing?.total || 0) > 0) {
-      return json(
-        { detail: "Administrador já configurado.", code: "admin_already_configured" },
-        409,
-        request,
-      );
-    }
-
-    let passwordHash;
-    try {
-      passwordHash = await createPasswordRecord(password);
-    } catch (error) {
-      const diagnostic = {
-        name: error?.name || "UnknownError",
-        message: error?.message || "Unknown error",
-      };
-      console.error("Bootstrap password hash error", diagnostic);
-      return json(
-        {
-          detail: "Falha ao preparar a credencial.",
-          code: "bootstrap_hash_failed",
-          diagnostic,
-        },
-        500,
-        request,
-      );
-    }
-
-    try {
-      await env.DB
-        .prepare(
-          "INSERT INTO usuarios (nome_usuario, senha_hash, perfil, ativo) VALUES (?, ?, 'admin', 1)",
-        )
-        .bind(username, passwordHash)
-        .run();
-    } catch (error) {
-      console.error("Bootstrap D1 insert error", error);
-      return json(
-        { detail: "Falha ao gravar o administrador.", code: "bootstrap_db_insert_failed" },
-        500,
-        request,
-      );
-    }
-
-    return json(
-      {
-        status: "configurado",
-        usuario: {
-          nome_usuario: username,
-          perfil: "admin",
-        },
-      },
-      201,
-      request,
-    );
-  } catch (error) {
-    console.error("Bootstrap unexpected error", error);
-    return json(
-      { detail: "Falha inesperada no bootstrap.", code: "bootstrap_unexpected_error" },
-      500,
-      request,
-    );
-  }
 }
 
 async function handleLogin(request, env) {
@@ -531,10 +270,6 @@ export default {
     const url = new URL(request.url);
 
     try {
-      if (url.pathname === "/bootstrap" && request.method === "GET") {
-        return bootstrapPage(request);
-      }
-
       if (url.pathname === "/health" && request.method === "GET") {
         if (!env.DB) {
           return json(
@@ -554,13 +289,6 @@ export default {
           200,
           request,
         );
-      }
-
-      if (url.pathname === "/setup/admin" && request.method === "POST") {
-        if (!env.DB) {
-          return json({ detail: "Banco D1 não configurado." }, 503, request);
-        }
-        return handleBootstrap(request, env);
       }
 
       if (url.pathname === "/login" && request.method === "POST") {
