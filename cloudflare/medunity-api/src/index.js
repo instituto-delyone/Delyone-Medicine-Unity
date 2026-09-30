@@ -336,52 +336,81 @@ async function getAuthenticatedUser(request, env) {
 }
 
 async function handleBootstrap(request, env) {
-  if (!env.BOOTSTRAP_SECRET) {
-    return json({ detail: "Bootstrap não configurado." }, 503, request);
-  }
-
-  const providedSecret = request.headers.get("X-Bootstrap-Secret") || "";
-  if (!constantTimeEqual(providedSecret, env.BOOTSTRAP_SECRET)) {
-    return json({ detail: "Não autorizado." }, 401, request);
-  }
-
-  const body = await request.json().catch(() => null);
-  if (!body || typeof body.nome_usuario !== "string" || typeof body.senha !== "string") {
-    return json({ detail: "Informe nome_usuario e senha." }, 400, request);
-  }
-
-  const username = body.nome_usuario.trim();
-  const password = body.senha;
-
-  if (username.length < 3 || password.length < 12) {
-    return json(
-      { detail: "Usuário inválido ou senha muito curta." },
-      400,
-      request,
-    );
-  }
-
-  const existing = await env.DB
-    .prepare("SELECT COUNT(*) AS total FROM usuarios WHERE perfil = 'admin' AND ativo = 1")
-    .first();
-
-  if (Number(existing?.total || 0) > 0) {
-    return json(
-      { detail: "Administrador já configurado." },
-      409,
-      request,
-    );
-  }
-
   try {
-    const passwordHash = await createPasswordRecord(password);
+    if (!env.BOOTSTRAP_SECRET) {
+      return json({ detail: "Bootstrap não configurado.", code: "bootstrap_secret_missing" }, 503, request);
+    }
 
-    await env.DB
-      .prepare(
-        "INSERT INTO usuarios (nome_usuario, senha_hash, perfil, ativo) VALUES (?, ?, 'admin', 1)",
-      )
-      .bind(username, passwordHash)
-      .run();
+    const providedSecret = request.headers.get("X-Bootstrap-Secret") || "";
+    if (!constantTimeEqual(providedSecret, env.BOOTSTRAP_SECRET)) {
+      return json({ detail: "Não autorizado.", code: "bootstrap_secret_invalid" }, 401, request);
+    }
+
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.nome_usuario !== "string" || typeof body.senha !== "string") {
+      return json({ detail: "Informe nome_usuario e senha.", code: "bootstrap_payload_invalid" }, 400, request);
+    }
+
+    const username = body.nome_usuario.trim();
+    const password = body.senha;
+
+    if (username.length < 3 || password.length < 12) {
+      return json(
+        { detail: "Usuário inválido ou senha muito curta.", code: "bootstrap_validation_failed" },
+        400,
+        request,
+      );
+    }
+
+    let existing;
+    try {
+      existing = await env.DB
+        .prepare("SELECT COUNT(*) AS total FROM usuarios WHERE perfil = 'admin' AND ativo = 1")
+        .first();
+    } catch (error) {
+      console.error("Bootstrap D1 check error", error);
+      return json(
+        { detail: "Falha ao consultar o banco.", code: "bootstrap_db_check_failed" },
+        500,
+        request,
+      );
+    }
+
+    if (Number(existing?.total || 0) > 0) {
+      return json(
+        { detail: "Administrador já configurado.", code: "admin_already_configured" },
+        409,
+        request,
+      );
+    }
+
+    let passwordHash;
+    try {
+      passwordHash = await createPasswordRecord(password);
+    } catch (error) {
+      console.error("Bootstrap password hash error", error);
+      return json(
+        { detail: "Falha ao preparar a credencial.", code: "bootstrap_hash_failed" },
+        500,
+        request,
+      );
+    }
+
+    try {
+      await env.DB
+        .prepare(
+          "INSERT INTO usuarios (nome_usuario, senha_hash, perfil, ativo) VALUES (?, ?, 'admin', 1)",
+        )
+        .bind(username, passwordHash)
+        .run();
+    } catch (error) {
+      console.error("Bootstrap D1 insert error", error);
+      return json(
+        { detail: "Falha ao gravar o administrador.", code: "bootstrap_db_insert_failed" },
+        500,
+        request,
+      );
+    }
 
     return json(
       {
@@ -395,9 +424,9 @@ async function handleBootstrap(request, env) {
       request,
     );
   } catch (error) {
-    console.error("Bootstrap error", error);
+    console.error("Bootstrap unexpected error", error);
     return json(
-      { detail: "Falha ao criar administrador.", code: "bootstrap_failed" },
+      { detail: "Falha inesperada no bootstrap.", code: "bootstrap_unexpected_error" },
       500,
       request,
     );
