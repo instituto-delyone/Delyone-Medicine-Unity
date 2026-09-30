@@ -40,7 +40,7 @@ function bootstrapPage(request) {
     "Content-Type": "text/html; charset=utf-8",
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
-    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self';",
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self';",
     ...corsHeaders(request),
   };
 
@@ -136,7 +136,13 @@ function constantTimeEqual(a, b) {
   if (aa.byteLength !== bb.byteLength) {
     return false;
   }
-  return crypto.subtle.timingSafeEqual(aa, bb);
+
+  let diff = 0;
+  for (let i = 0; i < aa.length; i += 1) {
+    diff |= aa[i] ^ bb[i];
+  }
+
+  return diff === 0;
 }
 
 async function hmacSha256(secret, value) {
@@ -174,10 +180,16 @@ async function verifyJwt(token, secret) {
   const expected = await hmacSha256(secret, header + "." + payloadPart);
   const actual = fromBase64url(signaturePart);
 
-  if (
-    expected.byteLength !== actual.byteLength ||
-    !crypto.subtle.timingSafeEqual(expected, actual)
-  ) {
+  if (expected.byteLength !== actual.byteLength) {
+    throw new Error("invalid_token");
+  }
+
+  let diff = 0;
+  for (let i = 0; i < expected.length; i += 1) {
+    diff |= expected[i] ^ actual[i];
+  }
+
+  if (diff !== 0) {
     throw new Error("invalid_token");
   }
 
