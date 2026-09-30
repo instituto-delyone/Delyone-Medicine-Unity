@@ -90,3 +90,4 @@ Quando chegar a hora, cada profissional terá login próprio e permissões. A ar
 Isso não significa que todos terão acesso automático a todos os pacientes: essa será uma decisão de permissões, não apenas de criptografia.
 Atenção à recuperação de senha
 Se a senha for esquecida, não podemos simplesmente “recuperar” a chave criptográfica sem um mecanismo previamente planejado. Precisaremos decidir entre uma chave de recuperação guardada com segurança ou outro procedimento controlado. Sem isso, uma falha de senha pode tornar os dados inacessíveis.
+Migration D1 configurada.
