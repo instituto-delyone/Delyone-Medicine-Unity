@@ -227,7 +227,7 @@ async function derivePasswordHash(password, salt) {
   const bits = await crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt,
+      salt: salt.buffer,
       iterations: PBKDF2_ITERATIONS,
       hash: "SHA-256",
     },
@@ -281,7 +281,7 @@ async function derivePasswordHashWithIterations(password, salt, iterations) {
   const bits = await crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt,
+      salt: salt.buffer,
       iterations,
       hash: "SHA-256",
     },
@@ -388,7 +388,10 @@ async function handleBootstrap(request, env) {
     try {
       passwordHash = await createPasswordRecord(password);
     } catch (error) {
-      console.error("Bootstrap password hash error", error);
+      console.error("Bootstrap password hash error", {
+        name: error?.name || "UnknownError",
+        message: error?.message || "Unknown error",
+      });
       return json(
         { detail: "Falha ao preparar a credencial.", code: "bootstrap_hash_failed" },
         500,
