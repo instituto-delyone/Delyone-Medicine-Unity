@@ -388,12 +388,17 @@ async function handleBootstrap(request, env) {
     try {
       passwordHash = await createPasswordRecord(password);
     } catch (error) {
-      console.error("Bootstrap password hash error", {
+      const diagnostic = {
         name: error?.name || "UnknownError",
         message: error?.message || "Unknown error",
-      });
+      };
+      console.error("Bootstrap password hash error", diagnostic);
       return json(
-        { detail: "Falha ao preparar a credencial.", code: "bootstrap_hash_failed" },
+        {
+          detail: "Falha ao preparar a credencial.",
+          code: "bootstrap_hash_failed",
+          diagnostic,
+        },
         500,
         request,
       );
