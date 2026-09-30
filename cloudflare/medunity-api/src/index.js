@@ -116,7 +116,7 @@ function empty(status, request) {
 
 function base64url(bytes) {
   const binary = String.fromCharCode(...new Uint8Array(bytes));
-  return btoa(binary).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
 function base64urlText(text) {
@@ -130,20 +130,23 @@ function fromBase64url(value) {
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 }
 
-function constantTimeEqual(a, b) {
-  const aa = encoder.encode(a);
-  const bb = encoder.encode(b);
-  if (aa.byteLength !== bb.byteLength) {
+function constantTimeBytesEqual(a, b) {
+  if (a.byteLength !== b.byteLength) {
     return false;
   }
 
   let diff = 0;
-  for (let i = 0; i < aa.length; i += 1) {
-    diff |= aa[i] ^ bb[i];
+  for (let i = 0; i < a.length; i += 1) {
+    diff |= a[i] ^ b[i];
   }
 
   return diff === 0;
 }
+
+function constantTimeEqual(a, b) {
+  return constantTimeBytesEqual(encoder.encode(a), encoder.encode(b));
+}
+
 
 async function hmacSha256(secret, value) {
   const key = await crypto.subtle.importKey(
@@ -261,11 +264,7 @@ async function verifyPassword(password, record) {
   const expected = fromBase64url(parts[4]);
   const actual = await derivePasswordHashWithIterations(password, salt, iterations);
 
-  if (actual.byteLength !== expected.byteLength) {
-    return false;
-  }
-
-  return crypto.subtle.timingSafeEqual(actual, expected);
+  return constantTimeBytesEqual(actual, expected);
 }
 
 async function derivePasswordHashWithIterations(password, salt, iterations) {
