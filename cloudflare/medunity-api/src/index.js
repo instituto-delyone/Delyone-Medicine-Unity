@@ -92,10 +92,12 @@ document.getElementById("form").addEventListener("submit", async (event) => {
         senha: document.getElementById("pass").value
       })
     });
-    const data = await response.json().catch(() => ({}));
+    const raw = await response.text();
+    let data = {};
+    try { data = JSON.parse(raw); } catch {}
     status.textContent = response.ok
       ? "Administrador criado com sucesso. Esta página deve ser removida após o uso."
-      : (data.detail || "Não foi possível concluir.");
+      : (data.detail || ("Falha HTTP " + response.status + (raw ? ": " + raw.slice(0, 300) : "")));
   } catch (error) {
     status.textContent = "Erro de conexão.";
   }
@@ -371,26 +373,35 @@ async function handleBootstrap(request, env) {
     );
   }
 
-  const passwordHash = await createPasswordRecord(password);
+  try {
+    const passwordHash = await createPasswordRecord(password);
 
-  await env.DB
-    .prepare(
-      "INSERT INTO usuarios (nome_usuario, senha_hash, perfil, ativo) VALUES (?, ?, 'admin', 1)",
-    )
-    .bind(username, passwordHash)
-    .run();
+    await env.DB
+      .prepare(
+        "INSERT INTO usuarios (nome_usuario, senha_hash, perfil, ativo) VALUES (?, ?, 'admin', 1)",
+      )
+      .bind(username, passwordHash)
+      .run();
 
-  return json(
-    {
-      status: "configurado",
-      usuario: {
-        nome_usuario: username,
-        perfil: "admin",
+    return json(
+      {
+        status: "configurado",
+        usuario: {
+          nome_usuario: username,
+          perfil: "admin",
+        },
       },
-    },
-    201,
-    request,
-  );
+      201,
+      request,
+    );
+  } catch (error) {
+    console.error("Bootstrap error", error);
+    return json(
+      { detail: "Falha ao criar administrador.", code: "bootstrap_failed" },
+      500,
+      request,
+    );
+  }
 }
 
 async function handleLogin(request, env) {
