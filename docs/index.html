@@ -104,6 +104,27 @@
     .header-status { font-size: 12px; color: var(--muted); }
     .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 8px; }
 
+    /* LOGIN ADMINISTRATIVO */
+    .header-tools { display: flex; align-items: center; gap: 10px; }
+    .admin-login-toggle { border: 1px solid var(--line); border-radius: 99px; padding: 8px 13px; background: var(--soft); color: var(--brand); font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .admin-login-toggle:hover { background: var(--bsoft); }
+    .admin-login-panel { position: absolute; top: calc(100% + 8px); right: max(22px, calc((100vw - var(--max)) / 2 + 22px)); width: min(340px, calc(100vw - 28px)); padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 35px rgba(13,43,69,.18); z-index: 10000; }
+    .admin-login-panel[hidden] { display: none; }
+    .admin-login-panel h2 { margin: 0 0 5px; font-size: 16px; }
+    .admin-login-panel p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .admin-login-panel .admin-field { margin-bottom: 10px; }
+    .admin-login-panel .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .admin-login-message { margin-top: 10px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+    .admin-login-message.ok { color: var(--ok); }
+    .admin-login-message.error { color: var(--danger); }
+    .admin-connected { color: var(--ok); font-size: 11px; font-weight: 800; }
+    @media (max-width: 560px) {
+      .header-inner { gap: 10px; flex-wrap: wrap; }
+      .header-tools { margin-left: auto; }
+      .header-link { padding: 6px 9px; }
+      .admin-login-panel { right: 14px; }
+    }
+
     /* HERO SECTION */
     .hero { padding: 55px 22px 32px; }
     .eyebrow, .chip, .badge { display: inline-flex; padding: 7px 12px; border-radius: 999px; font-size: 11px; font-weight: 750; }
@@ -271,8 +292,30 @@
         <div class="brand-subtitle">Clinical Document Engine</div>
       </div>
     </a>
-    <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
+    <div class="header-tools">
+      <button type="button" class="admin-login-toggle" id="adminLoginToggle" aria-expanded="false" aria-controls="adminLoginPanel">Login de ADM</button>
+      <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
+    </div>
   </div>
+  <section class="admin-login-panel" id="adminLoginPanel" aria-labelledby="adminLoginTitle" hidden>
+    <h2 id="adminLoginTitle">Acesso administrativo</h2>
+    <p>Entre com sua conta de administrador. A autenticação é feita pela API segura do MedUnity.</p>
+    <form id="adminLoginForm">
+      <div class="admin-field">
+        <label for="adminUsername">Usuário</label>
+        <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+      </div>
+      <div class="admin-field">
+        <label for="adminPassword">Senha</label>
+        <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="admin-actions">
+        <button class="btn primary" id="adminLoginSubmit" type="submit">Entrar</button>
+        <button class="btn secondary" id="adminLogout" type="button" hidden>Sair</button>
+      </div>
+      <div class="admin-login-message" id="adminLoginMessage" role="status" aria-live="polite">A autenticação será feita pela API segura do MedUnity.</div>
+    </form>
+  </section>
 </header>
 
 <section class="hero" id="top">
@@ -1937,6 +1980,90 @@ function carregarEvolucaoUTI() {
   atualizarPreviewEmTempoReal();
   toast('Padrão de UTI inserido!');
 }
+
+// LOGIN ADMINISTRATIVO — integração inicial com a API local.
+const MEDUNITY_API_BASE_URL = 'https://medunity-api.dr-delyone.workers.dev';
+const MEDUNITY_API_LOGIN_URL = `${MEDUNITY_API_BASE_URL}/login`;
+const ADMIN_TOKEN_KEY = 'medunity_admin_access_token';
+const adminPanel = $('adminLoginPanel');
+const adminToggle = $('adminLoginToggle');
+const adminForm = $('adminLoginForm');
+const adminMessage = $('adminLoginMessage');
+const adminSubmit = $('adminLoginSubmit');
+const adminLogout = $('adminLogout');
+
+function setAdminMessage(message, type = '') {
+  adminMessage.textContent = message;
+  adminMessage.className = 'admin-login-message' + (type ? ' ' + type : '');
+}
+
+function updateAdminLoginUI(connected) {
+  adminSubmit.hidden = connected;
+  $('adminUsername').disabled = connected;
+  $('adminPassword').disabled = connected;
+  adminLogout.hidden = !connected;
+  adminToggle.textContent = connected ? 'ADM conectado' : 'Login de ADM';
+  adminToggle.classList.toggle('admin-connected', connected);
+  if (connected) {
+    $('adminPassword').value = '';
+    setAdminMessage('Sessão administrativa ativa nesta aba. O token expira conforme a API.', 'ok');
+  }
+}
+
+adminToggle.addEventListener('click', () => {
+  const opening = adminPanel.hidden;
+  adminPanel.hidden = !opening;
+  adminToggle.setAttribute('aria-expanded', String(opening));
+});
+
+adminForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const nome_usuario = $('adminUsername').value.trim();
+  const senha = $('adminPassword').value;
+  if (!nome_usuario || !senha) {
+    setAdminMessage('Informe usuário e senha.', 'error');
+    return;
+  }
+
+  adminSubmit.disabled = true;
+  adminSubmit.textContent = 'Autenticando…';
+  setAdminMessage('Conectando à API do MedUnity…');
+
+  try {
+    const response = await fetch(MEDUNITY_API_LOGIN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_usuario, senha })
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.access_token) {
+      if (response.status === 401) {
+        throw new Error('Usuário ou senha inválidos.');
+      }
+      throw new Error(data.detail || 'Não foi possível autenticar. Verifique se a API está ativa.');
+    }
+
+    sessionStorage.setItem(ADMIN_TOKEN_KEY, data.access_token);
+    updateAdminLoginUI(true);
+    setAdminMessage('Login realizado. Os fluxos administrativos serão conectados nas próximas etapas.', 'ok');
+  } catch (error) {
+    const message = error instanceof TypeError
+      ? 'Não foi possível acessar a API do MedUnity. Verifique a conexão e o CORS.'
+      : error.message;
+    setAdminMessage(message, 'error');
+  } finally {
+    adminSubmit.disabled = false;
+    adminSubmit.textContent = 'Entrar';
+  }
+});
+
+adminLogout.addEventListener('click', () => {
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  adminForm.reset();
+  updateAdminLoginUI(false);
+  setAdminMessage('Sessão encerrada.');
+});
 
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local · CSI v1.0'},650);
 
