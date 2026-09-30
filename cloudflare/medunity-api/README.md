@@ -40,3 +40,7 @@ Se a implantação estiver sendo feita apenas pelo dashboard, a migração tamb�
 - `BOOTSTRAP_SECRET`
 
 Eles devem ser cadastrados em Worker > Settings > Variables & Secrets como **Secrets**.
+
+## Workers Builds
+
+A integração de produção é conectada ao repositório `instituto-delyone/Delyone-Medicine-Unity`, usando a branch `feature/medunity-cloud-api` e o diretório `cloudflare/medunity-api`.
