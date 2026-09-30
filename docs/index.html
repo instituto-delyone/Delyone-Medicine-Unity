@@ -299,7 +299,7 @@
   </div>
   <section class="admin-login-panel" id="adminLoginPanel" aria-labelledby="adminLoginTitle" hidden>
     <h2 id="adminLoginTitle">Acesso administrativo</h2>
-    <p>Entre com sua conta de administrador. A API local precisa estar em execução.</p>
+    <p>Entre com sua conta de administrador. A autenticação é feita pela API segura do MedUnity.</p>
     <form id="adminLoginForm">
       <div class="admin-field">
         <label for="adminUsername">Usuário</label>
@@ -313,7 +313,7 @@
         <button class="btn primary" id="adminLoginSubmit" type="submit">Entrar</button>
         <button class="btn secondary" id="adminLogout" type="button" hidden>Sair</button>
       </div>
-      <div class="admin-login-message" id="adminLoginMessage" role="status" aria-live="polite">A autenticação será feita pela API local do MedUnity.</div>
+      <div class="admin-login-message" id="adminLoginMessage" role="status" aria-live="polite">A autenticação será feita pela API segura do MedUnity.</div>
     </form>
   </section>
 </header>
@@ -1982,7 +1982,8 @@ function carregarEvolucaoUTI() {
 }
 
 // LOGIN ADMINISTRATIVO — integração inicial com a API local.
-const MEDUNITY_API_LOGIN_URL = 'http://127.0.0.1:8000/login';
+const MEDUNITY_API_BASE_URL = 'https://medunity-api.dr-delyone.workers.dev';
+const MEDUNITY_API_LOGIN_URL = `${MEDUNITY_API_BASE_URL}/login`;
 const ADMIN_TOKEN_KEY = 'medunity_admin_access_token';
 const adminPanel = $('adminLoginPanel');
 const adminToggle = $('adminLoginToggle');
@@ -2026,7 +2027,7 @@ adminForm.addEventListener('submit', async (event) => {
 
   adminSubmit.disabled = true;
   adminSubmit.textContent = 'Autenticando…';
-  setAdminMessage('Conectando à API local…');
+  setAdminMessage('Conectando à API do MedUnity…');
 
   try {
     const response = await fetch(MEDUNITY_API_LOGIN_URL, {
@@ -2048,7 +2049,7 @@ adminForm.addEventListener('submit', async (event) => {
     setAdminMessage('Login realizado. Os fluxos administrativos serão conectados nas próximas etapas.', 'ok');
   } catch (error) {
     const message = error instanceof TypeError
-      ? 'Não foi possível acessar a API local. Confirme se ela está rodando e se o CORS permite este site.'
+      ? 'Não foi possível acessar a API do MedUnity. Verifique a conexão e o CORS.'
       : error.message;
     setAdminMessage(message, 'error');
   } finally {
