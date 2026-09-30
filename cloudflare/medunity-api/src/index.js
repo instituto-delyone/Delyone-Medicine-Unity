@@ -77,6 +77,40 @@ function constantTimeEqual(a, b) {
   return constantTimeBytesEqual(encoder.encode(a), encoder.encode(b));
 }
 
+async function verifyPassword(password, record) {
+  const parts = record.split("$");
+  if (parts.length !== 5 || parts[0] !== "pbkdf2" || parts[1] !== "sha256") {
+    return false;
+  }
+
+  const iterations = Number(parts[2]);
+  if (!Number.isInteger(iterations) || iterations < 10000 || iterations > 100000) {
+    return false;
+  }
+
+  const salt = fromBase64url(parts[3]);
+  const expected = fromBase64url(parts[4]);
+
+  const actual = await new Promise((resolve, reject) => {
+    pbkdf2(
+      encoder.encode(password),
+      salt,
+      iterations,
+      32,
+      "sha256",
+      (error, derivedKey) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(new Uint8Array(derivedKey));
+      },
+    );
+  });
+
+  return constantTimeBytesEqual(actual, expected);
+}
+
 
 async function hmacSha256(secret, value) {
   const key = await crypto.subtle.importKey(
