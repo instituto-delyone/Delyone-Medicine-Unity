@@ -35,6 +35,78 @@ function json(data, status = 200, request) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+function bootstrapPage(request) {
+  const headers = {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self';",
+    ...corsHeaders(request),
+  };
+
+  const html = `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedUnity — Bootstrap ADM</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:520px;margin:40px auto;padding:20px;background:#f7f7f8;color:#171717}
+main{background:#fff;padding:24px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+h1{font-size:22px}label{display:block;margin:16px 0 6px;font-weight:600}
+input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px}
+button{margin-top:20px;width:100%;padding:13px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;font-weight:600}
+#status{margin-top:16px;white-space:pre-wrap}
+small{color:#666}
+</style>
+</head>
+<body>
+<main>
+<h1>MedUnity — Configuração inicial</h1>
+<small>Esta página é temporária e serve apenas para criar o primeiro administrador.</small>
+<form id="form">
+<label for="secret">Bootstrap Secret</label>
+<input id="secret" type="password" autocomplete="off" required>
+<label for="user">Nome de usuário</label>
+<input id="user" type="text" autocomplete="username" minlength="3" required>
+<label for="pass">Senha do ADM</label>
+<input id="pass" type="password" autocomplete="new-password" minlength="12" required>
+<button type="submit">Criar administrador</button>
+</form>
+<div id="status"></div>
+</main>
+<script>
+document.getElementById("form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const status = document.getElementById("status");
+  status.textContent = "Configurando...";
+  try {
+    const response = await fetch("/setup/admin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Bootstrap-Secret": document.getElementById("secret").value
+      },
+      body: JSON.stringify({
+        nome_usuario: document.getElementById("user").value,
+        senha: document.getElementById("pass").value
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+    status.textContent = response.ok
+      ? "Administrador criado com sucesso. Esta página deve ser removida após o uso."
+      : (data.detail || "Não foi possível concluir.");
+  } catch (error) {
+    status.textContent = "Erro de conexão.";
+  }
+});
+</script>
+</body>
+</html>`;
+
+  return new Response(html, { status: 200, headers });
+}
+
 function empty(status, request) {
   return new Response(null, {
     status,
@@ -400,6 +472,10 @@ export default {
     const url = new URL(request.url);
 
     try {
+      if (url.pathname === "/bootstrap" && request.method === "GET") {
+        return bootstrapPage(request);
+      }
+
       if (url.pathname === "/health" && request.method === "GET") {
         if (!env.DB) {
           return json(
