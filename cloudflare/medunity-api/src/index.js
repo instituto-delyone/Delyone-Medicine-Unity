@@ -308,8 +308,12 @@ async function handlePrescritorGet(request, env) {
       request,
     );
   } catch (error) {
-    if (error.message === "missing_token" || error.message === "invalid_token" || error.message === "expired_token" || error.message === "user_inactive") {
-      return json({ detail: "Autenticação necessária." }, 401, request);
+    if (["missing_token", "invalid_token", "expired_token", "user_inactive"].includes(error.message)) {
+      return json(
+        { detail: error.message === "expired_token" ? "Token expirado." : "Autenticação necessária." },
+        401,
+        request,
+      );
     }
     throw error;
   }
@@ -413,8 +417,12 @@ async function handlePrescritorPut(request, env) {
       request,
     );
   } catch (error) {
-    if (error.message === "missing_token" || error.message === "invalid_token" || error.message === "expired_token" || error.message === "user_inactive") {
-      return json({ detail: "Autenticação necessária." }, 401, request);
+    if (["missing_token", "invalid_token", "expired_token", "user_inactive"].includes(error.message)) {
+      return json(
+        { detail: error.message === "expired_token" ? "Token expirado." : "Autenticação necessária." },
+        401,
+        request,
+      );
     }
     throw error;
   }
