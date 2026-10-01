@@ -270,6 +270,156 @@ async function handleLogin(request, env) {
   );
 }
 
+async function handlePrescritorGet(request, env) {
+  try {
+    const usuario = await getAuthenticatedUser(request, env);
+    const row = await env.DB
+      .prepare(
+        `SELECT id, nome_completo, cpf, conselho_tipo, conselho_numero, conselho_uf,
+                especialidade, email, telefone, ativo, criado_em, atualizado_em
+         FROM prescritores
+         WHERE usuario_id = ?
+         LIMIT 1`,
+      )
+      .bind(usuario.id)
+      .first();
+
+    return json(
+      {
+        status: "ok",
+        prescritor: row
+          ? {
+              id: Number(row.id),
+              nome_completo: row.nome_completo,
+              cpf: row.cpf || "",
+              conselho_tipo: row.conselho_tipo,
+              conselho_numero: row.conselho_numero,
+              conselho_uf: row.conselho_uf,
+              especialidade: row.especialidade || "",
+              email: row.email || "",
+              telefone: row.telefone || "",
+              ativo: Number(row.ativo) === 1,
+              criado_em: row.criado_em,
+              atualizado_em: row.atualizado_em,
+            }
+          : null,
+      },
+      200,
+      request,
+    );
+  } catch (error) {
+    if (error.message === "missing_token" || error.message === "invalid_token" || error.message === "expired_token" || error.message === "user_inactive") {
+      return json({ detail: "Autenticação necessária." }, 401, request);
+    }
+    throw error;
+  }
+}
+
+async function handlePrescritorPut(request, env) {
+  try {
+    const usuario = await getAuthenticatedUser(request, env);
+    const body = await request.json().catch(() => null);
+
+    if (!body || typeof body !== "object") {
+      return json({ detail: "Dados do prescritor inválidos." }, 400, request);
+    }
+
+    const nomeCompleto = typeof body.nome_completo === "string" ? body.nome_completo.trim() : "";
+    const cpf = typeof body.cpf === "string" ? body.cpf.trim() : "";
+    const conselhoTipo = typeof body.conselho_tipo === "string" ? body.conselho_tipo.trim().toUpperCase() : "CRM";
+    const conselhoNumero = typeof body.conselho_numero === "string" ? body.conselho_numero.trim() : "";
+    const conselhoUf = typeof body.conselho_uf === "string" ? body.conselho_uf.trim().toUpperCase() : "";
+    const especialidade = typeof body.especialidade === "string" ? body.especialidade.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    const telefone = typeof body.telefone === "string" ? body.telefone.trim() : "";
+
+    if (!nomeCompleto || !conselhoNumero || !conselhoUf) {
+      return json(
+        { detail: "Nome completo, registro profissional e UF são obrigatórios." },
+        400,
+        request,
+      );
+    }
+
+    if (conselhoTipo !== "CRM") {
+      return json({ detail: "Nesta primeira versão, o módulo está configurado para CRM." }, 400, request);
+    }
+
+    if (!/^[A-Z]{2}$/.test(conselhoUf)) {
+      return json({ detail: "Informe a UF do conselho com duas letras." }, 400, request);
+    }
+
+    await env.DB
+      .prepare(
+        `INSERT INTO prescritores
+          (usuario_id, nome_completo, cpf, conselho_tipo, conselho_numero, conselho_uf,
+           especialidade, email, telefone, ativo, atualizado_em)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)
+         ON CONFLICT(usuario_id) DO UPDATE SET
+           nome_completo = excluded.nome_completo,
+           cpf = excluded.cpf,
+           conselho_tipo = excluded.conselho_tipo,
+           conselho_numero = excluded.conselho_numero,
+           conselho_uf = excluded.conselho_uf,
+           especialidade = excluded.especialidade,
+           email = excluded.email,
+           telefone = excluded.telefone,
+           ativo = 1,
+           atualizado_em = CURRENT_TIMESTAMP`,
+      )
+      .bind(
+        usuario.id,
+        nomeCompleto,
+        cpf,
+        conselhoTipo,
+        conselhoNumero,
+        conselhoUf,
+        especialidade,
+        email,
+        telefone,
+      )
+      .run();
+
+    const row = await env.DB
+      .prepare(
+        `SELECT id, nome_completo, cpf, conselho_tipo, conselho_numero, conselho_uf,
+                especialidade, email, telefone, ativo, criado_em, atualizado_em
+         FROM prescritores
+         WHERE usuario_id = ?
+         LIMIT 1`,
+      )
+      .bind(usuario.id)
+      .first();
+
+    return json(
+      {
+        status: "salvo",
+        prescritor: {
+          id: Number(row.id),
+          nome_completo: row.nome_completo,
+          cpf: row.cpf || "",
+          conselho_tipo: row.conselho_tipo,
+          conselho_numero: row.conselho_numero,
+          conselho_uf: row.conselho_uf,
+          especialidade: row.especialidade || "",
+          email: row.email || "",
+          telefone: row.telefone || "",
+          ativo: Number(row.ativo) === 1,
+          criado_em: row.criado_em,
+          atualizado_em: row.atualizado_em,
+        },
+      },
+      200,
+      request,
+    );
+  } catch (error) {
+    if (error.message === "missing_token" || error.message === "invalid_token" || error.message === "expired_token" || error.message === "user_inactive") {
+      return json({ detail: "Autenticação necessária." }, 401, request);
+    }
+    throw error;
+  }
+}
+
 async function handleMe(request, env) {
   try {
     const usuario = await getAuthenticatedUser(request, env);
@@ -332,6 +482,15 @@ export default {
       if (url.pathname === "/me" && request.method === "GET") {
         return handleMe(request, env);
       }
+      
+      if (url.pathname === "/prescritor" && request.method === "GET") {
+        return handlePrescritorGet(request, env);
+      }
+
+      if (url.pathname === "/prescritor" && request.method === "PUT") {
+        return handlePrescritorPut(request, env);
+      }
+
 
       return json({ detail: "Rota não encontrada." }, 404, request);
     } catch (error) {
