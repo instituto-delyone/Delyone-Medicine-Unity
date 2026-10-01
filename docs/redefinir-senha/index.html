@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redefinir senha — MedUnity</title>
+<style>
+:root{--bg:#f0f7fc;--surface:#fff;--soft:#e1edf5;--line:#b9d2e5;--ink:#0d2b45;--muted:#5b7b97;--brand:#007bb5;--dark:#005a8b;--ok:#28a745;--danger:#dc3545}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;display:grid;place-items:center;padding:20px}
+.card{width:min(460px,100%);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 10px 30px rgba(13,43,69,.08)}
+h1{margin:0 0 8px;font-size:24px}p{color:var(--muted);font-size:13px}
+label{display:block;margin:14px 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+button{margin-top:16px;width:100%;border:0;border-radius:10px;padding:12px;font-weight:700;background:var(--dark);color:#fff;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+.status{margin-top:14px;padding:11px;border-radius:10px;background:var(--soft);color:var(--muted);font-size:12px}
+.status.ok{background:#eafaf1;color:var(--ok);border:1px solid var(--ok)}
+.status.error{background:#fdf0f1;color:var(--danger);border:1px solid var(--danger)}
+a{color:var(--brand);font-weight:700;text-decoration:none}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main class="card">
+  <h1 id="title">Esqueci minha senha</h1>
+  <p id="description">Digite o e-mail cadastrado. Se houver uma conta ativa, enviaremos um link para redefinir sua senha.</p>
+
+  <section id="requestBox">
+    <form id="requestForm">
+      <label for="email">E-mail cadastrado</label>
+      <input id="email" type="email" autocomplete="email" required>
+      <button id="requestBtn" type="submit">Enviar link de redefinição</button>
+    </form>
+  </section>
+
+  <section id="resetBox" class="hidden">
+    <form id="resetForm">
+      <label for="password">Nova senha</label>
+      <input id="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+      <label for="passwordConfirm">Confirmar nova senha</label>
+      <input id="passwordConfirm" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+      <button id="resetBtn" type="submit">Salvar nova senha</button>
+    </form>
+  </section>
+
+  <div id="status" class="status">MedUnity</div>
+  <p style="margin-top:18px"><a href="../">← Voltar ao MedUnity</a></p>
+</main>
+
+<script>
+const API="https://medunity-api.dr-delyone.workers.dev";
+const params=new URLSearchParams(location.search);
+const token=params.get("token");
+const requestBox=document.getElementById("requestBox");
+const resetBox=document.getElementById("resetBox");
+const status=document.getElementById("status");
+
+function setStatus(message,type=""){
+  status.textContent=message;
+  status.className="status"+(type?" "+type:"");
+}
+
+if(token){
+  requestBox.classList.add("hidden");
+  resetBox.classList.remove("hidden");
+  document.getElementById("title").textContent="Criar nova senha";
+  document.getElementById("description").textContent="Defina uma nova senha para sua conta do MedUnity.";
+  setStatus("Link de redefinição recebido. O link é de uso único e expira em 30 minutos.");
+}
+
+document.getElementById("requestForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=document.getElementById("requestBtn");
+  btn.disabled=true;
+  setStatus("Enviando…");
+  try{
+    const response=await fetch(API+"/password/forgot",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email:document.getElementById("email").value.trim()})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.detail||"Não foi possível solicitar a redefinição.");
+    setStatus(data.message||"Se houver uma conta ativa com esse e-mail, enviaremos um link para redefinir a senha.","ok");
+    e.target.reset();
+  }catch(error){
+    setStatus(error.message,"error");
+  }finally{
+    btn.disabled=false;
+  }
+});
+
+document.getElementById("resetForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const password=document.getElementById("password").value;
+  const confirm=document.getElementById("passwordConfirm").value;
+  if(password.length<8){setStatus("A senha deve ter pelo menos 8 caracteres.","error");return}
+  if(password!==confirm){setStatus("As senhas não coincidem.","error");return}
+  const btn=document.getElementById("resetBtn");
+  btn.disabled=true;
+  setStatus("Salvando nova senha…");
+  try{
+    const response=await fetch(API+"/password/reset",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({token,senha:password})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.detail||"Não foi possível redefinir a senha.");
+    setStatus(data.message||"Senha redefinida com sucesso.","ok");
+    resetBox.innerHTML='<p style="color:var(--ok);font-weight:700">✓ Senha redefinida.</p><p>Você já pode voltar ao MedUnity e entrar com sua nova senha.</p><a href="../">Entrar no MedUnity →</a>';
+    history.replaceState({},document.title,location.pathname);
+  }catch(error){
+    setStatus(error.message,"error");
+  }finally{
+    btn.disabled=false;
+  }
+});
+</script>
+</body>
+</html>
