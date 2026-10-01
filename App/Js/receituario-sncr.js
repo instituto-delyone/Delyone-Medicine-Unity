@@ -3,7 +3,7 @@
  * A comunicação autenticada com o SNCR deve ocorrer no backend.
  */
 (() => {
-  const GOVBR_URL = "https://www.gov.br/governodigital/pt-br/contas/conta-gov-br";
+  const GOVBR_URL = "https://sso.acesso.gov.br/login";
 
   const TYPES = [
     { code: "NRA", label: "Notificação de Receita A (amarela)", mode: "visa" },
