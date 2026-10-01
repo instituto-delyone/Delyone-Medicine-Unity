@@ -293,10 +293,26 @@
       </div>
     </a>
     <div class="header-tools">
+      <button type="button" class="admin-login-toggle" id="userLoginToggle" aria-expanded="false" aria-controls="userLoginPanel">Entrar</button>
       <button type="button" class="admin-login-toggle" id="adminLoginToggle" aria-expanded="false" aria-controls="adminLoginPanel">Login de ADM</button>
-      <a href="prescritor/" class="header-link">Prescritor</a>\n      <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
+      <a href="prescritor/" class="header-link">Prescritor</a>
+      <a href="https://delyone.com" class="header-link">Instituto Delyone ↗</a>
     </div>
   </div>
+  <section class="admin-login-panel" id="userLoginPanel" aria-labelledby="userLoginTitle" hidden>
+    <h2 id="userLoginTitle">Acesso ao MedUnity</h2>
+    <p>Entre com sua conta pessoal. O cadastro de prescritor é uma etapa separada.</p>
+    <form id="userLoginForm">
+      <div class="admin-field"><label for="userUsername">Usuário</label><input id="userUsername" type="text" autocomplete="username" required></div>
+      <div class="admin-field"><label for="userPassword">Senha</label><input id="userPassword" type="password" autocomplete="current-password" required></div>
+      <div class="admin-actions">
+        <button class="btn primary" id="userLoginSubmit" type="submit">Entrar</button>
+        <button class="btn secondary" id="userLogout" type="button" hidden>Sair</button>
+        <a class="btn secondary" href="cadastro/" style="text-decoration:none">Criar conta</a>
+      </div>
+      <div class="admin-login-message" id="userLoginMessage" role="status" aria-live="polite">Acesso pessoal do MedUnity.</div>
+    </form>
+  </section>
   <section class="admin-login-panel" id="adminLoginPanel" aria-labelledby="adminLoginTitle" hidden>
     <h2 id="adminLoginTitle">Acesso administrativo</h2>
     <p>Entre com sua conta de administrador. A autenticação é feita pela API segura do MedUnity.</p>
@@ -1811,7 +1827,7 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
 });
 
 async function exigirCadastroPrescritor() {
-  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  const token = sessionStorage.getItem(USER_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
   if (!token) {
     toast('Faça login de ADM e cadastre o prescritor antes de gerar/baixar documentos.');
     adminPanel.hidden = false;
@@ -2027,6 +2043,75 @@ function carregarEvolucaoUTI() {
 
 // LOGIN ADMINISTRATIVO — integração inicial com a API local.
 const MEDUNITY_API_BASE_URL = 'https://medunity-api.dr-delyone.workers.dev';
+const USER_TOKEN_KEY = 'medunity_user_access_token';
+const userLoginPanel = $('userLoginPanel');
+const userLoginToggle = $('userLoginToggle');
+const userLoginForm = $('userLoginForm');
+const userLoginMessage = $('userLoginMessage');
+const userLoginSubmit = $('userLoginSubmit');
+const userLogout = $('userLogout');
+
+function setUserMessage(message, type = '') {
+  userLoginMessage.textContent = message;
+  userLoginMessage.className = 'admin-login-message' + (type ? ' ' + type : '');
+}
+
+function updateUserLoginUI(connected) {
+  userLoginSubmit.hidden = connected;
+  $('userUsername').disabled = connected;
+  $('userPassword').disabled = connected;
+  userLogout.hidden = !connected;
+  userLoginToggle.textContent = connected ? 'Conectado' : 'Entrar';
+  if (connected) {
+    $('userPassword').value = '';
+    setUserMessage('Sessão pessoal ativa nesta aba.', 'ok');
+  }
+}
+
+userLoginToggle.addEventListener('click', () => {
+  const opening = userLoginPanel.hidden;
+  userLoginPanel.hidden = !opening;
+  adminPanel.hidden = true;
+  userLoginToggle.setAttribute('aria-expanded', String(opening));
+});
+
+userLoginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const nome_usuario = $('userUsername').value.trim();
+  const senha = $('userPassword').value;
+  if (!nome_usuario || !senha) {
+    setUserMessage('Informe usuário e senha.', 'error');
+    return;
+  }
+  userLoginSubmit.disabled = true;
+  userLoginSubmit.textContent = 'Entrando…';
+  setUserMessage('Autenticando…');
+  try {
+    const response = await fetch(MEDUNITY_API_LOGIN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_usuario, senha })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.access_token) throw new Error(data.detail || 'Não foi possível autenticar.');
+    sessionStorage.setItem(USER_TOKEN_KEY, data.access_token);
+    updateUserLoginUI(true);
+  } catch (error) {
+    setUserMessage(error.message, 'error');
+  } finally {
+    userLoginSubmit.disabled = false;
+    userLoginSubmit.textContent = 'Entrar';
+  }
+});
+
+userLogout.addEventListener('click', () => {
+  sessionStorage.removeItem(USER_TOKEN_KEY);
+  userLoginForm.reset();
+  updateUserLoginUI(false);
+  setUserMessage('Sessão encerrada.');
+});
+
+
 const MEDUNITY_API_LOGIN_URL = `${MEDUNITY_API_BASE_URL}/login`;
 const ADMIN_TOKEN_KEY = 'medunity_admin_access_token';
 const adminPanel = $('adminLoginPanel');
@@ -2111,6 +2196,8 @@ adminLogout.addEventListener('click', () => {
 
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local · CSI v1.0'},650);
 
+updateUserLoginUI(Boolean(sessionStorage.getItem(USER_TOKEN_KEY)));
+updateAdminLoginUI(Boolean(sessionStorage.getItem(ADMIN_TOKEN_KEY)));
 loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
 
