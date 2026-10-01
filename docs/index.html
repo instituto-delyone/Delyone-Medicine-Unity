@@ -2087,7 +2087,7 @@ userLoginForm.addEventListener('submit', async (event) => {
   userLoginSubmit.textContent = 'Entrando…';
   setUserMessage('Autenticando…');
   try {
-    const response = await fetch(MEDUNITY_API_LOGIN_URL, {
+    const response = await fetch(MEDUNITY_API_ADMIN_LOGIN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome_usuario, senha })
@@ -2113,6 +2113,7 @@ userLogout.addEventListener('click', () => {
 
 
 const MEDUNITY_API_LOGIN_URL = `${MEDUNITY_API_BASE_URL}/login`;
+const MEDUNITY_API_ADMIN_LOGIN_URL = `${MEDUNITY_API_BASE_URL}/admin/login`;
 const ADMIN_TOKEN_KEY = 'medunity_admin_access_token';
 const adminPanel = $('adminLoginPanel');
 const adminToggle = $('adminLoginToggle');
@@ -2159,7 +2160,7 @@ adminForm.addEventListener('submit', async (event) => {
   setAdminMessage('Conectando à API do MedUnity…');
 
   try {
-    const response = await fetch(MEDUNITY_API_LOGIN_URL, {
+    const response = await fetch(MEDUNITY_API_ADMIN_LOGIN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome_usuario, senha })
