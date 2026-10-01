@@ -249,6 +249,7 @@ async function handleRegister(request, env) {
   const cpf = typeof body.cpf === "string" ? body.cpf.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const telefone = typeof body.telefone === "string" ? body.telefone.trim() : "";
+  const cpfDigits = cpf.replace(/\D/g, "");
 
   if (!nomeUsuario || !senha || !nomeCompleto || !cpf || !email || !telefone) {
     return json({ detail: "Nome completo, CPF, e-mail, telefone, usuário e senha são obrigatórios." }, 400, request);
