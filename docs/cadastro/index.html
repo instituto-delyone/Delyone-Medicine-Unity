@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedUnity — Criar conta</title>
+<style>
+:root{--bg:#f0f7fc;--surface:#fff;--soft:#e1edf5;--line:#b9d2e5;--ink:#0d2b45;--muted:#5b7b97;--brand:#007bb5;--dark:#005a8b;--ok:#28a745;--danger:#dc3545}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}.wrap{max-width:650px;margin:auto;padding:35px 18px 60px}.brand{font-weight:800;margin-bottom:25px}.back{color:var(--brand);text-decoration:none;font-weight:700;float:right}.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:25px;box-shadow:0 8px 24px rgba(0,0,0,.05)}h1{font-size:31px;letter-spacing:-.03em;margin:5px 0 8px}.muted{color:var(--muted)}.grid{display:grid;gap:13px;margin-top:22px}label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px}input{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--soft);color:var(--ink)}.btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer;background:var(--dark);color:white;margin-top:18px}.status{margin-top:15px;padding:12px;border-radius:11px;background:var(--soft);border:1px solid var(--line);font-size:13px}.ok{background:#eafaf1;border-color:var(--ok);color:var(--ok)}.error{background:#fdf0f1;border-color:var(--danger);color:var(--danger)}
+</style></head><body><div class="wrap">
+<div class="brand">MedUnity Delyone <a class="back" href="../">← Voltar</a></div>
+<div class="card"><div class="muted">CADASTRO BÁSICO</div><h1>Criar sua conta</h1><p class="muted">Crie seu acesso pessoal ao MedUnity. O cadastro de conta é separado do cadastro profissional do prescritor e do acesso administrativo.</p>
+<form id="form" class="grid">
+<div><label>Nome completo</label><input id="nome_completo" autocomplete="name"></div>
+<div><label>Usuário</label><input id="nome_usuario" autocomplete="username" minlength="4" maxlength="40" required></div>
+<div><label>E-mail</label><input id="email" type="email" autocomplete="email"></div>
+<div><label>Senha</label><input id="senha" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+<div><label>Confirmar senha</label><input id="confirmar" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+<button class="btn" type="submit">Criar conta</button></form><div id="status" class="status">Sua conta será criada como usuário comum, não como administrador.</div></div></div>
+<script>
+const API='https://medunity-api.dr-delyone.workers.dev';const form=document.getElementById('form');const status=document.getElementById('status');
+function msg(t,c=''){status.textContent=t;status.className='status '+c}
+form.addEventListener('submit',async e=>{e.preventDefault();const senha=document.getElementById('senha').value;if(senha!==document.getElementById('confirmar').value)return msg('As senhas não conferem.','error');
+const body={nome_completo:document.getElementById('nome_completo').value.trim(),nome_usuario:document.getElementById('nome_usuario').value.trim(),email:document.getElementById('email').value.trim(),senha};
+msg('Criando conta…');try{const r=await fetch(API+'/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.detail||'Não foi possível criar a conta.');msg('Conta criada. Agora você já pode entrar no MedUnity.','ok');setTimeout(()=>location.href='../',900)}catch(err){msg(err.message,'error')}});
+</script></body></html>
