@@ -41,8 +41,8 @@ input,select{width:100%;border:1px solid var(--line);border-radius:11px;backgrou
       </select></div>
 
     </div>
-    <div class="actions"><button class="btn primary" type="submit">Salvar identificação</button><a class="btn secondary" href="../">Voltar</a></div>
-    <div id="saveStatus" class="status" style="margin-top:14px">Nenhum cadastro carregado.</div>
+    <div class="actions"><button class="btn primary" type="submit">Salvar identificação</button><button class="btn secondary" id="sncrLoginBtn" type="button">Conectar SNCR / Gov.br</button><a class="btn secondary" href="../">Voltar</a></div>
+    <div id="saveStatus" class="status" style="margin-top:14px">Nenhum cadastro carregado.</div><div id="sncrStatus" class="status" style="margin-top:14px">SNCR ainda não conectado.</div>
   </form>
 
   <div class="card">
@@ -51,10 +51,11 @@ input,select{width:100%;border:1px solid var(--line);border-radius:11px;backgrou
     <p class="muted" style="margin-top:14px">Próxima camada: autorização/numeração no SNCR e assinatura eletrônica qualificada para as Notificações de Receita e demais receituários controlados aplicáveis.</p>
   </div>
 </div>
+<script src="../../App/Js/sncr-auth.js"></script>
 <script>
 const API='https://medunity-api.dr-delyone.workers.dev';
-const TOKEN_KEY='medunity_admin_access_token';
-const token=sessionStorage.getItem(TOKEN_KEY);
+const TOKEN_KEYS=['medunity_user_access_token','medunity_admin_access_token'];
+const token=TOKEN_KEYS.map(k=>sessionStorage.getItem(k)).find(Boolean);
 const authStatus=document.getElementById('authStatus');
 const form=document.getElementById('form');
 const saveStatus=document.getElementById('saveStatus');
@@ -87,6 +88,8 @@ form.addEventListener('submit',async e=>{
     fill(data.prescritor);setStatus(saveStatus,'Identificação do prescritor salva com sucesso.','ok');
   }catch(err){setStatus(saveStatus,err.message,'error')}
 });
+document.getElementById('sncrLoginBtn')?.addEventListener('click',()=>window.MedUnitySNCR?.login());
+window.MedUnitySNCR?.init({onStatus:(message,type='')=>setStatus(document.getElementById('sncrStatus'),message,type)});
 load();
 </script>
 </body>
