@@ -31,18 +31,15 @@ input,select{width:100%;border:1px solid var(--line);border-radius:11px;backgrou
 
   <form id="form" class="card" hidden>
     <h2>Dados profissionais</h2>
-    <p class="muted">Começamos pelo seu cadastro. Nada aqui substitui a autorização cadastral da Vigilância Sanitária nem a assinatura eletrônica qualificada.</p>
+    <p class="muted">Este é o vínculo profissional da sua conta. Inicialmente pedimos apenas nome do médico, CRM e UF. Nada aqui substitui a autorização da Vigilância Sanitária nem a assinatura eletrônica qualificada.</p>
     <div class="grid">
       <div class="full"><label for="nome_completo">Nome completo</label><input id="nome_completo" required autocomplete="name"></div>
-      <div><label for="cpf">CPF</label><input id="cpf" inputmode="numeric" autocomplete="off"></div>
       <div><label for="conselho_tipo">Conselho</label><select id="conselho_tipo"><option value="CRM">CRM — Conselho Regional de Medicina</option></select></div>
       <div><label for="conselho_numero">Número do CRM</label><input id="conselho_numero" required></div>
       <div><label for="conselho_uf">UF do CRM</label><select id="conselho_uf" required>
         <option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
       </select></div>
-      <div><label for="especialidade">Especialidade</label><input id="especialidade"></div>
-      <div><label for="email">E-mail profissional</label><input id="email" type="email" autocomplete="email"></div>
-      <div><label for="telefone">Telefone profissional</label><input id="telefone" type="tel"></div>
+
     </div>
     <div class="actions"><button class="btn primary" type="submit">Salvar identificação</button><a class="btn secondary" href="../">Voltar</a></div>
     <div id="saveStatus" class="status" style="margin-top:14px">Nenhum cadastro carregado.</div>
@@ -61,7 +58,7 @@ const token=sessionStorage.getItem(TOKEN_KEY);
 const authStatus=document.getElementById('authStatus');
 const form=document.getElementById('form');
 const saveStatus=document.getElementById('saveStatus');
-const fields=['nome_completo','cpf','conselho_tipo','conselho_numero','conselho_uf','especialidade','email','telefone'];
+const fields=['nome_completo','conselho_tipo','conselho_numero','conselho_uf'];
 
 function headers(){return {'Content-Type':'application/json','Authorization':'Bearer '+token}}
 function setStatus(el,text,type=''){el.className='status '+type;el.textContent=text}
