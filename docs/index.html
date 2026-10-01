@@ -1135,7 +1135,7 @@ function baixarGestorOffline() {
 
 function baixarFichaHtml() {
   if (!window.latestFichaHTML) return toast('Gere a Ficha-Mãe primeiro.');
-  const d = master();
+  const d = aplicarIdentidadePrescritor(master());
   const nome = d.patient_name ? d.patient_name.replace(/[^a-z0-9]/gi, '_') : 'Paciente_Anonimo';
   const templateHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Prontuário - ${nome}</title><style>body { background: #f4f7f8; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } #print-area { max-width: 850px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; border: none !important; } @media print { body { background: #fff; padding: 0; } #print-area { box-shadow: none !important; } }</style></head><body>${window.latestFichaHTML}</body></html>`;
   const blob = new Blob([templateHtml], { type: "text/html;charset=utf-8" });
@@ -1826,6 +1826,14 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   } catch (error) { toast('Erro ao inspecionar template.'); }
 });
 
+function aplicarIdentidadePrescritor(d) {
+  const identidade = identidadePrescritorParaDocumento();
+  if (!d.doctor_name && identidade.doctor_name) d.doctor_name = identidade.doctor_name;
+  if (!d.crm && identidade.crm) d.crm = identidade.crm;
+  if (!d.crm_uf && identidade.crm_uf) d.crm_uf = identidade.crm_uf;
+  return d;
+}
+
 async function exigirCadastroPrescritor() {
   const token = sessionStorage.getItem(USER_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
   if (!token) {
@@ -1871,6 +1879,7 @@ async function exigirCadastroPrescritor() {
 
 $('generateBtn').addEventListener('click', async () => {
   if (!(await exigirCadastroPrescritor())) return;
+  await carregarIdentidadeUsuario();
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
 
@@ -1940,7 +1949,7 @@ $('generateBtn').addEventListener('click', async () => {
     }
 
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesBuffer);
-    const rawMasterData = master();
+    const rawMasterData = aplicarIdentidadePrescritor(master());
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize(); 
     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -2044,6 +2053,47 @@ function carregarEvolucaoUTI() {
 // LOGIN ADMINISTRATIVO — integração inicial com a API local.
 const MEDUNITY_API_BASE_URL = 'https://medunity-api.dr-delyone.workers.dev';
 const USER_TOKEN_KEY = 'medunity_user_access_token';
+let currentPrescritor = null;
+
+async function carregarIdentidadeUsuario() {
+  const token = sessionStorage.getItem(USER_TOKEN_KEY);
+  if (!token) {
+    currentPrescritor = null;
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${MEDUNITY_API_BASE_URL}/prescritor`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(USER_TOKEN_KEY);
+      updateUserLoginUI(false);
+      currentPrescritor = null;
+      return null;
+    }
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    currentPrescritor = data.prescritor || null;
+    return currentPrescritor;
+  } catch (error) {
+    console.error('Falha ao carregar identidade profissional:', error);
+    return null;
+  }
+}
+
+function identidadePrescritorParaDocumento() {
+  if (!currentPrescritor) return {};
+  return {
+    doctor_name: currentPrescritor.nome_completo || '',
+    crm: currentPrescritor.conselho_numero || '',
+    crm_uf: currentPrescritor.conselho_uf || ''
+  };
+}
+
 const userLoginPanel = $('userLoginPanel');
 const userLoginToggle = $('userLoginToggle');
 const userLoginForm = $('userLoginForm');
@@ -2096,6 +2146,7 @@ userLoginForm.addEventListener('submit', async (event) => {
     if (!response.ok || !data.access_token) throw new Error(data.detail || 'Não foi possível autenticar.');
     sessionStorage.setItem(USER_TOKEN_KEY, data.access_token);
     updateUserLoginUI(true);
+    await carregarIdentidadeUsuario();
   } catch (error) {
     setUserMessage(error.message, 'error');
   } finally {
@@ -2106,6 +2157,7 @@ userLoginForm.addEventListener('submit', async (event) => {
 
 userLogout.addEventListener('click', () => {
   sessionStorage.removeItem(USER_TOKEN_KEY);
+  currentPrescritor = null;
   userLoginForm.reset();
   updateUserLoginUI(false);
   setUserMessage('Sessão encerrada.');
@@ -2198,6 +2250,7 @@ adminLogout.addEventListener('click', () => {
 setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTML='<span class="dot"></span>Motor v2.0 Tipográfico carregado · ambiente local · CSI v1.0'},650);
 
 updateUserLoginUI(Boolean(sessionStorage.getItem(USER_TOKEN_KEY)));
+carregarIdentidadeUsuario();
 updateAdminLoginUI(Boolean(sessionStorage.getItem(ADMIN_TOKEN_KEY)));
 loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
