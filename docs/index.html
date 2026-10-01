@@ -2087,7 +2087,7 @@ userLoginForm.addEventListener('submit', async (event) => {
   userLoginSubmit.textContent = 'Entrando…';
   setUserMessage('Autenticando…');
   try {
-    const response = await fetch(MEDUNITY_API_ADMIN_LOGIN_URL, {
+    const response = await fetch(MEDUNITY_API_LOGIN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome_usuario, senha })
