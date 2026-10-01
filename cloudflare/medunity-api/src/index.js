@@ -233,6 +233,194 @@ async function getAuthenticatedUser(request, env) {
   };
 }
 
+
+function normalizeEmail(value) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+async function sha256Base64url(value) {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value));
+  return base64url(digest);
+}
+
+function randomToken(bytes = 32) {
+  const value = crypto.getRandomValues(new Uint8Array(bytes));
+  return base64url(value);
+}
+
+async function sendPasswordResetEmail(env, email, resetUrl) {
+  if (!env.RESEND_API_KEY || !env.RESET_EMAIL_FROM) {
+    throw new Error("email_provider_not_configured");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: env.RESET_EMAIL_FROM,
+      to: [email],
+      subject: "Redefinição de senha — MedUnity",
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.5;color:#0d2b45">
+          <h2>Redefinição de senha</h2>
+          <p>Recebemos uma solicitação para redefinir sua senha do MedUnity.</p>
+          <p><a href="${resetUrl}" style="display:inline-block;padding:12px 18px;background:#005a8b;color:#fff;text-decoration:none;border-radius:8px">Redefinir minha senha</a></p>
+          <p>Este link é de uso único e expira em 30 minutos.</p>
+          <p>Se você não solicitou a redefinição, ignore este e-mail.</p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    console.error("Resend error", response.status, detail);
+    throw new Error("email_send_failed");
+  }
+}
+
+async function handleForgotPassword(request, env) {
+  const body = await request.json().catch(() => null);
+  const email = normalizeEmail(body?.email);
+
+  // Sempre respondemos de forma genérica para não revelar se um e-mail existe.
+  const generic = {
+    status: "ok",
+    message: "Se houver uma conta ativa com esse e-mail, enviaremos um link para redefinir a senha.",
+  };
+
+  if (!email || !validEmail(email)) {
+    return json(generic, 200, request);
+  }
+
+  if (!env.DB) {
+    return json({ detail: "API não configurada." }, 503, request);
+  }
+
+  const user = await env.DB
+    .prepare(
+      "SELECT id, email, perfil, ativo FROM usuarios WHERE email = ? LIMIT 1",
+    )
+    .bind(email)
+    .first();
+
+  // Por segurança, o fluxo público de recuperação vale para contas normais.
+  // A conta administrativa continua fora deste mecanismo nesta primeira versão.
+  if (!user || Number(user.ativo) !== 1 || user.perfil === "admin") {
+    return json(generic, 200, request);
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const recent = await env.DB
+    .prepare(
+      "SELECT COUNT(*) AS total FROM password_reset_tokens WHERE usuario_id = ? AND criado_em >= datetime('now', '-10 minutes')",
+    )
+    .bind(Number(user.id))
+    .first();
+
+  if (Number(recent?.total || 0) >= 3) {
+    return json(generic, 200, request);
+  }
+
+  const rawToken = randomToken(32);
+  const tokenHash = await sha256Base64url(rawToken);
+  const expiresAt = now + 30 * 60;
+
+  await env.DB
+    .prepare(
+      "UPDATE password_reset_tokens SET used_at = ? WHERE usuario_id = ? AND used_at IS NULL",
+    )
+    .bind(now, Number(user.id))
+    .run();
+
+  await env.DB
+    .prepare(
+      "INSERT INTO password_reset_tokens (usuario_id, token_hash, expires_at) VALUES (?, ?, ?)",
+    )
+    .bind(Number(user.id), tokenHash, expiresAt)
+    .run();
+
+  const resetUrl =
+    `https://medunity.delyone.com/redefinir-senha/?token=${encodeURIComponent(rawToken)}`;
+
+  try {
+    await sendPasswordResetEmail(env, email, resetUrl);
+  } catch (error) {
+    console.error("Password reset email error", error);
+    // Não devolvemos o token ao navegador em produção.
+    return json(generic, 200, request);
+  }
+
+  return json(generic, 200, request);
+}
+
+async function handleResetPassword(request, env) {
+  if (!env.DB) {
+    return json({ detail: "API não configurada." }, 503, request);
+  }
+
+  const body = await request.json().catch(() => null);
+  const token = typeof body?.token === "string" ? body.token.trim() : "";
+  const senha = typeof body?.senha === "string" ? body.senha : "";
+
+  if (!token || senha.length < 8 || senha.length > 128) {
+    return json({ detail: "Token ou senha inválidos." }, 400, request);
+  }
+
+  const tokenHash = await sha256Base64url(token);
+  const now = Math.floor(Date.now() / 1000);
+
+  const row = await env.DB
+    .prepare(
+      `SELECT id, usuario_id, expires_at
+       FROM password_reset_tokens
+       WHERE token_hash = ? AND used_at IS NULL
+       LIMIT 1`,
+    )
+    .bind(tokenHash)
+    .first();
+
+  if (!row || Number(row.expires_at) <= now) {
+    return json({ detail: "Link inválido ou expirado. Solicite uma nova redefinição." }, 400, request);
+  }
+
+  const senhaHash = await createPasswordRecord(senha);
+
+  await env.DB
+    .prepare(
+      "UPDATE usuarios SET senha_hash = ? WHERE id = ? AND ativo = 1 AND perfil <> 'admin'",
+    )
+    .bind(senhaHash, Number(row.usuario_id))
+    .run();
+
+  await env.DB
+    .prepare(
+      "UPDATE password_reset_tokens SET used_at = ? WHERE id = ?",
+    )
+    .bind(now, Number(row.id))
+    .run();
+
+  await env.DB
+    .prepare(
+      "UPDATE password_reset_tokens SET used_at = ? WHERE usuario_id = ? AND used_at IS NULL",
+    )
+    .bind(now, Number(row.usuario_id))
+    .run();
+
+  return json(
+    { status: "senha_redefinida", message: "Senha redefinida com sucesso. Você já pode entrar no MedUnity." },
+    200,
+    request,
+  );
+}
+
 async function handleRegister(request, env) {
   if (!env.DB) {
     return json({ detail: "API não configurada." }, 503, request);
@@ -587,6 +775,13 @@ export default {
 
       if (url.pathname === "/cadastro" && request.method === "POST") {
         return handleRegister(request, env);
+      }
+      if (url.pathname === "/password/forgot" && request.method === "POST") {
+        return handleForgotPassword(request, env);
+      }
+
+      if (url.pathname === "/password/reset" && request.method === "POST") {
+        return handleResetPassword(request, env);
       }
 
       if (url.pathname === "/login" && request.method === "POST") {
