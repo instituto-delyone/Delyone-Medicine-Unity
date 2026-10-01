@@ -2055,8 +2055,8 @@ const MEDUNITY_API_BASE_URL = 'https://medunity-api.dr-delyone.workers.dev';
 const USER_TOKEN_KEY = 'medunity_user_access_token';
 let currentPrescritor = null;
 
-async function carregarIdentidadeUsuario() {
-  const token = sessionStorage.getItem(USER_TOKEN_KEY);
+async function carregarIdentidadeUsuario(tokenOverride = null) {
+  const token = tokenOverride || sessionStorage.getItem(USER_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
   if (!token) {
     currentPrescritor = null;
     return null;
@@ -2227,8 +2227,9 @@ adminForm.addEventListener('submit', async (event) => {
     }
 
     sessionStorage.setItem(ADMIN_TOKEN_KEY, data.access_token);
+    await carregarIdentidadeUsuario(data.access_token);
     updateAdminLoginUI(true);
-    setAdminMessage('Login realizado. Os fluxos administrativos serão conectados nas próximas etapas.', 'ok');
+    setAdminMessage('Login realizado. Identidade profissional vinculada quando cadastrada.', 'ok');
   } catch (error) {
     const message = error instanceof TypeError
       ? 'Não foi possível acessar a API do MedUnity. Verifique a conexão e o CORS.'
@@ -2242,6 +2243,7 @@ adminForm.addEventListener('submit', async (event) => {
 
 adminLogout.addEventListener('click', () => {
   sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  currentPrescritor = null;
   adminForm.reset();
   updateAdminLoginUI(false);
   setAdminMessage('Sessão encerrada.');
