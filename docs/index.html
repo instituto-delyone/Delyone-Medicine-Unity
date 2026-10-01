@@ -1810,7 +1810,51 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
   } catch (error) { toast('Erro ao inspecionar template.'); }
 });
 
+async function exigirCadastroPrescritor() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) {
+    toast('Faça login de ADM e cadastre o prescritor antes de gerar/baixar documentos.');
+    adminPanel.hidden = false;
+    adminToggle.setAttribute('aria-expanded', 'true');
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${MEDUNITY_API_BASE_URL}/prescritor`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      updateAdminLoginUI(false);
+      toast('Sessão expirada. Faça login novamente.');
+      adminPanel.hidden = false;
+      adminToggle.setAttribute('aria-expanded', 'true');
+      return false;
+    }
+
+    if (!response.ok) {
+      toast('Não foi possível verificar o cadastro do prescritor.');
+      return false;
+    }
+
+    const data = await response.json();
+    if (!data.prescritor || data.prescritor.ativo !== true) {
+      toast('Cadastro do prescritor obrigatório para gerar/baixar documentos.');
+      window.location.href = 'prescritor/';
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    toast('Não foi possível verificar o cadastro do prescritor.');
+    return false;
+  }
+}
+
 $('generateBtn').addEventListener('click', async () => {
+  if (!(await exigirCadastroPrescritor())) return;
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
 
