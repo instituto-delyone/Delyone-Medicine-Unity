@@ -246,10 +246,12 @@ async function handleRegister(request, env) {
   const nomeUsuario = typeof body.nome_usuario === "string" ? body.nome_usuario.trim() : "";
   const senha = typeof body.senha === "string" ? body.senha : "";
   const nomeCompleto = typeof body.nome_completo === "string" ? body.nome_completo.trim() : "";
+  const cpf = typeof body.cpf === "string" ? body.cpf.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  const telefone = typeof body.telefone === "string" ? body.telefone.trim() : "";
 
-  if (!nomeUsuario || !senha) {
-    return json({ detail: "Usuário e senha são obrigatórios." }, 400, request);
+  if (!nomeUsuario || !senha || !nomeCompleto || !cpf || !email || !telefone) {
+    return json({ detail: "Nome completo, CPF, e-mail, telefone, usuário e senha são obrigatórios." }, 400, request);
   }
 
   if (!/^[A-Za-z0-9._-]{4,40}$/.test(nomeUsuario)) {
@@ -265,12 +267,12 @@ async function handleRegister(request, env) {
   }
 
   const existing = await env.DB
-    .prepare("SELECT id FROM usuarios WHERE nome_usuario = ? LIMIT 1")
-    .bind(nomeUsuario)
+    .prepare("SELECT id FROM usuarios WHERE nome_usuario = ? OR cpf = ? OR email = ? LIMIT 1")
+    .bind(nomeUsuario, cpfDigits, email)
     .first();
 
   if (existing) {
-    return json({ detail: "Esse usuário já está cadastrado." }, 409, request);
+    return json({ detail: "Usuário, CPF ou e-mail já cadastrado." }, 409, request);
   }
 
   const senhaHash = await createPasswordRecord(senha);
@@ -279,10 +281,10 @@ async function handleRegister(request, env) {
     const result = await env.DB
       .prepare(
         `INSERT INTO usuarios
-          (nome_usuario, senha_hash, perfil, ativo, nome_completo, email)
-         VALUES (?, ?, 'usuario', 1, ?, ?)`,
+          (nome_usuario, senha_hash, perfil, ativo, nome_completo, cpf, email, telefone)
+         VALUES (?, ?, 'usuario', 1, ?, ?, ?, ?)`,
       )
-      .bind(nomeUsuario, senhaHash, nomeCompleto || null, email || null)
+      .bind(nomeUsuario, senhaHash, nomeCompleto, cpfDigits, email, telefone)
       .run();
 
     return json(
@@ -292,7 +294,9 @@ async function handleRegister(request, env) {
           id: Number(result.meta?.last_row_id),
           nome_usuario: nomeUsuario,
           nome_completo: nomeCompleto,
+          cpf: cpfDigits,
           email,
+          telefone,
           perfil: "usuario",
         },
       },
