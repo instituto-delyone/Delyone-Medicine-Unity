@@ -307,7 +307,7 @@ async function handleRegister(request, env) {
   }
 }
 
-async function handleLogin(request, env) {
+async function handleLogin(request, env, adminOnly = false) {
   if (!env.DB || !env.JWT_SECRET) {
     return json({ detail: "API não configurada." }, 503, request);
   }
@@ -329,6 +329,10 @@ async function handleLogin(request, env) {
   const valid = row && Number(row.ativo) === 1
     ? await verifyPassword(body.senha, row.senha_hash)
     : false;
+
+  if (valid && adminOnly && row.perfil !== "admin") {
+    return json({ detail: "Esta conta não possui acesso administrativo." }, 403, request);
+  }
 
   if (!valid) {
     return json({ detail: "Usuário ou senha inválidos." }, 401, request);
@@ -582,6 +586,10 @@ export default {
 
       if (url.pathname === "/login" && request.method === "POST") {
         return handleLogin(request, env);
+      }
+
+      if (url.pathname === "/admin/login" && request.method === "POST") {
+        return handleLogin(request, env, true);
       }
 
       if (url.pathname === "/me" && request.method === "GET") {
