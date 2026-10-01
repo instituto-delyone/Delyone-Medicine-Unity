@@ -262,7 +262,7 @@ async function handleRegister(request, env) {
     return json({ detail: "A senha deve ter entre 8 e 128 caracteres." }, 400, request);
   }
 
-  if (email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return json({ detail: "Informe um e-mail válido." }, 400, request);
   }
 
