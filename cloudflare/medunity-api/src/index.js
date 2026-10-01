@@ -77,6 +77,25 @@ function constantTimeEqual(a, b) {
   return constantTimeBytesEqual(encoder.encode(a), encoder.encode(b));
 }
 
+async function createPasswordRecord(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const derived = await new Promise((resolve, reject) => {
+    pbkdf2(
+      encoder.encode(password),
+      salt,
+      PBKDF2_ITERATIONS,
+      32,
+      "sha256",
+      (error, derivedKey) => {
+        if (error) reject(error);
+        else resolve(new Uint8Array(derivedKey));
+      },
+    );
+  });
+
+  return `pbkdf2$sha256${PBKDF2_ITERATIONS}${base64url(salt)}${base64url(derived)}`;
+}
+
 async function verifyPassword(password, record) {
   const parts = record.split("$");
   if (parts.length !== 5 || parts[0] !== "pbkdf2" || parts[1] !== "sha256") {
@@ -212,6 +231,80 @@ async function getAuthenticatedUser(request, env) {
     nome_usuario: row.nome_usuario,
     perfil: row.perfil,
   };
+}
+
+async function handleRegister(request, env) {
+  if (!env.DB) {
+    return json({ detail: "API não configurada." }, 503, request);
+  }
+
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body !== "object") {
+    return json({ detail: "Dados de cadastro inválidos." }, 400, request);
+  }
+
+  const nomeUsuario = typeof body.nome_usuario === "string" ? body.nome_usuario.trim() : "";
+  const senha = typeof body.senha === "string" ? body.senha : "";
+  const nomeCompleto = typeof body.nome_completo === "string" ? body.nome_completo.trim() : "";
+  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+
+  if (!nomeUsuario || !senha) {
+    return json({ detail: "Usuário e senha são obrigatórios." }, 400, request);
+  }
+
+  if (!/^[A-Za-z0-9._-]{4,40}$/.test(nomeUsuario)) {
+    return json({ detail: "O usuário deve ter 4 a 40 caracteres e usar apenas letras, números, ponto, hífen ou sublinhado." }, 400, request);
+  }
+
+  if (senha.length < 8 || senha.length > 128) {
+    return json({ detail: "A senha deve ter entre 8 e 128 caracteres." }, 400, request);
+  }
+
+  if (email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    return json({ detail: "Informe um e-mail válido." }, 400, request);
+  }
+
+  const existing = await env.DB
+    .prepare("SELECT id FROM usuarios WHERE nome_usuario = ? LIMIT 1")
+    .bind(nomeUsuario)
+    .first();
+
+  if (existing) {
+    return json({ detail: "Esse usuário já está cadastrado." }, 409, request);
+  }
+
+  const senhaHash = await createPasswordRecord(senha);
+
+  try {
+    const result = await env.DB
+      .prepare(
+        `INSERT INTO usuarios
+          (nome_usuario, senha_hash, perfil, ativo, nome_completo, email)
+         VALUES (?, ?, 'usuario', 1, ?, ?)`,
+      )
+      .bind(nomeUsuario, senhaHash, nomeCompleto || null, email || null)
+      .run();
+
+    return json(
+      {
+        status: "cadastrado",
+        usuario: {
+          id: Number(result.meta?.last_row_id),
+          nome_usuario: nomeUsuario,
+          nome_completo: nomeCompleto,
+          email,
+          perfil: "usuario",
+        },
+      },
+      201,
+      request,
+    );
+  } catch (error) {
+    if (String(error.message || "").toLowerCase().includes("unique")) {
+      return json({ detail: "Esse usuário já está cadastrado." }, 409, request);
+    }
+    throw error;
+  }
 }
 
 async function handleLogin(request, env) {
@@ -481,6 +574,10 @@ export default {
           200,
           request,
         );
+      }
+
+      if (url.pathname === "/cadastro" && request.method === "POST") {
+        return handleRegister(request, env);
       }
 
       if (url.pathname === "/login" && request.method === "POST") {
