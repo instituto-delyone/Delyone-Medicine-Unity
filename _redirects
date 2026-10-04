@@ -1,3 +1,0 @@
-# GOV.BR Login Único — keep the public integration URLs on the MedUnity domain.
-/auth/govbr/*  https://medunity-api.dr-delyone.workers.dev/auth/govbr/:splat  200!
-/auth/govbr     https://medunity-api.dr-delyone.workers.dev/auth/govbr       200!
