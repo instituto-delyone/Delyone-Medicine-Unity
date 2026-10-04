@@ -29,13 +29,14 @@
   <div id="status" class="status">Verificando sessão…</div>
 </main>
 <script>
+  const GOVBR_WORKER = 'https://medunity-api.dr-delyone.workers.dev';
   const statusEl = document.getElementById('status');
   const loginBtn = document.getElementById('login');
   const logoutBtn = document.getElementById('logout');
 
   async function loadSession(){
     try{
-      const response = await fetch('/auth/govbr/me', { credentials:'include', cache:'no-store' });
+      const response = await fetch(`${GOVBR_WORKER}/auth/govbr/me`, { credentials:'include', cache:'no-store' });
       const data = await response.json().catch(()=>({}));
       if(response.ok && data.authenticated){
         statusEl.className='status ok';
@@ -54,8 +55,8 @@
     }
   }
 
-  loginBtn.addEventListener('click',()=>{ window.location.href='/auth/govbr'; });
-  logoutBtn.addEventListener('click',()=>{ window.location.href='/auth/govbr/logout'; });
+  loginBtn.addEventListener('click',()=>{ window.location.href=`${GOVBR_WORKER}/auth/govbr`; });
+  logoutBtn.addEventListener('click',()=>{ window.location.href=`${GOVBR_WORKER}/auth/govbr/logout`; });
   loadSession();
 </script>
 </body>
