@@ -2,23 +2,21 @@
 
 ## Endpoints implementados
 
-| Função | Endpoint |
+| Função | Endpoint público |
 |---|---|
-| Iniciar autenticação | `GET /auth/govbr` |
-| Retorno OAuth/PKCE | `GET /auth/govbr/callback` |
+| Iniciar autenticação | `GET https://medunity.delyone.com/auth/govbr` |
+| Retorno OAuth/PKCE | `GET https://medunity.delyone.com/auth/govbr/callback` |
 | Consultar sessão GOV.BR | `GET /auth/govbr/me` |
-| Logout GOV.BR + MedUnity | `GET` ou `POST /auth/govbr/logout` |
-| Diagnóstico sem segredo | `GET /auth/govbr/config` |
+| Logout GOV.BR + MedUnity | `GET` ou `POST https://medunity.delyone.com/auth/govbr/logout` |
+| Diagnóstico sem segredo | `GET https://medunity.delyone.com/auth/govbr/config` |
 
-URL base atual do Worker:
-
-`https://medunity-api.dr-delyone.workers.dev`
+O domínio público é o MedUnity. O `_redirects` do site faz proxy das rotas `/auth/govbr/*` para o Worker `medunity-api`.
 
 ## URLs para o formulário do Portal da Sociedade
 
 ### URL(s) do retorno (Homologação)
 
-`https://medunity-api.dr-delyone.workers.dev/auth/govbr/callback`
+`https://medunity.delyone.com/auth/govbr/callback`
 
 ### URL única para página inicial do sistema (Homologação)
 
@@ -26,7 +24,7 @@ URL base atual do Worker:
 
 ### URL de Logout (Homologação), quando o campo estiver disponível
 
-`https://medunity-api.dr-delyone.workers.dev/auth/govbr/logout`
+`https://medunity.delyone.com/auth/govbr/logout`
 
 > A URL de callback deve ser cadastrada exatamente igual à usada em `GOVBR_REDIRECT_URI`. A documentação oficial do Login Único exige que a `redirect_uri` esteja previamente cadastrada e que o fluxo use `state`, `nonce` e PKCE/S256.
 
@@ -37,7 +35,7 @@ Depois que o GOV.BR aprovar a solicitação e disponibilizar as credenciais de h
 - `GOVBR_BASE_URL=https://sso.staging.acesso.gov.br`
 - `GOVBR_CLIENT_ID=<client_id recebido do GOV.BR>`
 - `GOVBR_CLIENT_SECRET=<secret recebido do GOV.BR>`
-- `GOVBR_REDIRECT_URI=https://medunity-api.dr-delyone.workers.dev/auth/govbr/callback`
+- `GOVBR_REDIRECT_URI=https://medunity.delyone.com/auth/govbr/callback`
 - `GOVBR_RETURN_URL=https://medunity.delyone.com/`
 
 **Nunca** colocar `GOVBR_CLIENT_SECRET` no GitHub, HTML, JavaScript do navegador ou documentação pública.
@@ -70,10 +68,11 @@ Aplicar a migration no D1 antes do primeiro teste de login.
 1. Aplicar a migration no D1 `medunity-auth`.
 2. Configurar os quatro valores `GOVBR_*` acima.
 3. Confirmar no Portal da Sociedade que a callback cadastrada é exatamente a mesma URL.
-4. Abrir `https://medunity-api.dr-delyone.workers.dev/auth/govbr/config` e confirmar que o endpoint responde sem expor o segredo.
-5. Testar `https://medunity-api.dr-delyone.workers.dev/auth/govbr` em navegador normal.
-6. Após o fluxo de login, confirmar retorno ao MedUnity e consultar `/auth/govbr/me` com cookies.
-7. Para a evidência de homologação, gravar o navegador com a barra de endereço visível, mostrando login, retorno ao MedUnity e logout.
+4. Publicar o `_redirects` do site para que `/auth/govbr/*` seja encaminhado ao Worker.
+5. Abrir `https://medunity.delyone.com/auth/govbr/config` e confirmar que o endpoint responde sem expor o segredo.
+6. Testar `https://medunity.delyone.com/auth/govbr` em navegador normal.
+7. Após o fluxo de login, confirmar retorno ao MedUnity e consultar `/auth/govbr/me` com cookies.
+8. Para a evidência de homologação, gravar o navegador com a barra de endereço visível, mostrando login, retorno ao MedUnity e logout.
 
 ## Produção
 
