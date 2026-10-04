@@ -36,7 +36,7 @@ Depois que o GOV.BR aprovar a solicitação e disponibilizar as credenciais de h
 - `GOVBR_CLIENT_ID=<client_id recebido do GOV.BR>`
 - `GOVBR_CLIENT_SECRET=<secret recebido do GOV.BR>`
 - `GOVBR_REDIRECT_URI=https://medunity.delyone.com/auth/govbr/callback`
-- `GOVBR_RETURN_URL=https://medunity.delyone.com/`
+- `GOVBR_RETURN_URL=https://medunity.delyone.com/govbr/`
 
 **Nunca** colocar `GOVBR_CLIENT_SECRET` no GitHub, HTML, JavaScript do navegador ou documentação pública.
 
@@ -51,7 +51,7 @@ Depois que o GOV.BR aprovar a solicitação e disponibilizar as credenciais de h
 7. O Worker usa o `access_token` no `/userinfo` para obter os dados básicos do usuário.
 8. O usuário é associado/criado na tabela local `usuarios` como perfil `usuario` quando apropriado.
 9. É criada uma sessão própria do MedUnity em `govbr_sessions`; o token do GOV.BR não é usado como sessão da aplicação.
-10. O navegador retorna para `https://medunity.delyone.com/?govbr=authenticated`.
+10. O navegador retorna para `https://medunity.delyone.com/govbr/`, uma página de homologação que mostra o estado da sessão e oferece logout.
 11. O logout revoga a sessão MedUnity e redireciona para o logout do GOV.BR.
 
 ## Banco de dados
@@ -70,9 +70,10 @@ Aplicar a migration no D1 antes do primeiro teste de login.
 3. Confirmar no Portal da Sociedade que a callback cadastrada é exatamente a mesma URL.
 4. Publicar o `_redirects` do site para que `/auth/govbr/*` seja encaminhado ao Worker.
 5. Abrir `https://medunity.delyone.com/auth/govbr/config` e confirmar que o endpoint responde sem expor o segredo.
-6. Testar `https://medunity.delyone.com/auth/govbr` em navegador normal.
-7. Após o fluxo de login, confirmar retorno ao MedUnity e consultar `/auth/govbr/me` com cookies.
-8. Para a evidência de homologação, gravar o navegador com a barra de endereço visível, mostrando login, retorno ao MedUnity e logout.
+6. Abrir `https://medunity.delyone.com/govbr/` e clicar em **Entrar com GOV.BR**.
+7. Após o fluxo de login, confirmar o retorno à página de homologação e a identificação do usuário.
+8. Clicar em **Sair** e confirmar o retorno ao MedUnity.
+9. Para a evidência de homologação, gravar o navegador com a barra de endereço visível, mostrando login, retorno ao MedUnity e logout.
 
 ## Produção
 
