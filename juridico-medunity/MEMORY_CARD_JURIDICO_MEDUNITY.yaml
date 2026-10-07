@@ -1,0 +1,282 @@
+# MEMORY CARD — JURÍDICO MEDUNITY
+# Versão: 1.0
+# Estado: ATIVO
+# Última atualização: 2026-10-06
+# Regra: este arquivo é memória operacional; não substitui parecer jurídico.
+
+meta:
+  nome: "Jurídico MedUnity"
+  projeto: "MedUnity"
+  instituto: "Instituto Delyone de Medicina e Tecnologia"
+  repositorio: "instituto-delyone/Delyone-Medicine-Unity"
+  finalidade: "Organizar, consultar e atualizar o estado jurídico, regulatório, contratual e de propriedade intelectual do MedUnity."
+  status_geral: "ATIVO"
+  politica_epistemica:
+    confirmado: "Sustentado por documento, registro oficial ou evidência suficiente."
+    interpretacao: "Leitura jurídica/técnica que pode exigir validação profissional."
+    hipotese: "Possibilidade ou tese em estudo."
+    a_validar: "Não usar como fato jurídico consolidado antes de verificar."
+  proibido_armazenar:
+    - "senhas"
+    - "JWT"
+    - "JWT_SECRET"
+    - "BOOTSTRAP_SECRET"
+    - "API tokens"
+    - "chaves privadas"
+    - "credenciais"
+
+controle:
+  usar_memoria: true
+  usar_para_analise_juridica: true
+  usar_para_contratos: true
+  usar_para_publicidade: false
+  exigir_verificacao_antes_de_uso_formal: true
+  exigir_fonte_primaria_para_regulacao_atual: true
+
+frentes:
+  identidade_juridica:
+    ativa: true
+    prioridade: alta
+    status: "CONFIRMADO/A VALIDAR"
+    objetivo: "Mapear entidade, objeto social, CNAEs e compatibilidade com atividades futuras do MedUnity."
+    perguntas_abertas:
+      - "Compatibilidade do objeto social/CNAEs com licenciamento de software, serviços tecnológicos e operações B2B."
+      - "Necessidade de ajustes societários ou cadastrais antes de determinadas atividades."
+
+  titularidade_ip:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Mapear titularidade, autoria, registros, pedidos de patente e ativos relacionados ao MedUnity."
+    registros_declarados:
+      software:
+        - numero: "BR512026006823-1"
+          descricao: "IDMT App: MedUnity e Diagnosis"
+          status: "A VALIDAR"
+      patentes:
+        - numero: "BR 10 2026 001743-4"
+          titulo: "Gerenciamento Assimétrico de Contexto Informacional em IA"
+          status: "A VALIDAR"
+        - numero: "BR 10 2026 019277-5"
+          titulo: "Encapsulamento Criptográfico Dinâmico de Credenciais Digitais"
+          status: "A VALIDAR"
+    regra: "Verificar diretamente no INPI antes de afirmar titularidade, status, escopo ou proteção."
+
+  software_licenciamento:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Definir modelo de licenciamento, propriedade do código, uso por terceiros, SaaS/on-premise, implantação e suporte."
+    pontos:
+      - "Licença atual do núcleo MedUnity deve ser confirmada no repositório."
+      - "Separar software, dados, conteúdo clínico, templates, CSI e integrações."
+      - "Definir direitos sobre customizações feitas para clientes."
+
+  lgpd_dados_clinicos:
+    ativa: true
+    prioridade: critica
+    status: "A VALIDAR"
+    objetivo: "Definir papéis, bases legais, governança e ciclo de vida dos dados pessoais e dados de saúde."
+    pontos:
+      - "Mapear controlador, operador e eventuais suboperadores por fluxo."
+      - "Mapear coleta, armazenamento, processamento, compartilhamento, exportação e eliminação."
+      - "Definir política de retenção e resposta a incidentes."
+      - "Separar dados clínicos reais de dados de teste/desenvolvimento."
+    regra: "Não presumir papéis LGPD sem analisar cada fluxo contratual e operacional."
+
+  prontuario_eletronico:
+    ativa: true
+    prioridade: critica
+    status: "A VALIDAR"
+    objetivo: "Mapear requisitos aplicáveis ao registro clínico, integridade, autenticidade, rastreabilidade, guarda e acesso."
+    estado_tecnico_declarado:
+      ficha_mestra: "Integrada no estado documentado do projeto; implementação atual deve ser verificada antes de afirmação comercial."
+      documentos: "Geração documental funcional foi registrada no estado do projeto."
+    pontos:
+      - "Verificar requisitos atuais aplicáveis ao prontuário eletrônico."
+      - "Definir trilha de auditoria e gestão de alterações."
+      - "Definir exportação, portabilidade e acesso do paciente/profissional."
+
+  telemedicina_senior_consult:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Separar juridicamente a plataforma MedUnity do ato médico e organizar o fluxo do Senior Consult."
+    estado_comercial:
+      modelo: "Solicitação/agendamento com confirmação manual."
+      pagamento: "Confirmação manual."
+      regra: "Solicitação não deve ser tratada como consulta confirmada sem confirmação operacional."
+    pontos:
+      - "Consentimento e documentação do atendimento."
+      - "Responsabilidade do médico versus responsabilidade tecnológica."
+      - "Termos de uso e política de privacidade."
+      - "Publicidade e alegações sobre telemedicina."
+
+  anvisa_samd:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Classificar cada funcionalidade do MedUnity segundo sua finalidade de uso e verificar eventual enquadramento regulatório."
+    regra_central: "A classificação depende da finalidade de uso e da funcionalidade efetivamente disponibilizada."
+    matriz_obrigatoria:
+      - "funcionalidade"
+      - "finalidade_declarada"
+      - "usuario"
+      - "entrada"
+      - "saida"
+      - "apoia_decisao_clinica"
+      - "toma_decisao_ou_recomenda"
+      - "risco"
+      - "classificacao"
+      - "evidencia"
+      - "status"
+    alerta: "Não declarar o MedUnity como SaMD nem como não-SaMD sem análise da funcionalidade e finalidade específicas."
+
+  responsabilidades_limites:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Definir claramente o que é responsabilidade do software, do Instituto, do médico, do cliente e de terceiros."
+    pontos:
+      - "O sistema não deve ser descrito como substituto do julgamento clínico sem base específica."
+      - "Separar ferramenta documental de suporte à decisão clínica."
+      - "Definir limites de disponibilidade, segurança e interoperabilidade."
+
+  contratos:
+    ativa: true
+    prioridade: alta
+    status: "PENDENTE"
+    objetivo: "Criar biblioteca contratual do MedUnity."
+    documentos_alvo:
+      - "Termos de Uso"
+      - "Política de Privacidade"
+      - "DPA/Anexo de Tratamento de Dados"
+      - "Contrato B2B de Licenciamento"
+      - "Contrato de Implantação/Suporte"
+      - "Contrato/Termo para Senior Consult"
+      - "NDA"
+      - "Termo de uso de ambiente de testes"
+      - "Acordo com parceiros/integradores"
+
+  seguranca_informacao:
+    ativa: true
+    prioridade: critica
+    status: "A VALIDAR"
+    objetivo: "Transformar segurança técnica em controles, responsabilidades e evidências jurídicas."
+    pontos:
+      - "Controle de acesso."
+      - "Autenticação e sessão."
+      - "Logs e auditoria."
+      - "Gestão de incidentes."
+      - "Backup e recuperação."
+      - "Gestão de fornecedores."
+      - "Segregação de ambientes."
+    regra: "Não guardar segredos no repositório ou nesta memória."
+
+  sus_pdil:
+    ativa: true
+    prioridade: alta
+    status: "A VALIDAR"
+    objetivo: "Mapear implicações jurídicas da proposta PDIL e eventual relação futura com SUS."
+    pontos:
+      - "Titularidade dos ativos pré-existentes."
+      - "Ativos desenvolvidos com recurso público."
+      - "Licenciamento, transferência de tecnologia ou copropriedade quando aplicável."
+      - "Obrigações de acesso, demonstração, interoperabilidade e entrega."
+    regra: "Separar patrimônio intelectual prévio do que eventualmente vier a ser desenvolvido com recurso público."
+
+  ip_previa:
+    ativa: true
+    prioridade: critica
+    status: "A VALIDAR"
+    objetivo: "Registrar quais ativos existiam antes de contratos, parcerias ou financiamento público."
+    itens:
+      - "Código."
+      - "Arquitetura."
+      - "CSI."
+      - "Modelos e schemas."
+      - "Templates."
+      - "Documentação."
+      - "Patentes/pedidos."
+      - "Marcas."
+      - "Know-how."
+    regra: "Manter evidência temporal da criação e versões."
+
+  ativos_recurso_publico:
+    ativa: true
+    prioridade: alta
+    status: "PENDENTE"
+    objetivo: "Controlar qualquer ativo criado ou aprimorado com recurso público e suas consequências de titularidade/licenciamento."
+    perguntas:
+      - "Qual instrumento jurídico financia?"
+      - "Qual recurso é público?"
+      - "Qual ativo foi criado ou modificado?"
+      - "Qual regime de propriedade intelectual se aplica?"
+      - "Existe obrigação de licenciamento, acesso ou transferência?"
+
+  comercializacao_b2b:
+    ativa: true
+    prioridade: alta
+    status: "PENDENTE"
+    objetivo: "Preparar estrutura jurídica para venda nacional do MedUnity."
+    pontos:
+      - "Modelo SaaS/licença/implantação."
+      - "SLA."
+      - "Suporte."
+      - "Limitação de responsabilidade."
+      - "Proteção de dados."
+      - "Propriedade intelectual."
+      - "Rescisão e portabilidade."
+      - "Uso de integrações de terceiros."
+
+  riscos_juridicos:
+    ativa: true
+    prioridade: critica
+    status: "ATIVO"
+    objetivo: "Manter registro vivo dos riscos e das medidas de mitigação."
+    niveis:
+      critico: "Pode impedir operação ou gerar exposição relevante."
+      alto: "Precisa de ação antes de expansão/comercialização."
+      medio: "Precisa de tratamento planejado."
+      baixo: "Monitorar."
+
+  matriz_conformidade:
+    ativa: true
+    prioridade: critica
+    status: "PENDENTE"
+    objetivo: "Relacionar requisito -> evidência -> responsável -> status -> ação."
+    campos:
+      - "tema"
+      - "requisito"
+      - "fonte"
+      - "aplicabilidade"
+      - "evidencia"
+      - "responsavel"
+      - "status"
+      - "risco"
+      - "acao"
+      - "prazo"
+      - "ultima_verificacao"
+
+documentos_necessarios:
+  - "Inventário de ativos/IP"
+  - "Matriz de finalidade de uso"
+  - "Mapa de dados/LGPD"
+  - "Matriz de responsabilidades"
+  - "Matriz regulatória"
+  - "Termos de Uso"
+  - "Política de Privacidade"
+  - "DPA"
+  - "Contrato B2B"
+  - "SLA"
+  - "NDA"
+  - "Dossiê de segurança"
+  - "Dossiê de prontuário eletrônico"
+  - "Dossiê de telemedicina"
+  - "Dossiê SUS/PDIL"
+  - "Registro de evidências de IP"
+
+estado_atual:
+  resumo: "Dossiê jurídico criado como estrutura operacional inicial."
+  proxima_acao_recomendada: "Preencher a Matriz de Finalidade de Uso do MedUnity e, em paralelo, o inventário de IP pré-existente."
+  ultima_revisao: "2026-10-06"
