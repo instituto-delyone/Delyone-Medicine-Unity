@@ -747,6 +747,8 @@
             <option value="TEMPLATE_SUS_Laudo_Solicitacao_APAC_Procedimentos_Ambulatoriais.pdf">004 — Laudo APAC (Oficial SUS - PDF Mapeado)</option>
             <option value="RECEITA_SUS" style="font-weight: bold; color: var(--brand);">005 — Receituário Ambulatorial SUS</option>
             <option value="RECEITA_CONTROLE" style="font-weight: bold; color: var(--brand);">006 — Receituário de Controle Especial</option>
+            <option value="SOLICITACAO_EXAMES_SUS" style="font-weight: bold; color: var(--brand);">007 — Solicitação de Exames Complementares SUS</option>
+            <option value="SOLICITACAO_EXAMES_MEDUNITY" style="font-weight: bold; color: var(--brand);">008 — Solicitação de Exames Complementares MedUnity</option>
           </select>
 
           <div class="actions">
@@ -1736,6 +1738,69 @@ function gerarHTMLReceitaControle(d) {
   `;
 }
   
+function gerarColunaExamesSolicitacao(d, incluirCodigo, inicio, fim) {
+  const lista = Array.isArray(d.examesComplementares) ? d.examesComplementares : [];
+  return lista.slice(inicio, fim).map(function(exame) {
+    const qtd = Number(exame.qtd || 1);
+    const codigo = incluirCodigo && exame.codigo ? '<span style="font-size:9px;color:#555;margin-right:6px;">[' + esc(exame.codigo) + ']</span>' : '';
+    return '<div style="display:flex;align-items:center;gap:8px;min-height:28px;padding:3px 4px;border-bottom:1px solid #ddd;font-size:10.5px;line-height:1.25;">' +
+      '<span style="display:inline-flex;width:15px;height:15px;border:1.5px solid #222;flex:0 0 15px;align-items:center;justify-content:center;font-size:10px;">✓</span>' +
+      '<span style="flex:1;">' + codigo + '<strong>' + qtd + 'x</strong> — ' + esc(exame.nome) + '</span></div>';
+  }).join('');
+}
+
+function gerarHTMLSolicitacaoExamesSUS(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const local = d.municipality || '';
+  const medico = d.doctor_name || '';
+  const crm = d.crm || '';
+  const lista = Array.isArray(d.examesComplementares) ? d.examesComplementares : [];
+  const metade = Math.ceil(lista.length / 2);
+  const esquerda = lista.length ? gerarColunaExamesSolicitacao(d, true, 0, metade) : '<div style="grid-column:1/-1;min-height:175mm;display:flex;align-items:center;justify-content:center;color:#777;font-size:12px;">Nenhum exame complementar solicitado na Ficha-Mãe.</div>';
+  const direita = lista.length ? gerarColunaExamesSolicitacao(d, true, metade, lista.length) : '';
+
+  return '<div id="print-area" style="font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;width:210mm;min-height:297mm;max-width:100%;margin:auto;padding:12mm 10mm 10mm;box-sizing:border-box;">' +
+    '<div style="border:1.5px solid #222;min-height:275mm;box-sizing:border-box;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:center;gap:10px;padding:9px 10px 8px;border-bottom:2px solid #135ca8;">' +
+        '<div style="display:flex;align-items:center;gap:7px;color:#075ca8;font-weight:900;"><div style="width:34px;height:34px;position:relative;"><div style="position:absolute;left:9px;top:0;width:16px;height:34px;background:#075ca8;"></div><div style="position:absolute;left:0;top:9px;width:34px;height:16px;background:#075ca8;"></div></div><span style="font-size:21px;letter-spacing:-1px;">SUS</span></div>' +
+        '<div style="text-align:center;line-height:1.2;"><div style="font-weight:900;font-size:14px;">MINISTÉRIO DA SAÚDE</div><div style="font-weight:900;font-size:14px;">SUS</div></div>' +
+        '<div style="text-align:right;font-size:9px;font-weight:700;color:#333;"><div style="font-size:24px;line-height:1;">🇧🇷</div><div>REPÚBLICA FEDERATIVA DO BRASIL</div></div>' +
+      '</div>' +
+      '<div style="border:1.5px solid #222;margin:9mm 7mm 7mm;padding:9px 10px;min-height:22mm;box-sizing:border-box;"><div style="font-size:10px;font-weight:900;margin-bottom:8px;">NOME DO PACIENTE:</div><div style="font-size:13px;font-weight:700;min-height:8mm;">' + esc(d.patient_name || '') + '</div></div>' +
+      '<div style="margin:0 7mm;border:1.5px solid #222;">' +
+        '<div style="background:#eaf2fb;border-bottom:1.5px solid #222;text-align:center;font-size:15px;font-weight:900;padding:8px;text-transform:uppercase;">SOLICITAÇÃO DE EXAMES COMPLEMENTARES</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:175mm;"><div style="padding:7px;border-right:1px solid #777;">' + esquerda + '</div><div style="padding:7px;">' + direita + '</div></div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1.2fr;gap:0;margin:7mm 7mm 0;border:1.5px solid #222;min-height:29mm;">' +
+        '<div style="padding:10px;border-right:1px solid #222;font-size:10px;"><div style="font-weight:900;">DATA:</div><div style="margin-top:8px;">' + hoje + '</div><div style="font-weight:900;margin-top:7px;">LOCAL:</div><div style="margin-top:4px;">' + esc(local) + '</div></div>' +
+        '<div style="padding:10px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;"><div style="height:12mm;border-bottom:1px solid #222;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;margin-top:3px;">' + esc(medico) + (crm ? ' · ' + esc(crm) : '') + '</div></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function gerarHTMLSolicitacaoExamesMedUnity(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const lista = Array.isArray(d.examesComplementares) ? d.examesComplementares : [];
+  const exames = lista.length ? lista.map(function(exame) {
+    return '<div style="padding:7px 8px;border-bottom:1px solid #d8e3e5;font-size:12px;"><strong>' + Number(exame.qtd || 1) + 'x</strong> — ' + esc(exame.nome) + (exame.codigo ? ' <span style="font-size:9px;color:#66757c;">[' + esc(exame.codigo) + ']</span>' : '') + '</div>';
+  }).join('') : '<div style="padding:20px;text-align:center;color:#66757c;">Nenhum exame complementar solicitado na Ficha-Mãe.</div>';
+
+  return '<div id="print-area" style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;color:#172126;background:#fff;width:210mm;min-height:297mm;max-width:100%;margin:auto;padding:14mm;box-sizing:border-box;">' +
+    '<div style="border:1.5px solid #172126;min-height:268mm;padding:12mm;box-sizing:border-box;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #0f8f92;padding-bottom:7mm;margin-bottom:8mm;">' +
+        '<div style="display:flex;align-items:center;gap:10px;"><div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#0f8f92,#086d70);color:#fff;display:grid;place-items:center;font-weight:900;">MD</div><div><div style="font-size:15px;font-weight:900;">MedUnity Delyone</div><div style="font-size:8px;color:#66757c;letter-spacing:.08em;text-transform:uppercase;">Clinical Document Engine</div></div></div>' +
+        '<div style="text-align:right;font-size:9px;color:#66757c;">Instituto Delyone<br>Medicina · Tecnologia · Pesquisa</div>' +
+      '</div>' +
+      '<h1 style="font-size:19px;text-align:center;letter-spacing:.02em;margin:0 0 9mm;text-transform:uppercase;">Solicitação de Exames Complementares</h1>' +
+      '<div style="border:1px solid #172126;padding:7px 9px;margin-bottom:8mm;"><div style="font-size:9px;color:#66757c;font-weight:800;text-transform:uppercase;">Paciente</div><div style="font-size:14px;font-weight:800;margin-top:3px;">' + esc(d.patient_name || '') + '</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px;font-size:10px;"><div>Data de nascimento: <strong>' + esc(d.birth || '') + '</strong></div><div>CNS: <strong>' + esc(d.cns || '') + '</strong></div></div></div>' +
+      '<div style="font-size:12px;font-weight:900;margin-bottom:5px;">SOLICITO EXAMES COMPLEMENTARES:</div><div style="border:1px solid #172126;margin-bottom:9mm;">' + exames + '</div>' +
+      '<div style="margin-top:35mm;display:grid;grid-template-columns:1fr 1fr;gap:25mm;align-items:end;"><div style="font-size:10px;"><div>Local: <strong>' + esc(d.municipality || '') + '</strong></div><div style="margin-top:5px;">Data: <strong>' + hoje + '</strong></div></div><div style="text-align:center;"><div style="height:14mm;border-bottom:1px solid #172126;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;color:#66757c;margin-top:3px;">' + esc(d.doctor_name || '') + (d.crm ? ' · ' + esc(d.crm) : '') + '</div></div></div>' +
+      '<div style="margin-top:10mm;padding-top:4mm;border-top:1px solid #dce5e8;text-align:center;font-size:8px;color:#66757c;">Documento gerado eletronicamente pelo MedUnity Delyone. Conferência e assinatura do profissional solicitante são obrigatórias antes da emissão.</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function vincularLivePreview() {
   FIELDS.forEach(k => {
     const el = $('master_' + k);
@@ -1805,7 +1870,7 @@ function renderFields(){
 $('inspectTemplateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate) return toast('Selecione um template primeiro.');
-  if (['FICHA_MAE', 'EVOLUCAO_INTERNACAO', 'PRESCRICAO_UTI', 'RECEITA_SUS', 'RECEITA_CONTROLE'].includes(selectedTemplate)) {
+  if (['FICHA_MAE', 'EVOLUCAO_INTERNACAO', 'PRESCRICAO_UTI', 'RECEITA_SUS', 'RECEITA_CONTROLE', 'SOLICITACAO_EXAMES_SUS', 'SOLICITACAO_EXAMES_MEDUNITY'].includes(selectedTemplate)) {
     return toast('Este é um documento nativo/dinâmico. Clique em "Gerar documento" para visualizá-lo.');
   }
   try {
@@ -1887,7 +1952,7 @@ $('generateBtn').addEventListener('click', async () => {
   const d = master();
   const previewArea = $('preview');
 
-  if (['FICHA_MAE', 'EVOLUCAO_INTERNACAO', 'PRESCRICAO_UTI', 'RECEITA_SUS', 'RECEITA_CONTROLE'].includes(selectedTemplate)) {
+  if (['FICHA_MAE', 'EVOLUCAO_INTERNACAO', 'PRESCRICAO_UTI', 'RECEITA_SUS', 'RECEITA_CONTROLE', 'SOLICITACAO_EXAMES_SUS', 'SOLICITACAO_EXAMES_MEDUNITY'].includes(selectedTemplate)) {
     let htmlGerado = '';
     let tituloDoc = '';
 
@@ -1907,6 +1972,12 @@ $('generateBtn').addEventListener('click', async () => {
     } else if (selectedTemplate === 'RECEITA_CONTROLE') {
       htmlGerado = gerarHTMLReceitaControle(d);
       tituloDoc = 'Receituário de Controle Especial';
+    } else if (selectedTemplate === 'SOLICITACAO_EXAMES_SUS') {
+      htmlGerado = gerarHTMLSolicitacaoExamesSUS(d);
+      tituloDoc = 'Solicitação de Exames Complementares SUS';
+    } else if (selectedTemplate === 'SOLICITACAO_EXAMES_MEDUNITY') {
+      htmlGerado = gerarHTMLSolicitacaoExamesMedUnity(d);
+      tituloDoc = 'Solicitação de Exames Complementares MedUnity';
     }
 
     window.latestFichaHTML = htmlGerado;
