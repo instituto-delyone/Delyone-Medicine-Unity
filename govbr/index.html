@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedUnity — Login GOV.BR</title>
+  <style>
+    :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17313a;background:#f3f7f8}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+    main{width:min(560px,100%);background:#fff;border:1px solid #dce5e8;border-radius:22px;padding:32px;box-shadow:0 12px 35px #10252a12}
+    .brand{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#0b777a;font-weight:800}
+    h1{margin:8px 0;font-size:32px;line-height:1.1}
+    p{color:#617279;line-height:1.6}
+    button{border:0;border-radius:12px;padding:13px 18px;background:#0b777a;color:#fff;font-weight:800;cursor:pointer;font-size:15px}
+    button.secondary{background:#edf2f3;color:#31444b;margin-left:8px}
+    .status{margin-top:20px;padding:14px;border-radius:12px;background:#f7fafb;border:1px solid #dce5e8;white-space:pre-wrap}
+    .ok{background:#eef9f2;border-color:#c9ead8;color:#256a49}
+    .error{background:#fff2f2;border-color:#f0cccc;color:#8a3e3e}
+    code{word-break:break-all}
+  </style>
+</head>
+<body>
+<main>
+  <div class="brand">Instituto Delyone · MedUnity</div>
+  <h1>Entrar com GOV.BR</h1>
+  <p>Ambiente de homologação do Login Único. A autenticação é feita pelo GOV.BR e a sessão da aplicação é mantida separadamente pelo MedUnity.</p>
+  <button id="login">Entrar com GOV.BR</button>
+  <button id="logout" class="secondary" hidden>Sair</button>
+  <div id="status" class="status">Verificando sessão…</div>
+</main>
+<script>
+  const GOVBR_WORKER = 'https://medunity-api.dr-delyone.workers.dev';
+  const statusEl = document.getElementById('status');
+  const loginBtn = document.getElementById('login');
+  const logoutBtn = document.getElementById('logout');
+
+  async function loadSession(){
+    try{
+      const response = await fetch(`${GOVBR_WORKER}/auth/govbr/me`, { credentials:'include', cache:'no-store' });
+      const data = await response.json().catch(()=>({}));
+      if(response.ok && data.authenticated){
+        statusEl.className='status ok';
+        statusEl.textContent = `Autenticado no MedUnity\n\nNome: ${data.usuario.nome_completo || '—'}\nCPF: ${data.usuario.cpf || '—'}\nE-mail: ${data.usuario.email || '—'}`;
+        loginBtn.hidden=true;
+        logoutBtn.hidden=false;
+      }else{
+        statusEl.className='status';
+        statusEl.textContent='Nenhuma sessão GOV.BR ativa.';
+        loginBtn.hidden=false;
+        logoutBtn.hidden=true;
+      }
+    }catch(error){
+      statusEl.className='status error';
+      statusEl.textContent='Não foi possível consultar a sessão.\n\n'+error.message;
+    }
+  }
+
+  loginBtn.addEventListener('click',()=>{ window.location.href=`${GOVBR_WORKER}/auth/govbr`; });
+  logoutBtn.addEventListener('click',()=>{ window.location.href=`${GOVBR_WORKER}/auth/govbr/logout`; });
+  loadSession();
+</script>
+</body>
+</html>
