@@ -1650,9 +1650,10 @@ function gerarHTMLReceitaSUS(d) {
           <div style="font-size: 9px; color: #666; margin-top: 4px;">* Válido por 30 dias a contar da data de emissão.</div>
         </div>
         <div style="text-align: center;">
-          <div style="border-bottom: 1px solid #000; margin-bottom: 3px; width: 85%; margin-left: auto; margin-right: auto;"></div>
-          <strong>${esc(d.doctor_name || 'Dr. Médico Responsável')}</strong><br>
-          <span style="font-size: 10px;">Médico · ${esc(d.crm || 'CRM-UF 00000')}</span>
+          <div style="height: 18mm; border: 1px dashed #777; margin-bottom: 4px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 3px; font-size: 8px; color: #555;">ÁREA PARA CARIMBO E ASSINATURA</div>
+          <strong>${esc(d.doctor_name || '')}</strong><br>
+          <span style="font-size: 10px;">Médico · ${esc(formatarCRMDocumento(d))}</span><br>
+          <span style="font-size: 8px; color: #555;">Assinatura do médico prescritor</span>
         </div>
       </div>
 
@@ -1753,7 +1754,7 @@ function gerarHTMLSolicitacaoExamesSUS(d) {
   const hoje = new Date().toLocaleDateString('pt-BR');
   const local = d.municipality || '';
   const medico = d.doctor_name || '';
-  const crm = d.crm || '';
+  const crm = formatarCRMDocumento(d);
   const lista = Array.isArray(d.examesComplementares) ? d.examesComplementares : [];
   const metade = Math.ceil(lista.length / 2);
   const esquerda = lista.length ? gerarColunaExamesSolicitacao(d, true, 0, metade) : '<div style="grid-column:1/-1;min-height:175mm;display:flex;align-items:center;justify-content:center;color:#777;font-size:12px;">Nenhum exame complementar solicitado na Ficha-Mãe.</div>';
@@ -1773,7 +1774,7 @@ function gerarHTMLSolicitacaoExamesSUS(d) {
       '</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1.2fr;gap:0;margin:7mm 7mm 0;border:1.5px solid #222;min-height:29mm;">' +
         '<div style="padding:10px;border-right:1px solid #222;font-size:10px;"><div style="font-weight:900;">DATA:</div><div style="margin-top:8px;">' + hoje + '</div><div style="font-weight:900;margin-top:7px;">LOCAL:</div><div style="margin-top:4px;">' + esc(local) + '</div></div>' +
-        '<div style="padding:10px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;"><div style="height:12mm;border-bottom:1px solid #222;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;margin-top:3px;">' + esc(medico) + (crm ? ' · ' + esc(crm) : '') + '</div></div>' +
+        '<div style="padding:10px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;"><div style="height:18mm;border:1px dashed #777;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;margin-top:3px;">' + esc(medico) + (crm ? ' · ' + esc(crm) : '') + '</div></div>' +
       '</div>' +
     '</div>' +
   '</div>';
@@ -1782,6 +1783,7 @@ function gerarHTMLSolicitacaoExamesSUS(d) {
 function gerarHTMLSolicitacaoExamesMedUnity(d) {
   const hoje = new Date().toLocaleDateString('pt-BR');
   const lista = Array.isArray(d.examesComplementares) ? d.examesComplementares : [];
+  const crm = formatarCRMDocumento(d);
   const exames = lista.length ? lista.map(function(exame) {
     return '<div style="padding:7px 8px;border-bottom:1px solid #d8e3e5;font-size:12px;"><strong>' + Number(exame.qtd || 1) + 'x</strong> — ' + esc(exame.nome) + (exame.codigo ? ' <span style="font-size:9px;color:#66757c;">[' + esc(exame.codigo) + ']</span>' : '') + '</div>';
   }).join('') : '<div style="padding:20px;text-align:center;color:#66757c;">Nenhum exame complementar solicitado na Ficha-Mãe.</div>';
@@ -1795,7 +1797,7 @@ function gerarHTMLSolicitacaoExamesMedUnity(d) {
       '<h1 style="font-size:19px;text-align:center;letter-spacing:.02em;margin:0 0 9mm;text-transform:uppercase;">Solicitação de Exames Complementares</h1>' +
       '<div style="border:1px solid #172126;padding:7px 9px;margin-bottom:8mm;"><div style="font-size:9px;color:#66757c;font-weight:800;text-transform:uppercase;">Paciente</div><div style="font-size:14px;font-weight:800;margin-top:3px;">' + esc(d.patient_name || '') + '</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px;font-size:10px;"><div>Data de nascimento: <strong>' + esc(d.birth || '') + '</strong></div><div>CNS: <strong>' + esc(d.cns || '') + '</strong></div></div></div>' +
       '<div style="font-size:12px;font-weight:900;margin-bottom:5px;">SOLICITO EXAMES COMPLEMENTARES:</div><div style="border:1px solid #172126;margin-bottom:9mm;">' + exames + '</div>' +
-      '<div style="margin-top:35mm;display:grid;grid-template-columns:1fr 1fr;gap:25mm;align-items:end;"><div style="font-size:10px;"><div>Local: <strong>' + esc(d.municipality || '') + '</strong></div><div style="margin-top:5px;">Data: <strong>' + hoje + '</strong></div></div><div style="text-align:center;"><div style="height:14mm;border-bottom:1px solid #172126;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;color:#66757c;margin-top:3px;">' + esc(d.doctor_name || '') + (d.crm ? ' · ' + esc(d.crm) : '') + '</div></div></div>' +
+      '<div style="margin-top:35mm;display:grid;grid-template-columns:1fr 1fr;gap:25mm;align-items:end;"><div style="font-size:10px;"><div>Local: <strong>' + esc(d.municipality || '') + '</strong></div><div style="margin-top:5px;">Data: <strong>' + hoje + '</strong></div></div><div style="text-align:center;"><div style="height:18mm;border:1px dashed #777;margin-bottom:4px;"></div><div style="font-size:10px;font-weight:900;">CARIMBO / ASSINATURA DO MÉDICO SOLICITANTE</div><div style="font-size:9px;color:#66757c;margin-top:3px;">' + esc(d.doctor_name || '') + (crm ? ' · ' + esc(crm) : '') + '</div></div></div>' +
       '<div style="margin-top:10mm;padding-top:4mm;border-top:1px solid #dce5e8;text-align:center;font-size:8px;color:#66757c;">Documento gerado eletronicamente pelo MedUnity Delyone. Conferência e assinatura do profissional solicitante são obrigatórias antes da emissão.</div>' +
     '</div>' +
   '</div>';
@@ -1894,10 +1896,18 @@ $('inspectTemplateBtn').addEventListener('click', async () => {
 
 function aplicarIdentidadePrescritor(d) {
   const identidade = identidadePrescritorParaDocumento();
-  if (!d.doctor_name && identidade.doctor_name) d.doctor_name = identidade.doctor_name;
-  if (!d.crm && identidade.crm) d.crm = identidade.crm;
-  if (!d.crm_uf && identidade.crm_uf) d.crm_uf = identidade.crm_uf;
+  // A identidade do cadastro autenticado prevalece sobre valores antigos da Ficha-Mãe.
+  if (identidade.doctor_name) d.doctor_name = identidade.doctor_name;
+  if (identidade.crm) d.crm = identidade.crm;
+  if (identidade.crm_uf) d.crm_uf = identidade.crm_uf;
   return d;
+}
+
+function formatarCRMDocumento(d) {
+  const numero = String(d?.crm || '').trim();
+  const uf = String(d?.crm_uf || '').trim().toUpperCase();
+  if (!numero) return '';
+  return uf ? 'CRM-' + uf + ' nº ' + numero : 'CRM nº ' + numero;
 }
 
 async function exigirCadastroPrescritor() {
@@ -1930,11 +1940,13 @@ async function exigirCadastroPrescritor() {
 
     const data = await response.json();
     if (!data.prescritor || data.prescritor.ativo !== true) {
+      currentPrescritor = null;
       toast('Cadastro do prescritor obrigatório para gerar/baixar documentos.');
       window.location.href = 'prescritor/';
       return false;
     }
 
+    currentPrescritor = data.prescritor;
     return true;
   } catch (error) {
     console.error(error);
@@ -1949,7 +1961,21 @@ $('generateBtn').addEventListener('click', async () => {
   const selectedTemplate = $('templateSelect').value;
   if (!selectedTemplate && !state.currentPdfFile) return toast('Selecione um template ou envie um PDF.');
 
-  const d = master();
+  const templatesComIdentidadeObrigatoria = ['RECEITA_SUS', 'SOLICITACAO_EXAMES_SUS', 'SOLICITACAO_EXAMES_MEDUNITY'];
+  if (templatesComIdentidadeObrigatoria.includes(selectedTemplate)) {
+    const identidade = identidadePrescritorParaDocumento();
+    const faltantes = [];
+    if (!String(identidade.doctor_name || '').trim()) faltantes.push('nome completo');
+    if (!String(identidade.crm || '').trim()) faltantes.push('número do CRM');
+    if (!String(identidade.crm_uf || '').trim()) faltantes.push('UF do CRM');
+    if (faltantes.length) {
+      toast('Complete o cadastro do prescritor: ' + faltantes.join(', ') + '.');
+      window.location.href = 'prescritor/';
+      return;
+    }
+  }
+
+  const d = aplicarIdentidadePrescritor(master());
   const previewArea = $('preview');
 
   if (['FICHA_MAE', 'EVOLUCAO_INTERNACAO', 'PRESCRICAO_UTI', 'RECEITA_SUS', 'RECEITA_CONTROLE', 'SOLICITACAO_EXAMES_SUS', 'SOLICITACAO_EXAMES_MEDUNITY'].includes(selectedTemplate)) {
