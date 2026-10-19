@@ -22,7 +22,11 @@
   function isSupportedCallback(urlValue) {
     try {
       const url = new URL(urlValue);
-      return url.protocol === "https:" && /\.br$/i.test(url.hostname);
+      // Trial mode: allow the Institute HTTPS .com host to test SNCR acceptance.
+      // The SNCR service remains authoritative and may reject a non-.br callback.
+      const host = url.hostname.toLowerCase();
+      const isDelyoneHost = host === "delyone.com" || host.endsWith(".delyone.com");
+      return url.protocol === "https:" && isDelyoneHost;
     } catch {
       return false;
     }
@@ -99,20 +103,20 @@
 
     if (!isSupportedCallback(callback)) {
       login.disabled = true;
-      setStatus("Configuração pendente: o callback precisa usar HTTPS e um domínio .br aceito pela documentação do SNCR.", "warn");
-      help.textContent = "Callback detectado: " + callback + ". Quando o domínio .br oficial estiver definido, configure window.MEDUNITY_SNCR_CALLBACK_URL com a URL exata da página que receberá o retorno.";
+      setStatus("Configuração pendente: o teste exige HTTPS em um domínio do Instituto Delyone.", "warn");
+      help.textContent = "Callback detectado: " + callback + ". O teste usará este endereço HTTPS .com; o SNCR pode rejeitá-lo se exigir domínio .br.";
       return;
     }
 
     login.disabled = false;
-    setStatus("Pronto para iniciar a autenticação oficial do SNCR.", "");
-    help.textContent = "O login ocorrerá no ambiente oficial da Anvisa/GOV.BR e retornará para esta página.";
+    setStatus("Pronto para testar se o SNCR aceita este callback HTTPS .com.", "");
+    help.textContent = "Teste de callback .com: o SNCR pode aceitar ou rejeitar o domínio. Não considere a integração ativa até concluir o retorno e receber um token válido.";
   }
 
   function startLogin() {
     const callback = callbackUrl();
     if (!isSupportedCallback(callback)) {
-      setStatus("Login não iniciado: configure primeiro um callback HTTPS em domínio .br aceito pelo SNCR.", "warn");
+      setStatus("Login não iniciado: configure primeiro um callback HTTPS no domínio do Instituto Delyone.", "warn");
       return;
     }
 
