@@ -43,6 +43,14 @@
     const lock=document.createElement("div");lock.id="sncrAdminLock";lock.className="notice";
     lock.innerHTML='<span aria-hidden="true">🔒</span> <strong>Teste restrito ao administrador</strong> — a área SNCR só abre com a chave administrativa de teste.';
     notice?.after(lock);
+    const configNotice=document.createElement("div");
+    configNotice.id="sncrConfigNotice";
+    configNotice.className="notice";
+    configNotice.setAttribute("role","status");
+    configNotice.textContent=API
+      ? "Integração SNCR configurada para teste. A comunicação real ainda depende da validação do backend, das credenciais oficiais e do fluxo de autenticação."
+      : "Integração SNCR em configuração. Os comandos permanecem indisponíveis até a URL oficial do Worker ser configurada e validada.";
+    lock.after(configNotice);
     const grid=card.querySelector(".form-grid");
     if(grid) {
       const extra=document.createElement("div");extra.id="sncrExtraFields";extra.className="form-grid full";
@@ -62,6 +70,7 @@
       actions.append(button("Entrar no SNCR","sncrLoginBtn","btn secondary",startLogin));
       actions.append(button("Solicitar numeração","sncrPrepareBtn","btn gold",requestNumbers));
       actions.append(button("Encerrar sessão","sncrLogoutBtn","btn secondary",logout));
+      if(!API) actions.querySelectorAll("button").forEach(b=>{b.disabled=true;b.title="Aguardando configuração e validação da URL do Worker.";});
     }
     const qty=el("sncrQuantity");if(qty){qty.min="10";qty.max="50";qty.step="1";qty.value="10";}
     el("sncrType")?.addEventListener("change",updateFields);
@@ -192,6 +201,10 @@
   }
   async function init(){
     renderTypes();addFields();setUnlocked(false);
+    if(!API){
+      status("Módulo em configuração: URL do Worker ainda não definida. Nenhuma chamada ao SNCR será realizada.");
+      return;
+    }
     try{await processCallback();}catch(e){status("Erro no retorno de autenticação: "+e.message,"err");}
     if(sessionStorage.getItem(ADMIN_KEY)){
       try{await api("/admin/session");setUnlocked(true);}catch{sessionStorage.removeItem(ADMIN_KEY);setUnlocked(false);}
