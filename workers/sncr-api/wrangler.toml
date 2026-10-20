@@ -4,9 +4,10 @@ compatibility_date = "2026-10-20"
 
 [vars]
 SNCR_ENV = "homologacao"
-# Set SNCR_FRONTEND_ORIGIN and SNCR_CALLBACK_URL to exact registered HTTPS URLs.
-# Do not put secrets in this file.
+SNCR_FRONTEND_ORIGIN = "https://medunity.delyone.com"
+# SNCR_CALLBACK_URL must be the exact HTTPS URL registered/allowed by SNCR.
+# Add it only after confirming the official callback registration. Never put secrets here.
 
 [[kv_namespaces]]
 binding = "SNCR_SESSIONS"
-id = "REPLACE_WITH_CLOUDFLARE_KV_NAMESPACE_ID"
+id = "40a6505120e34a9583ac4121df9e551f"
