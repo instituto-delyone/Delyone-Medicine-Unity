@@ -34,14 +34,28 @@ async function signedState(payload, secret) {
   return body + "." + await hmac(body, secret);
 }
 async function verifyState(state, secret) {
-  if (!state || !state.includes(".")) return null;
+  // Exactly one separator prevents ambiguous encodings and ignored suffixes.
+  if (typeof state !== "string" || !state || state.indexOf(".") <= 0 ||
+      state.indexOf(".") !== state.lastIndexOf(".")) return null;
   const [body, signature] = state.split(".");
+  if (!body || !signature) return null;
   const expected = await hmac(body, secret);
   if (signature.length !== expected.length) return null;
   let diff = 0;
   for (let i = 0; i < signature.length; i++) diff |= signature.charCodeAt(i) ^ expected.charCodeAt(i);
   if (diff !== 0) return null;
-  try { return JSON.parse(atob(body.replace(/-/g, "+").replace(/_/g, "/"))); } catch { return null; }
+  try {
+    const normalized = body.replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(normalized));
+  } catch { return null; }
+}
+function callbackConfigIsValid(env) {
+  try {
+    const callback = new URL(env.SNCR_CALLBACK_URL || "");
+    return callback.protocol === "https:" &&
+      callback.origin === env.SNCR_FRONTEND_ORIGIN &&
+      callback.username === "" && callback.password === "";
+  } catch { return false; }
 }
 function cors(request, env) {
   const origin = request.headers.get("Origin") || "";
@@ -102,11 +116,14 @@ export default {
       return withCors(json({ authenticated: true, scope: "sncr-test-admin", environment: env.SNCR_ENV || "homologacao" }), request, env);
 
     if (url.pathname === "/auth/login" && request.method === "POST") {
-      if (!env.SNCR_CALLBACK_URL || !env.SNCR_STATE_HMAC_SECRET || !env.SNCR_SESSIONS)
-        return withCors(fail("Configuração incompleta: callback, segredo HMAC e KV são obrigatórios.", 503, "SNCR_CONFIG_MISSING"), request, env);
+      if (!callbackConfigIsValid(env) || !env.SNCR_STATE_HMAC_SECRET || !env.SNCR_SESSIONS)
+        return withCors(fail("Configuração incompleta ou callback incompatível com a origem autorizada.", 503, "SNCR_CONFIG_MISSING"), request, env);
+      const requestOrigin = request.headers.get("Origin") || "";
+      if (requestOrigin !== env.SNCR_FRONTEND_ORIGIN)
+        return withCors(fail("Origem não autorizada para iniciar autenticação.", 403, "ORIGIN_NOT_ALLOWED"), request, env);
       const nonce = randomId(24);
       const sessionKey = randomId(32);
-      const state = await signedState({ nonce, sessionKey, createdAt: Date.now(), origin: request.headers.get("Origin") || "" }, env.SNCR_STATE_HMAC_SECRET);
+      const state = await signedState({ nonce, sessionKey, createdAt: Date.now(), origin: requestOrigin }, env.SNCR_STATE_HMAC_SECRET);
       await env.SNCR_SESSIONS.put("sncr:state:" + sessionKey, JSON.stringify({ nonce, state, createdAt: Date.now() }), { expirationTtl: 300 });
       const login = new URL(apiBase(env) + "/api/v1/auth/login");
       login.searchParams.set("client_url", env.SNCR_CALLBACK_URL);
@@ -118,10 +135,14 @@ export default {
       if (!env.SNCR_STATE_HMAC_SECRET || !env.SNCR_SESSIONS)
         return withCors(fail("Configuração de callback incompleta.", 503, "SNCR_CONFIG_MISSING"), request, env);
       const body = await request.json().catch(() => ({}));
+      const requestOrigin = request.headers.get("Origin") || "";
       const payload = await verifyState(String(body.state || ""), env.SNCR_STATE_HMAC_SECRET);
       const sessionId = String(body.session_id || "");
-      if (!payload || !sessionId || Date.now() - payload.createdAt > 300000)
+      const age = payload && Number.isFinite(payload.createdAt) ? Date.now() - payload.createdAt : Infinity;
+      if (!payload || !sessionId || sessionId.length > 2048 || age < 0 || age > 300000)
         return withCors(fail("Callback inválido ou expirado.", 400, "INVALID_CALLBACK"), request, env);
+      if (requestOrigin !== env.SNCR_FRONTEND_ORIGIN || payload.origin !== env.SNCR_FRONTEND_ORIGIN)
+        return withCors(fail("Origem do callback não corresponde à origem autorizada.", 403, "CALLBACK_ORIGIN_MISMATCH"), request, env);
       const stateRecord = await env.SNCR_SESSIONS.get("sncr:state:" + payload.sessionKey, "json");
       if (!stateRecord || stateRecord.state !== body.state || stateRecord.nonce !== payload.nonce)
         return withCors(fail("State ausente, inválido ou já consumido.", 400, "STATE_INVALID"), request, env);
