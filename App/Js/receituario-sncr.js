@@ -39,6 +39,22 @@
   }
   function addFields() {
     const card=el("sncrCard");if(!card||el("sncrAdminLock"))return;
+    // Keep the operational panel out of the public-facing view until explicitly opened.
+    card.hidden=true;
+    const publicPanel=el("sncrComingSoon");
+    if(publicPanel&&!el("sncrAdminEntryBtn")){
+      const entry=document.createElement("button");
+      entry.type="button";entry.id="sncrAdminEntryBtn";entry.className="btn secondary";
+      entry.textContent="🔒 Acesso administrativo de teste";
+      entry.addEventListener("click",()=>{
+        card.hidden=false;
+        entry.textContent="Área de teste aberta — autenticação administrativa obrigatória";
+        entry.disabled=true;
+        card.scrollIntoView({behavior:"smooth",block:"start"});
+      });
+      const actions=document.createElement("div");actions.className="actions";actions.append(entry);
+      publicPanel.append(actions);
+    }
     const notice=card.querySelector(".notice");
     const lock=document.createElement("div");lock.id="sncrAdminLock";lock.className="notice";
     lock.innerHTML='<span aria-hidden="true">🔒</span> <strong>Teste restrito ao administrador</strong> — a área SNCR só abre com a chave administrativa de teste.';
