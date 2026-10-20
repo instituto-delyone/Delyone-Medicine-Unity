@@ -1,76 +1,201 @@
-/* MedUnity — SNCR / Receituário Controlado
- * Camada de UI + adapter. Não contém credenciais nem tokens.
- * A comunicação autenticada com o SNCR deve ocorrer no backend.
+/* MedUnity — SNCR API v3 adapter (admin-only test gate)
+ * Endpoints and validation are based on the supplied Anvisa SNCR API Manual,
+ * 3rd edition (September 2026). Requires the companion Cloudflare Worker.
+ * Never use this test gate as a substitute for institutional authentication.
  */
 (() => {
-  const GOVBR_URL = "https://sso.acesso.gov.br/login";
-
+  "use strict";
+  const API = String(window.MEDUNITY_SNCR_WORKER_URL || "").replace(/\/$/, "");
+  const ADMIN_KEY = "medunity_sncr_test_admin_key";
+  const SESSION_KEY = "medunity_sncr_test_session";
   const TYPES = [
-    { code: "NRA", label: "Notificação de Receita A (amarela)", mode: "visa" },
-    { code: "NRB", label: "Notificação de Receita B (azul)", mode: "visa" },
-    { code: "NRB2", label: "Notificação de Receita B2", mode: "visa" },
-    { code: "NRR", label: "Notificação de Receita Especial — retinoides", mode: "visa" },
-    { code: "NRT", label: "Notificação de Receita — talidomida", mode: "visa" },
-    { code: "RCE", label: "Receita de Controle Especial", mode: "sncr" },
-    { code: "RET", label: "Receita Sujeita à Retenção", mode: "sncr" },
+    { code:"NRA", label:"Notificação de Receita A (amarela)", group:"notification" },
+    { code:"NRB", label:"Notificação de Receita B (azul)", group:"notification" },
+    { code:"NRB2", label:"Notificação de Receita B2", group:"notification" },
+    { code:"NRR", label:"Notificação de Receita Especial — retinoides", group:"notification" },
+    { code:"NRT", label:"Notificação de Receita — talidomida", group:"notification" },
+    { code:"RCE", label:"Receita de Controle Especial", group:"special" },
+    { code:"RET", label:"Receita Sujeita à Retenção", group:"special" }
   ];
+  const el = id => document.getElementById(id);
+  let adminUnlocked = false;
+  let busy = false;
 
-  const el = (id) => document.getElementById(id);
-
-  function setStatus(message, ok = false) {
-    const target = el("sncrStatus");
-    if (!target) return;
-    target.className = "status" + (ok ? " ok" : "");
-    target.innerHTML = '<span class="dot"></span>' + message;
+  function status(message, kind="") {
+    const target=el("sncrStatus");
+    if(!target)return;
+    target.className="status"+(kind?" "+kind:"");
+    target.replaceChildren();
+    const dot=document.createElement("span");dot.className="dot";target.append(dot,document.createTextNode(message));
   }
-
-  function renderTypes() {
-    const target = el("sncrType");
-    if (!target) return;
-    target.innerHTML = '<option value="">Selecione o tipo</option>' +
-      TYPES.map((item) => '<option value="' + item.code + '">' + item.label + '</option>').join("");
+  function button(label, id, className="btn secondary", handler=null) {
+    const b=document.createElement("button");b.type="button";b.id=id;b.className=className;b.textContent=label;
+    if(handler)b.addEventListener("click",handler);return b;
   }
-
-  function openGovBr() {
-    window.open(GOVBR_URL, "_blank", "noopener,noreferrer");
-    setStatus("Gov.br aberto em nova aba. O login/autorização permanece fora do MedUnity.");
+  function field(label,id,placeholder="",type="text") {
+    const wrap=document.createElement("div"), lab=document.createElement("label"), input=document.createElement("input");
+    lab.htmlFor=id;lab.textContent=label;input.id=id;input.type=type;input.placeholder=placeholder;input.autocomplete="off";
+    wrap.append(lab,input);return wrap;
   }
-
-  function prepareRequest() {
-    const type = el("sncrType")?.value;
-    const quantity = Number(el("sncrQuantity")?.value || 0);
-
-    if (!type) {
-      setStatus("Selecione o tipo de receituário.");
+  function addFields() {
+    const card=el("sncrCard");if(!card||el("sncrAdminLock"))return;
+    const notice=card.querySelector(".notice");
+    const lock=document.createElement("div");lock.id="sncrAdminLock";lock.className="notice";
+    lock.innerHTML='<span aria-hidden="true">🔒</span> <strong>Teste restrito ao administrador</strong> — a área SNCR só abre com a chave administrativa de teste.';
+    notice?.after(lock);
+    const grid=card.querySelector(".form-grid");
+    if(grid) {
+      const extra=document.createElement("div");extra.id="sncrExtraFields";extra.className="form-grid full";
+      extra.style.marginTop="12px";
+      extra.append(
+        field("Conselho profissional (ex.: CRM)","sncrCouncil","CRM"),
+        field("UF do conselho","sncrUF","GO"),
+        field("Número do documento profissional","sncrDocument","CRM / registro"),
+        field("CNPJ da plataforma de prescrição","sncrCNPJ","00.000.000/0000-00")
+      );
+      grid.after(extra);
+    }
+    const actions=card.querySelector(".actions");
+    if(actions) {
+      actions.replaceChildren();
+      actions.append(button("🔓 Desbloquear (administrador)","sncrUnlockBtn","btn primary",unlockAdmin));
+      actions.append(button("Entrar no SNCR","sncrLoginBtn","btn secondary",startLogin));
+      actions.append(button("Solicitar numeração","sncrPrepareBtn","btn gold",requestNumbers));
+      actions.append(button("Encerrar sessão","sncrLogoutBtn","btn secondary",logout));
+    }
+    const qty=el("sncrQuantity");if(qty){qty.min="10";qty.max="50";qty.step="1";qty.value="10";}
+    el("sncrType")?.addEventListener("change",updateFields);
+    updateFields();
+  }
+  function renderTypes(){
+    const select=el("sncrType");if(!select)return;
+    select.replaceChildren(new Option("Selecione o tipo",""));
+    TYPES.forEach(t=>select.add(new Option(t.label,t.code)));
+  }
+  function setUnlocked(value){
+    adminUnlocked=value;
+    const lock=el("sncrAdminLock"), extra=el("sncrExtraFields");
+    const type=el("sncrType"), qty=el("sncrQuantity");
+    if(lock)lock.hidden=value;
+    if(extra)extra.hidden=!value;
+    if(type)type.disabled=!value;
+    if(qty)qty.disabled=!value;
+    ["sncrLoginBtn","sncrPrepareBtn","sncrLogoutBtn"].forEach(id=>{if(el(id))el(id).disabled=!value;});
+    if(el("sncrUnlockBtn"))el("sncrUnlockBtn").textContent=value?"🔓 Administrador autorizado":"🔒 Desbloquear (administrador)";
+    if(!value)status("Área SNCR bloqueada. Acesso de teste exclusivo do administrador.");
+  }
+  async function api(path, options={}) {
+    if(!API)throw new Error("Configure window.MEDUNITY_SNCR_WORKER_URL com a URL do Worker.");
+    const key=sessionStorage.getItem(ADMIN_KEY)||"";
+    const headers=new Headers(options.headers||{});
+    headers.set("X-MedUnity-Admin-Key",key);
+    if(options.body && typeof options.body!=="string"){headers.set("Content-Type","application/json");options.body=JSON.stringify(options.body);}
+    const response=await fetch(API+path,{...options,headers,cache:"no-store",credentials:"omit"});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data?.error?.message||data?.message||("HTTP "+response.status));
+    return data;
+  }
+  async function unlockAdmin(){
+    if(busy)return;
+    const current=sessionStorage.getItem(ADMIN_KEY);
+    const key=window.prompt("Chave administrativa temporária para o teste SNCR:");
+    if(key===null)return;
+    if(!key.trim()){status("Informe a chave administrativa de teste.");return;}
+    busy=true;
+    try{
+      sessionStorage.setItem(ADMIN_KEY,key.trim());
+      const result=await api("/admin/session");
+      setUnlocked(true);
+      status("Acesso administrativo de teste confirmado · ambiente "+(result.environment||"não informado")+".", "ok");
+      const session=sessionStorage.getItem(SESSION_KEY);
+      if(session)status("Administrador autorizado. Sessão SNCR temporária presente nesta aba.","ok");
+    }catch(e){
+      sessionStorage.removeItem(ADMIN_KEY);setUnlocked(false);
+      status("Acesso negado: "+e.message,"err");
+    }finally{busy=false;}
+  }
+  async function startLogin(){
+    if(!adminUnlocked)return status("🔒 Desbloqueie com a chave administrativa primeiro.");
+    try{
+      const result=await api("/auth/login",{method:"POST",body:{}});
+      if(!result.authorization_url)throw new Error("O serviço não retornou a URL de autenticação.");
+      window.location.assign(result.authorization_url);
+    }catch(e){status("Não foi possível iniciar autenticação SNCR: "+e.message,"err");}
+  }
+  async function processCallback(){
+    const params=new URLSearchParams(window.location.search);
+    const sessionId=params.get("session_id"),state=params.get("state");
+    if(!sessionId||!state)return;
+    // Remove one-use SNCR session id and state from address bar before network requests.
+    params.delete("session_id");params.delete("state");
+    const query=params.toString();
+    history.replaceState({},document.title,location.pathname+(query?"?"+query:"")+location.hash);
+    if(!sessionStorage.getItem(ADMIN_KEY)){
+      status("Retorno do SNCR recebido, mas a área está bloqueada. Desbloqueie como administrador para concluir o teste.","warn");
+      sessionStorage.setItem("medunity_sncr_pending_callback",JSON.stringify({session_id:sessionId,state}));
       return;
     }
-
-    const item = TYPES.find((entry) => entry.code === type);
-    if (!item) return;
-
-    if (item.mode === "visa" && (quantity < 10 || quantity > 50)) {
-      setStatus("Para notificações, a solicitação técnica deve respeitar a faixa definida pela API do SNCR.");
-      return;
+    await completeCallback(sessionId,state);
+  }
+  async function completeCallback(sessionId,state){
+    status("Validando retorno e trocando a sessão de uso único…");
+    const result=await api("/auth/callback",{method:"POST",body:{session_id:sessionId,state}});
+    if(!result.session_id)throw new Error("O serviço não retornou uma sessão interna.");
+    sessionStorage.setItem(SESSION_KEY,result.session_id);
+    sessionStorage.removeItem("medunity_sncr_pending_callback");
+    status("Autenticação SNCR concluída. Confira a identidade/permissão ao solicitar numeração.","ok");
+  }
+  async function requestNumbers(){
+    if(!adminUnlocked)return status("🔒 Desbloqueie com a chave administrativa primeiro.");
+    const type=el("sncrType")?.value;
+    if(!type)return status("Selecione o tipo de receituário.");
+    const session_id=sessionStorage.getItem(SESSION_KEY);
+    if(!session_id)return status("Autentique-se no SNCR antes de solicitar numeração.");
+    const common={
+      conselho:el("sncrCouncil")?.value.trim(),
+      uf:el("sncrUF")?.value.trim().toUpperCase(),
+      documento:el("sncrDocument")?.value.trim(),
+      session_id
+    };
+    if(!common.conselho||!common.uf||!common.documento)return status("Preencha conselho, UF e número do documento profissional.");
+    const qty=Number(el("sncrQuantity")?.value);
+    if(type==="RCE"||type==="RET"){
+      const cnpj=el("sncrCNPJ")?.value.trim();
+      if(!cnpj)return status("Informe o CNPJ da plataforma de prescrição.");
+      try{
+        const data=await api("/numeracoes/receita-especial-retencao",{method:"POST",body:{...common,tipo:type,cnpj}});
+        status("Resposta SNCR: "+JSON.stringify(data),"ok");
+      }catch(e){status("SNCR: "+e.message,"err");}
+    }else{
+      if(!Number.isInteger(qty)||qty<10||qty>50)return status("A quantidade deve ser um inteiro entre 10 e 50.");
+      try{
+        const data=await api("/numeracoes/notificacao-receita",{method:"POST",body:{...common,receita:type,quantidade:qty}});
+        status("Resposta SNCR: "+JSON.stringify(data),"ok");
+      }catch(e){status("SNCR: "+e.message,"err");}
     }
-
-    if (item.mode === "sncr") {
-      setStatus("RCE/RET: o MedUnity deixará a numeração ser obtida pelo serviço integrado ao SNCR, sem inventar uma numeração local.");
-      return;
+  }
+  function updateFields(){
+    const type=el("sncrType")?.value;
+    const qtyWrap=el("sncrQuantity")?.closest("div");
+    const cnpj=el("sncrCNPJ")?.closest("div");
+    if(qtyWrap)qtyWrap.hidden=Boolean(type==="RCE"||type==="RET");
+    if(cnpj)cnpj.hidden=!(type==="RCE"||type==="RET");
+  }
+  function logout(){
+    sessionStorage.removeItem(SESSION_KEY);
+    status("Sessão SNCR local encerrada. Isso não cancela receitas ou numerações emitidas.");
+  }
+  async function init(){
+    renderTypes();addFields();setUnlocked(false);
+    try{await processCallback();}catch(e){status("Erro no retorno de autenticação: "+e.message,"err");}
+    if(sessionStorage.getItem(ADMIN_KEY)){
+      try{await api("/admin/session");setUnlocked(true);}catch{sessionStorage.removeItem(ADMIN_KEY);setUnlocked(false);}
     }
-
-    setStatus("Notificação " + type + ": a numeração precisa estar previamente disponibilizada pela Vigilância Sanitária para o prescritor; depois o serviço integrado consulta/consome a numeração no SNCR.");
+    const pending=sessionStorage.getItem("medunity_sncr_pending_callback");
+    if(pending&&adminUnlocked){
+      try{const p=JSON.parse(pending);await completeCallback(p.session_id,p.state);}catch(e){status("Não foi possível concluir o callback pendente: "+e.message,"err");}
+    }
+    updateFields();
   }
-
-  function init() {
-    renderTypes();
-    el("sncrGovBtn")?.addEventListener("click", openGovBr);
-    el("sncrPrepareBtn")?.addEventListener("click", prepareRequest);
-    setStatus("Módulo SNCR preparado. Nenhuma credencial é armazenada no navegador.");
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
