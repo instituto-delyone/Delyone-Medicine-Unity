@@ -107,8 +107,13 @@
       const result=await api("/admin/session");
       setUnlocked(true);
       status("Acesso administrativo de teste confirmado · ambiente "+(result.environment||"não informado")+".", "ok");
-      const session=sessionStorage.getItem(SESSION_KEY);
-      if(session)status("Administrador autorizado. Sessão SNCR temporária presente nesta aba.","ok");
+      const pending=sessionStorage.getItem("medunity_sncr_pending_callback");
+      if(pending){
+        const callback=JSON.parse(pending);
+        await completeCallback(callback.session_id,callback.state);
+      } else if(sessionStorage.getItem(SESSION_KEY)) {
+        status("Administrador autorizado. Sessão SNCR temporária presente nesta aba.","ok");
+      }
     }catch(e){
       sessionStorage.removeItem(ADMIN_KEY);setUnlocked(false);
       status("Acesso negado: "+e.message,"err");
