@@ -137,7 +137,7 @@ export default {
       return withCors(json({ session_id: internalSession, authenticated: true, expires_in: 1800 }), request, env);
     }
 
-    if (url.pathname === "/api/v1/numeracoes/notificacao-receita" && request.method === "POST") {
+    if (url.pathname === "/numeracoes/notificacao-receita" && request.method === "POST") {
       const body = await request.json().catch(() => null);
       if (!body || !body.session_id) return withCors(fail("Informe a sessão SNCR autenticada.", 401, "SNCR_SESSION_REQUIRED"), request, env);
       const allowed = ["NRA","NRB","NRB2","NRR","NRT"];
@@ -146,18 +146,18 @@ export default {
         return withCors(fail("A quantidade deve estar entre 10 e 50.", 400, "INVALID_QUANTITY"), request, env);
       const { session_id, ...payload } = body;
       try {
-        const result = await sncrFetch(env, "/numeracoes/notificacao-receita", {method:"POST",body:payload,sessionId:session_id});
+        const result = await sncrFetch(env, "/api/v1/numeracoes/notificacao-receita", {method:"POST",body:payload,sessionId:session_id});
         return withCors(json(result.data, result.status), request, env);
       } catch(e) { return withCors(fail(e.message==="SNCR_SESSION_EXPIRED"?"Sessão SNCR expirada. Entre novamente.":"Não foi possível consultar o SNCR.", e.message==="SNCR_SESSION_EXPIRED"?401:502, e.message), request, env); }
     }
 
-    if (url.pathname === "/api/v1/numeracoes/receita-especial-retencao" && request.method === "POST") {
+    if (url.pathname === "/numeracoes/receita-especial-retencao" && request.method === "POST") {
       const body = await request.json().catch(() => null);
       if (!body || !body.session_id) return withCors(fail("Informe a sessão SNCR autenticada.", 401, "SNCR_SESSION_REQUIRED"), request, env);
       if (!["RCE","RET"].includes(body.tipo)) return withCors(fail("Tipo deve ser RCE ou RET.", 400, "INVALID_TIPO"));
       const { session_id, ...payload } = body;
       try {
-        const result = await sncrFetch(env, "/numeracoes/receita-especial-retencao", {method:"POST",body:payload,sessionId:session_id});
+        const result = await sncrFetch(env, "/api/v1/numeracoes/receita-especial-retencao", {method:"POST",body:payload,sessionId:session_id});
         return withCors(json(result.data, result.status), request, env);
       } catch(e) { return withCors(fail(e.message==="SNCR_SESSION_EXPIRED"?"Sessão SNCR expirada. Entre novamente.":"Não foi possível consultar o SNCR.", e.message==="SNCR_SESSION_EXPIRED"?401:502, e.message), request, env); }
     }
