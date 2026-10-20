@@ -137,7 +137,7 @@ export default {
       return withCors(json({ session_id: internalSession, authenticated: true, expires_in: 1800 }), request, env);
     }
 
-    if (url.pathname === "/numeracoes/notificacao-receita" && request.method === "POST") {
+    if (url.pathname === "/api/v1/numeracoes/notificacao-receita" && request.method === "POST") {
       const body = await request.json().catch(() => null);
       if (!body || !body.session_id) return withCors(fail("Informe a sessão SNCR autenticada.", 401, "SNCR_SESSION_REQUIRED"), request, env);
       const allowed = ["NRA","NRB","NRB2","NRR","NRT"];
@@ -151,7 +151,7 @@ export default {
       } catch(e) { return withCors(fail(e.message==="SNCR_SESSION_EXPIRED"?"Sessão SNCR expirada. Entre novamente.":"Não foi possível consultar o SNCR.", e.message==="SNCR_SESSION_EXPIRED"?401:502, e.message), request, env); }
     }
 
-    if (url.pathname === "/numeracoes/receita-especial-retencao" && request.method === "POST") {
+    if (url.pathname === "/api/v1/numeracoes/receita-especial-retencao" && request.method === "POST") {
       const body = await request.json().catch(() => null);
       if (!body || !body.session_id) return withCors(fail("Informe a sessão SNCR autenticada.", 401, "SNCR_SESSION_REQUIRED"), request, env);
       if (!["RCE","RET"].includes(body.tipo)) return withCors(fail("Tipo deve ser RCE ou RET.", 400, "INVALID_TIPO"));
