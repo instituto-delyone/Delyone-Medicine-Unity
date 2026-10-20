@@ -921,6 +921,42 @@
     </div>
   </div>
 
+
+
+  <!-- RECEITUÁRIOS OFICIAIS A/B — visualização protegida -->
+  <section class="card" id="officialControlledRxCard" aria-labelledby="officialControlledRxTitle">
+    <div class="card-head">
+      <div>
+        <div class="kicker">Modelos oficiais</div>
+        <h2 class="title" id="officialControlledRxTitle">Receitas de Controle Especial</h2>
+        <p class="desc">“Notificação” — modelos A e B para visualização.</p>
+      </div>
+      <span class="badge">Acesso controlado</span>
+    </div>
+    <div class="notice">Pré-visualização dos modelos oficiais, sem edição. A impressão permanece disponível somente após autenticação administrativa nesta sessão.</div>
+    <div class="actions" style="margin-top:12px">
+      <button type="button" class="btn secondary" data-official-rx="a">Notificação A</button>
+      <button type="button" class="btn secondary" data-official-rx="b">Notificação B</button>
+      <button type="button" class="btn secondary" data-official-rx="controle">Controle especial eletrônico</button>
+    </div>
+  </section>
+
+  <div id="officialRxModal" hidden role="dialog" aria-modal="true" aria-labelledby="officialRxModalTitle" style="position:fixed;inset:0;z-index:20000;background:rgba(5,20,35,.82);padding:16px;overflow:auto">
+    <div style="max-width:980px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px">
+      <div class="card-head" style="align-items:center;margin-bottom:10px">
+        <div><h2 class="title" id="officialRxModalTitle">Modelo oficial</h2><p class="desc" id="officialRxModalNote">Visualização somente leitura.</p></div>
+        <button type="button" class="btn secondary" id="officialRxClose">Fechar</button>
+      </div>
+      <div id="officialRxPreview" style="background:#eef3f7;border:1px solid var(--line);border-radius:10px;min-height:60vh;overflow:auto;text-align:center">
+        <iframe id="officialRxFrame" title="Pré-visualização do modelo oficial" style="width:100%;height:75vh;border:0;background:white" sandbox></iframe>
+      </div>
+      <div class="actions" id="officialRxAdminActions" hidden style="margin-top:12px">
+        <button type="button" class="btn primary" id="officialRxPrint">Imprimir modelo (administrador)</button>
+      </div>
+      <p class="desc" style="margin-top:12px">A pré-visualização não permite editar ou preencher dados. A restrição de interface não substitui controles de acesso no servidor.</p>
+    </div>
+  </div>
+
 </main>
 
 <footer style="margin-top: 40px; padding: 30px; border-top: 1px solid var(--line);">
@@ -1142,6 +1178,61 @@ function baixarFichaHtml() {
   const nome = d.patient_name ? d.patient_name.replace(/[^a-z0-9]/gi, '_') : 'Paciente_Anonimo';
   const templateHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Prontuário - ${nome}</title><style>body { background: #f4f7f8; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } #print-area { max-width: 850px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; border: none !important; } @media print { body { background: #fff; padding: 0; } #print-area { box-shadow: none !important; } }</style></head><body>${window.latestFichaHTML}  <script src="sncr-integration.js"><\/script>
 <script src="sncr-integration.js" defer><\/script>
+
+<script>
+(() => {
+  const base = 'templates/receituários-oficiais-a-b-controle/';
+  const models = {
+    a: { title: 'Notificação A', file: 'file.pdf' },
+    b: { title: 'Notificação B', file: 'Receitua%CC%81rio-b.pdf' },
+    controle: { title: 'Controle especial eletrônico', file: 'Controle%20especial%20eletro%CC%82nica.pdf' }
+  };
+  const modal = document.getElementById('officialRxModal');
+  const frame = document.getElementById('officialRxFrame');
+  const title = document.getElementById('officialRxModalTitle');
+  const note = document.getElementById('officialRxModalNote');
+  const adminActions = document.getElementById('officialRxAdminActions');
+  let currentModel = null;
+  function adminAuthenticated() {
+    return Boolean(sessionStorage.getItem('medunity_admin_access_token'));
+  }
+  function openModel(key) {
+    const model = models[key];
+    if (!model) return;
+    currentModel = model;
+    title.textContent = model.title;
+    const isAdmin = adminAuthenticated();
+    note.textContent = isAdmin ? 'Sessão administrativa detectada.' : 'Visualização somente leitura; impressão indisponível sem autenticação administrativa.';
+    adminActions.hidden = !isAdmin;
+    frame.src = base + model.file + '#toolbar=0&navpanes=0&scrollbar=1';
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModel() {
+    modal.hidden = true;
+    frame.removeAttribute('src');
+    document.body.style.overflow = '';
+    currentModel = null;
+  }
+  document.querySelectorAll('[data-official-rx]').forEach(button => {
+    button.addEventListener('click', () => openModel(button.dataset.officialRx));
+  });
+  document.getElementById('officialRxClose').addEventListener('click', closeModel);
+  modal.addEventListener('click', event => { if (event.target === modal) closeModel(); });
+  document.getElementById('officialRxPrint').addEventListener('click', () => {
+    if (!adminAuthenticated() || !currentModel) {
+      adminActions.hidden = true;
+      note.textContent = 'Autentique-se pelo login de administrador para habilitar a impressão.';
+      return;
+    }
+    const url = base + currentModel.file;
+    const printWindow = window.open(url, '_blank', 'noopener');
+    if (!printWindow) note.textContent = 'O navegador bloqueou a abertura. Permita pop-ups para imprimir o modelo.';
+  });
+  window.addEventListener('storage', () => { if (!adminAuthenticated()) adminActions.hidden = true; });
+})();
+</script>
+
 </body></html>`;
   const blob = new Blob([templateHtml], { type: "text/html;charset=utf-8" });
   const url = URL.createObjectURL(blob);
