@@ -139,11 +139,22 @@
   async function processCallback(){
     const params=new URLSearchParams(window.location.search);
     const sessionId=params.get("session_id"),state=params.get("state");
-    if(!sessionId||!state)return;
-    // Remove one-use SNCR session id and state from address bar before network requests.
-    params.delete("session_id");params.delete("state");
+    const providerError=params.get("error");
+    const hasCallbackParams=params.has("session_id")||params.has("state")||params.has("error");
+    if(!hasCallbackParams)return;
+    // Strip one-use values and provider errors from the address bar before any network request.
+    params.delete("session_id");params.delete("state");params.delete("error");params.delete("error_description");
     const query=params.toString();
     history.replaceState({},document.title,location.pathname+(query?"?"+query:"")+location.hash);
+    if(providerError){
+      sessionStorage.removeItem("medunity_sncr_pending_callback");
+      status("A autenticação SNCR não foi concluída pelo provedor. Inicie novamente quando estiver pronto.","warn");
+      return;
+    }
+    if(!sessionId||!state){
+      status("Retorno incompleto do SNCR: faltam os parâmetros de sessão. Não foi feita nenhuma troca de token.","err");
+      return;
+    }
     if(!sessionStorage.getItem(ADMIN_KEY)){
       status("Retorno do SNCR recebido, mas a área está bloqueada. Desbloqueie como administrador para concluir o teste.","warn");
       sessionStorage.setItem("medunity_sncr_pending_callback",JSON.stringify({session_id:sessionId,state}));
