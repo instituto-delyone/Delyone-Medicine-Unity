@@ -645,7 +645,15 @@
               </div>
               <div>
                 <label>CRM / UF</label>
-                <input id="master_crm" type="text" placeholder="CRM-GO 00000" data-csi="001.000." data-csi-label="Registro Profissional CRM">
+                <input id="master_crm" type="text" placeholder="32985" data-csi="001.000." data-csi-label="Número do CRM">
+              </div>
+              <div>
+                <label>UF do CRM</label>
+                <input id="master_crm_uf" type="text" maxlength="2" autocapitalize="characters" placeholder="GO" data-csi="001.000." data-csi-label="UF do CRM">
+              </div>
+              <div class="full">
+                <label>CPF do profissional responsável</label>
+                <input id="master_doctor_cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" data-csi="001.000." data-csi-label="CPF do Profissional Responsável">
               </div>
             </div>
           </div>
@@ -1044,7 +1052,7 @@ const CSI_MAP = {
 };
 
 const MASTER_KEY='medunity_master_record';
-const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
+const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm','crm_uf','doctor_cpf', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,detectedFields:[],currentPdfFile:null};
 
@@ -1773,7 +1781,8 @@ function gerarHTMLReceitaControle(d) {
         <div style="border: 2px solid #000; padding: 8px; font-size: 10.5px; line-height: 1.4;">
           <div style="text-align: center; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Identificação do Emitente</div>
           <div>Nome: <strong>${esc(d.doctor_name || 'Dr. Médico Responsável')}</strong></div>
-          <div>CRM: <strong>${esc(d.crm || 'CRM-UF 00000')}</strong></div>
+          <div>CRM: <strong>${esc(formatarCRMDocumento(d) || 'CRM-UF 00000')}</strong></div>
+          <div>CPF: <strong>${esc(d.doctor_cpf || '')}</strong></div>
           <div>Endereço: <span>${esc(d.municipality || 'Local de Atendimento')}</span></div>
           <div>Telefone: <span>(  ) _____-____</span></div>
         </div>
@@ -1788,6 +1797,7 @@ function gerarHTMLReceitaControle(d) {
         <div style="border-bottom: 1px solid #000;">Endereço: <span>${esc(d.address || '')}</span></div>
       </div>
 
+      ${d.cid10 ? `<div style="margin: 0 6px 10px; font-size: 11px;"><strong>CID-10:</strong> ${esc(d.cid10)}</div>` : ''}
       <div style="text-align: center; font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">Prescrição</div>
       <div style="min-height: 180px; padding: 4px 6px;">
         ${lista.map((item, idx) => `
@@ -2000,6 +2010,7 @@ function aplicarIdentidadePrescritor(d) {
   if (identidade.doctor_name) d.doctor_name = identidade.doctor_name;
   if (identidade.crm) d.crm = identidade.crm;
   if (identidade.crm_uf) d.crm_uf = identidade.crm_uf;
+  if (identidade.doctor_cpf) d.doctor_cpf = identidade.doctor_cpf;
   return d;
 }
 
@@ -2288,7 +2299,8 @@ function identidadePrescritorParaDocumento() {
   return {
     doctor_name: currentPrescritor.nome_completo || '',
     crm: currentPrescritor.conselho_numero || '',
-    crm_uf: currentPrescritor.conselho_uf || ''
+    crm_uf: currentPrescritor.conselho_uf || '',
+    doctor_cpf: currentPrescritor.cpf || currentPrescritor.documento_cpf || ''
   };
 }
 
