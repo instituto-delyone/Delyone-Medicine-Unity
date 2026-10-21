@@ -644,8 +644,12 @@
                 <input id="master_doctor_name" type="text" placeholder="Nome do médico" data-csi="001.000." data-csi-label="Profissional Solicitante">
               </div>
               <div>
-                <label>CRM / UF</label>
+                <label>Número do CRM</label>
                 <input id="master_crm" type="text" placeholder="32985" data-csi="001.000." data-csi-label="Número do CRM">
+              </div>
+              <div>
+                <label>UF do CRM</label>
+                <input id="master_crm_uf" type="text" maxlength="2" autocapitalize="characters" placeholder="GO" data-csi="001.000." data-csi-label="UF do CRM">
               </div>
               <div class="full">
                 <label>CPF do profissional responsável</label>
@@ -1048,7 +1052,7 @@ const CSI_MAP = {
 };
 
 const MASTER_KEY='medunity_master_record';
-const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm','doctor_cpf', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
+const FIELDS=['patient_name','social_name','cpf','cns','birth','age','gender','mother_name','municipality','phone','address','record_number','admission','sector','aih','qpp','hda','antecedents','medications','allergies','family_history','social_history','vitals','physical_exam','labs','imaging','other_results','hypothesis','cid10','differential','assessment','plan','evolution','doctor_name','crm','crm_uf','doctor_cpf', 'proc1_name', 'proc1_code', 'proc1_qty', 'proc2_name', 'proc2_code', 'proc2_qty', 'proc3_name', 'proc3_code', 'proc3_qty'];
 const $=id=>document.getElementById(id);
 const state={template:null,detectedFields:[],currentPdfFile:null};
 
