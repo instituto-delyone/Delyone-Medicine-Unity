@@ -39,7 +39,6 @@
   }
   function addFields() {
     const card=el("sncrCard");if(!card||el("sncrAdminLock"))return;
-feat/sncr-api-v3-manual
 
     // Keep the operational panel out of the public-facing view until explicitly opened.
     card.hidden=true;
@@ -57,7 +56,6 @@ feat/sncr-api-v3-manual
       const actions=document.createElement("div");actions.className="actions";actions.append(entry);
       publicPanel.append(actions);
     }
-main
     const notice=card.querySelector(".notice");
     const lock=document.createElement("div");lock.id="sncrAdminLock";lock.className="notice";
     lock.innerHTML='<span aria-hidden="true">🔒</span> <strong>Teste restrito ao administrador</strong> — a área SNCR só abre com a chave administrativa de teste.';
