@@ -1179,7 +1179,7 @@ function baixarFichaHtml() {
   const templateHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Prontuário - ${nome}</title><style>body { background: #f4f7f8; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } #print-area { max-width: 850px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; border: none !important; } @media print { body { background: #fff; padding: 0; } #print-area { box-shadow: none !important; } }</style></head><body>${window.latestFichaHTML}
 <script>
 (() => {
-  const base = 'templates/receituários-oficiais-a-b-controle/';
+  const base = './templates/receitu%C3%A1rios-oficiais-a-b-controle/';
   const models = {
     a: { title: 'Notificação A', file: 'file.pdf' },
     b: { title: 'Notificação B', file: 'Receitua%CC%81rio-b.pdf' },
@@ -1196,7 +1196,7 @@ function baixarFichaHtml() {
   }
   function openModel(key) {
     const model = models[key];
-    if (!model) return;
+    if (!model || !modal || !frame) return;
     currentModel = model;
     title.textContent = model.title;
     const isAdmin = adminAuthenticated();
