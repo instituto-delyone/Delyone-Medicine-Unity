@@ -2381,6 +2381,37 @@ function updateAdminLoginUI(connected) {
   }
 }
 
+async function validarSessaoAdmin() {
+  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) {
+    updateAdminLoginUI(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${MEDUNITY_API_BASE_URL}/me`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data?.usuario?.perfil !== 'admin') {
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      updateAdminLoginUI(false);
+      setAdminMessage('Sessão expirada ou inválida. Entre novamente.', 'error');
+      return;
+    }
+
+    updateAdminLoginUI(true);
+    setAdminMessage('Sessão administrativa validada pela API.', 'ok');
+  } catch (error) {
+    // Falha de rede não prova que o token expirou; preserve a sessão para nova tentativa.
+    updateAdminLoginUI(true);
+    setAdminMessage('Não foi possível validar a sessão. Verifique a conexão.', 'error');
+    console.error('Falha ao validar sessão administrativa:', error);
+  }
+}
+
 adminToggle.addEventListener('click', () => {
   const opening = adminPanel.hidden;
   adminPanel.hidden = !opening;
@@ -2442,7 +2473,7 @@ setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTM
 
 updateUserLoginUI(Boolean(sessionStorage.getItem(USER_TOKEN_KEY)));
 carregarIdentidadeUsuario();
-updateAdminLoginUI(Boolean(sessionStorage.getItem(ADMIN_TOKEN_KEY)));
+validarSessaoAdmin();
 loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
 
