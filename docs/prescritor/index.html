@@ -26,12 +26,16 @@ input,select{width:100%;border:1px solid var(--line);border-radius:11px;backgrou
     <div class="muted">MÓDULO 01 · IDENTIDADE PROFISSIONAL</div>
     <h1>Identificação do Prescritor</h1>
     <p class="muted">Cadastro canônico do profissional que será associado às futuras prescrições eletrônicas. O perfil fica vinculado à conta autenticada no MedUnity.</p>
+    <div class="status warn" role="note" aria-live="polite" style="margin:14px 0">
+      <strong>Aviso aos profissionais:</strong> se você fez login no MedUnity antes de 21/10/2026, atualize seu cadastro profissional e informe o CPF. O preenchimento é necessário para a geração de receituários de controle especial, conforme os critérios de aceite informados pelos profissionais farmacêuticos.
+      <div style="margin-top:8px">Acesse o cadastro abaixo e salve seus dados atualizados.</div>
+    </div>
     <div id="authStatus" class="status">Verificando autenticação…</div>
   </div>
 
   <form id="form" class="card" hidden>
     <h2>Dados profissionais</h2>
-    <p class="muted">Este é o vínculo profissional da sua conta. Inicialmente pedimos apenas nome do médico, CRM e UF. Nada aqui substitui a autorização da Vigilância Sanitária nem a assinatura eletrônica qualificada.</p>
+    <p class="muted">Este é o vínculo profissional da sua conta. Informe nome, CPF, CRM e UF. Nada aqui substitui a autorização da Vigilância Sanitária nem a assinatura eletrônica qualificada.</p>
     <div class="grid">
       <div class="full"><label for="nome_completo">Nome completo</label><input id="nome_completo" required autocomplete="name"></div>
       <div><label for="conselho_tipo">Conselho</label><select id="conselho_tipo"><option value="CRM">CRM — Conselho Regional de Medicina</option></select></div>
@@ -39,6 +43,7 @@ input,select{width:100%;border:1px solid var(--line);border-radius:11px;backgrou
       <div><label for="conselho_uf">UF do CRM</label><select id="conselho_uf" required>
         <option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
       </select></div>
+      <div class="full"><label for="cpf">CPF do profissional</label><input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required></div>
 
     </div>
     <div class="actions"><button class="btn primary" type="submit">Salvar identificação</button><button class="btn secondary" id="sncrLoginBtn" type="button">Conectar SNCR / Gov.br</button><a class="btn secondary" href="../">Voltar</a></div>
@@ -59,7 +64,7 @@ const token=TOKEN_KEYS.map(k=>sessionStorage.getItem(k)).find(Boolean);
 const authStatus=document.getElementById('authStatus');
 const form=document.getElementById('form');
 const saveStatus=document.getElementById('saveStatus');
-const fields=['nome_completo','conselho_tipo','conselho_numero','conselho_uf'];
+const fields=['nome_completo','cpf','conselho_tipo','conselho_numero','conselho_uf'];
 
 function headers(){return {'Content-Type':'application/json','Authorization':'Bearer '+token}}
 function setStatus(el,text,type=''){el.className='status '+type;el.textContent=text}
