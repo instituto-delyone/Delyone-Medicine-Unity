@@ -2474,6 +2474,67 @@ setTimeout(()=>{$('engineStatus').classList.add('ok');$('engineStatus').innerHTM
 updateUserLoginUI(Boolean(sessionStorage.getItem(USER_TOKEN_KEY)));
 carregarIdentidadeUsuario();
 validarSessaoAdmin();
+
+/* Pré-visualização dos modelos oficiais de receituário — handlers da página principal */
+(() => {
+  const base = './templates/receitu%C3%A1rios-oficiais-a-b-controle/';
+  const models = {
+    a: { title: 'Notificação A', file: 'file.pdf' },
+    b: { title: 'Notificação B', file: 'Receitua%CC%81rio-b.pdf' },
+    controle: { title: 'Controle especial eletrônico', file: 'Controle%20especial%20eletro%CC%82nica.pdf' }
+  };
+  const modal = document.getElementById('officialRxModal');
+  const frame = document.getElementById('officialRxFrame');
+  const title = document.getElementById('officialRxModalTitle');
+  const note = document.getElementById('officialRxModalNote');
+  const adminActions = document.getElementById('officialRxAdminActions');
+  const closeButton = document.getElementById('officialRxClose');
+  const printButton = document.getElementById('officialRxPrint');
+  if (!modal || !frame || !title || !note || !adminActions || !closeButton || !printButton) {
+    console.error('Pré-visualização de receituários: faltam elementos do modal no HTML.');
+    return;
+  }
+  let currentModel = null;
+  const adminAuthenticated = () => Boolean(sessionStorage.getItem('medunity_admin_access_token'));
+  function openModel(key) {
+    const model = models[key];
+    if (!model) return;
+    currentModel = model;
+    title.textContent = model.title;
+    const isAdmin = adminAuthenticated();
+    note.textContent = isAdmin
+      ? 'Sessão administrativa detectada.'
+      : 'Visualização somente leitura; impressão indisponível sem autenticação administrativa.';
+    adminActions.hidden = !isAdmin;
+    frame.src = base + model.file + '#toolbar=0&navpanes=0&scrollbar=1';
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModel() {
+    modal.hidden = true;
+    frame.removeAttribute('src');
+    document.body.style.overflow = '';
+    currentModel = null;
+  }
+  document.querySelectorAll('[data-official-rx]').forEach(button => {
+    if (button.dataset.previewHandlerAttached === 'true') return;
+    button.dataset.previewHandlerAttached = 'true';
+    button.addEventListener('click', () => openModel(button.dataset.officialRx));
+  });
+  closeButton.addEventListener('click', closeModel);
+  modal.addEventListener('click', event => { if (event.target === modal) closeModel(); });
+  printButton.addEventListener('click', () => {
+    if (!adminAuthenticated() || !currentModel) {
+      adminActions.hidden = true;
+      note.textContent = 'Autentique-se pelo login de administrador para habilitar a impressão.';
+      return;
+    }
+    const opened = window.open(base + currentModel.file, '_blank');
+    if (!opened) note.textContent = 'O navegador bloqueou a abertura. Permita pop-ups para imprimir o modelo.';
+  });
+  window.addEventListener('storage', () => { if (!adminAuthenticated()) adminActions.hidden = true; });
+})();
+
 loadMaster(); renderFields(); vincularLivePreview(); atualizarPreviewEmTempoReal();
 </script>
 
