@@ -234,27 +234,6 @@ async function getAuthenticatedUser(request, env) {
 }
 
 
-function normalizeCpf(value) {
-  return typeof value === "string" ? value.replace(/\D/g, "") : "";
-}
-
-function validCpf(value) {
-  const cpf = normalizeCpf(value);
-  if (!/^\d{11}$/.test(cpf) || /^(\d)\1{10}$/.test(cpf)) return false;
-
-  let sum = 0;
-  for (let i = 0; i < 9; i += 1) sum += Number(cpf[i]) * (10 - i);
-  let digit = (sum * 10) % 11;
-  if (digit === 10) digit = 0;
-  if (digit !== Number(cpf[9])) return false;
-
-  sum = 0;
-  for (let i = 0; i < 10; i += 1) sum += Number(cpf[i]) * (11 - i);
-  digit = (sum * 10) % 11;
-  if (digit === 10) digit = 0;
-  return digit === Number(cpf[10]);
-}
-
 function normalizeEmail(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
@@ -458,14 +437,10 @@ async function handleRegister(request, env) {
   const cpf = typeof body.cpf === "string" ? body.cpf.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const telefone = typeof body.telefone === "string" ? body.telefone.trim() : "";
-  const cpfDigits = normalizeCpf(cpf);
+  const cpfDigits = cpf.replace(/\D/g, "");
 
   if (!nomeUsuario || !senha || !nomeCompleto || !cpf || !email || !telefone) {
     return json({ detail: "Nome completo, CPF, e-mail, telefone, usuário e senha são obrigatórios." }, 400, request);
-  }
-
-  if (!validCpf(cpfDigits)) {
-    return json({ detail: "Informe um CPF válido." }, 400, request);
   }
 
   if (!/^[A-Za-z0-9._-]{4,40}$/.test(nomeUsuario)) {
@@ -531,19 +506,15 @@ async function handleLogin(request, env, adminOnly = false) {
   }
 
   const body = await request.json().catch(() => null);
-  if (!body || typeof body.nome_usuario !== "string" || typeof body.senha !== "string" || typeof body.cpf !== "string") {
-    return json({ detail: "Informe usuário, CPF e senha." }, 400, request);
+  if (!body || typeof body.nome_usuario !== "string" || typeof body.senha !== "string") {
+    return json({ detail: "Informe nome_usuario e senha." }, 400, request);
   }
 
   const username = body.nome_usuario.trim();
-  const cpf = normalizeCpf(body.cpf);
-  if (!validCpf(cpf)) {
-    return json({ detail: "Informe um CPF válido." }, 400, request);
-  }
 
   const row = await env.DB
     .prepare(
-      "SELECT id, nome_usuario, senha_hash, perfil, ativo, cpf FROM usuarios WHERE nome_usuario = ? LIMIT 1",
+      "SELECT id, nome_usuario, senha_hash, perfil, ativo FROM usuarios WHERE nome_usuario = ? LIMIT 1",
     )
     .bind(username)
     .first();
@@ -552,45 +523,12 @@ async function handleLogin(request, env, adminOnly = false) {
     ? await verifyPassword(body.senha, row.senha_hash)
     : false;
 
-  if (!valid) {
-    return json({ detail: "Usuário, CPF ou senha inválidos." }, 401, request);
-  }
-
-  if (adminOnly && row.perfil !== "admin") {
+  if (valid && adminOnly && row.perfil !== "admin") {
     return json({ detail: "Esta conta não possui acesso administrativo." }, 403, request);
   }
 
-  const accountCpf = normalizeCpf(row.cpf || "");
-  const prescriber = await env.DB
-    .prepare("SELECT cpf FROM prescritores WHERE usuario_id = ? LIMIT 1")
-    .bind(Number(row.id))
-    .first();
-  const prescriberCpf = normalizeCpf(prescriber?.cpf || "");
-
-  if (accountCpf && accountCpf !== cpf) {
-    return json({ detail: "O CPF informado não corresponde ao CPF cadastrado nesta conta." }, 403, request);
-  }
-  if (prescriberCpf && prescriberCpf !== cpf) {
-    return json({ detail: "O CPF informado não corresponde à identidade profissional vinculada a esta conta." }, 403, request);
-  }
-
-  if (!accountCpf) {
-    const duplicate = await env.DB
-      .prepare("SELECT id FROM usuarios WHERE cpf = ? AND id <> ? LIMIT 1")
-      .bind(cpf, Number(row.id))
-      .first();
-    if (duplicate) {
-      return json({ detail: "Este CPF já está vinculado a outra conta." }, 409, request);
-    }
-    await env.DB.prepare("UPDATE usuarios SET cpf = ? WHERE id = ? AND (cpf IS NULL OR cpf = '')")
-      .bind(cpf, Number(row.id))
-      .run();
-  }
-
-  if (prescriber && !prescriberCpf) {
-    await env.DB.prepare("UPDATE prescritores SET cpf = ?, atualizado_em = CURRENT_TIMESTAMP WHERE usuario_id = ? AND (cpf IS NULL OR cpf = '')")
-      .bind(cpf, Number(row.id))
-      .run();
+  if (!valid) {
+    return json({ detail: "Usuário ou senha inválidos." }, 401, request);
   }
 
   const now = Math.floor(Date.now() / 1000);
@@ -681,7 +619,7 @@ async function handlePrescritorPut(request, env) {
     }
 
     const nomeCompleto = typeof body.nome_completo === "string" ? body.nome_completo.trim() : "";
-    const cpf = normalizeCpf(body.cpf);
+    const cpf = typeof body.cpf === "string" ? body.cpf.trim() : "";
     const conselhoTipo = typeof body.conselho_tipo === "string" ? body.conselho_tipo.trim().toUpperCase() : "CRM";
     const conselhoNumero = typeof body.conselho_numero === "string" ? body.conselho_numero.trim() : "";
     const conselhoUf = typeof body.conselho_uf === "string" ? body.conselho_uf.trim().toUpperCase() : "";
@@ -689,36 +627,12 @@ async function handlePrescritorPut(request, env) {
     const email = typeof body.email === "string" ? body.email.trim() : "";
     const telefone = typeof body.telefone === "string" ? body.telefone.trim() : "";
 
-    if (!nomeCompleto || !cpf || !conselhoNumero || !conselhoUf) {
+    if (!nomeCompleto || !conselhoNumero || !conselhoUf) {
       return json(
-        { detail: "Nome completo, CPF, registro profissional e UF são obrigatórios." },
+        { detail: "Nome completo, registro profissional e UF são obrigatórios." },
         400,
         request,
       );
-    }
-
-    if (!validCpf(cpf)) {
-      return json({ detail: "Informe um CPF válido para o prescritor." }, 400, request);
-    }
-
-    const account = await env.DB.prepare("SELECT cpf FROM usuarios WHERE id = ? LIMIT 1").bind(usuario.id).first();
-    const accountCpf = normalizeCpf(account?.cpf || "");
-    if (accountCpf && accountCpf !== cpf) {
-      return json({ detail: "O CPF do prescritor deve ser igual ao CPF vinculado à conta de acesso." }, 409, request);
-    }
-
-    const duplicateCpf = await env.DB
-      .prepare("SELECT id FROM usuarios WHERE cpf = ? AND id <> ? LIMIT 1")
-      .bind(cpf, usuario.id)
-      .first();
-    if (duplicateCpf) {
-      return json({ detail: "Este CPF está vinculado a outra conta." }, 409, request);
-    }
-
-    if (!accountCpf) {
-      await env.DB.prepare("UPDATE usuarios SET cpf = ? WHERE id = ? AND (cpf IS NULL OR cpf = '')")
-        .bind(cpf, usuario.id)
-        .run();
     }
 
     if (conselhoTipo !== "CRM") {
