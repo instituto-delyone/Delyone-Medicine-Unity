@@ -301,9 +301,10 @@
   </div>
   <section class="admin-login-panel" id="userLoginPanel" aria-labelledby="userLoginTitle" hidden>
     <h2 id="userLoginTitle">Acesso ao MedUnity</h2>
-    <p>Entre com sua conta pessoal. O cadastro de prescritor é uma etapa separada.</p>
+    <p>Entre com sua conta pessoal. O CPF será conferido com o cadastro da conta e, quando houver, com a identidade do prescritor.</p>
     <form id="userLoginForm">
       <div class="admin-field"><label for="userUsername">Usuário</label><input id="userUsername" type="text" autocomplete="username" required></div>
+      <div class="admin-field"><label for="userCpf">CPF</label><input id="userCpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required></div>
       <div class="admin-field"><label for="userPassword">Senha</label><input id="userPassword" type="password" autocomplete="current-password" required></div>
       <div class="admin-actions">
         <button class="btn primary" id="userLoginSubmit" type="submit">Entrar</button>
@@ -316,11 +317,15 @@
   </section>
   <section class="admin-login-panel" id="adminLoginPanel" aria-labelledby="adminLoginTitle" hidden>
     <h2 id="adminLoginTitle">Acesso administrativo</h2>
-    <p>Entre com sua conta de administrador. A autenticação é feita pela API segura do MedUnity.</p>
+    <p>Entre com sua conta de administrador. O CPF também será conferido pela API com a conta e o cadastro profissional.</p>
     <form id="adminLoginForm">
       <div class="admin-field">
         <label for="adminUsername">Usuário</label>
         <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+      </div>
+      <div class="admin-field">
+        <label for="adminCpf">CPF</label>
+        <input id="adminCpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
       </div>
       <div class="admin-field">
         <label for="adminPassword">Senha</label>
@@ -2319,12 +2324,14 @@ function setUserMessage(message, type = '') {
 function updateUserLoginUI(connected) {
   userLoginSubmit.hidden = connected;
   $('userUsername').disabled = connected;
+  $('userCpf').disabled = connected;
   $('userPassword').disabled = connected;
   userLogout.hidden = !connected;
   userLoginToggle.textContent = connected ? 'Conectado' : 'Entrar';
   if (connected) {
     $('userPassword').value = '';
-    setUserMessage('Sessão pessoal ativa nesta aba.', 'ok');
+    $('userCpf').value = '';
+    setUserMessage('Sessão pessoal ativa nesta aba. CPF conferido pela API.', 'ok');
   }
 }
 
@@ -2338,9 +2345,10 @@ userLoginToggle.addEventListener('click', () => {
 userLoginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const nome_usuario = $('userUsername').value.trim();
+  const cpf = $('userCpf').value.trim();
   const senha = $('userPassword').value;
-  if (!nome_usuario || !senha) {
-    setUserMessage('Informe usuário e senha.', 'error');
+  if (!nome_usuario || !cpf || !senha) {
+    setUserMessage('Informe usuário, CPF e senha.', 'error');
     return;
   }
   userLoginSubmit.disabled = true;
@@ -2350,7 +2358,7 @@ userLoginForm.addEventListener('submit', async (event) => {
     const response = await fetch(MEDUNITY_API_LOGIN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome_usuario, senha })
+      body: JSON.stringify({ nome_usuario, cpf, senha })
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.access_token) throw new Error(data.detail || 'Não foi possível autenticar.');
@@ -2392,13 +2400,15 @@ function setAdminMessage(message, type = '') {
 function updateAdminLoginUI(connected) {
   adminSubmit.hidden = connected;
   $('adminUsername').disabled = connected;
+  $('adminCpf').disabled = connected;
   $('adminPassword').disabled = connected;
   adminLogout.hidden = !connected;
   adminToggle.textContent = connected ? 'ADM conectado' : 'Login de ADM';
   adminToggle.classList.toggle('admin-connected', connected);
   if (connected) {
     $('adminPassword').value = '';
-    setAdminMessage('Sessão administrativa ativa nesta aba. O token expira conforme a API.', 'ok');
+    $('adminCpf').value = '';
+    setAdminMessage('Sessão administrativa ativa nesta aba. CPF conferido pela API.', 'ok');
   }
 }
 
@@ -2442,9 +2452,10 @@ adminToggle.addEventListener('click', () => {
 adminForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const nome_usuario = $('adminUsername').value.trim();
+  const cpf = $('adminCpf').value.trim();
   const senha = $('adminPassword').value;
-  if (!nome_usuario || !senha) {
-    setAdminMessage('Informe usuário e senha.', 'error');
+  if (!nome_usuario || !cpf || !senha) {
+    setAdminMessage('Informe usuário, CPF e senha.', 'error');
     return;
   }
 
@@ -2456,7 +2467,7 @@ adminForm.addEventListener('submit', async (event) => {
     const response = await fetch(MEDUNITY_API_ADMIN_LOGIN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome_usuario, senha })
+      body: JSON.stringify({ nome_usuario, cpf, senha })
     });
     const data = await response.json().catch(() => ({}));
 
