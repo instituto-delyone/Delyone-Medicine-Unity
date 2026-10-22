@@ -10,10 +10,12 @@ function json(data, status = 200, request) {
   return new Response(JSON.stringify(data), {status, headers});
 }
 function b64url(bytes) {
-  let binary = ""; for (const byte of new Uint8Array(bytes)) binary += String.fromCharCode(byte);
+  let binary = "";
+  for (const byte of new Uint8Array(bytes)) binary += String.fromCharCode(byte);
   return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
 }
 function fromB64url(value) {
+  if (typeof value !== "string" || !/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("auth");
   const normalized=value.replace(/-/g,"+").replace(/_/g,"/");
   const binary=atob(normalized+"=".repeat((4-normalized.length%4)%4));
   return Uint8Array.from(binary,c=>c.charCodeAt(0));
@@ -25,14 +27,22 @@ async function getUser(request, env) {
   const parts=auth.slice(7).trim().split(".");
   if (parts.length!==3) throw new Error("auth");
   const [head,body,sig]=parts;
-  const decode=v=>JSON.parse(new TextDecoder().decode(fromB64url(v)));
-  const header=decode(head);
+  let header, payload;
+  try {
+    const decode=v=>JSON.parse(new TextDecoder().decode(fromB64url(v)));
+    header=decode(head);
+    payload=decode(body);
+  } catch { throw new Error("auth"); }
   if(header.alg!=="HS256"||header.typ!=="JWT") throw new Error("auth");
   const key=await crypto.subtle.importKey("raw",encoder.encode(env.JWT_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
   const expected=new Uint8Array(await crypto.subtle.sign("HMAC",key,encoder.encode(head+"."+body)));
-  const actual=fromB64url(sig);
-  if(expected.length!==actual.length||expected.some((v,i)=>v!==actual[i])) throw new Error("auth");
-  const payload=decode(body), now=Math.floor(Date.now()/1000);
+  let actual;
+  try { actual=fromB64url(sig); } catch { throw new Error("auth"); }
+  let mismatch = expected.length ^ actual.length;
+  const length = Math.max(expected.length, actual.length);
+  for (let i=0;i<length;i++) mismatch |= (expected[i]||0) ^ (actual[i]||0);
+  if(mismatch!==0) throw new Error("auth");
+  const now=Math.floor(Date.now()/1000);
   if(!payload.exp||payload.exp<=now) throw new Error("auth");
   const id=Number(payload.sub);
   if(!Number.isSafeInteger(id)||id<1) throw new Error("auth");
@@ -42,7 +52,8 @@ async function getUser(request, env) {
 }
 async function encryptPayload(payload, env) {
   if(!env.FICHA_MAE_ENCRYPTION_KEY) throw new Error("key");
-  const raw=fromB64url(env.FICHA_MAE_ENCRYPTION_KEY);
+  let raw;
+  try { raw=fromB64url(env.FICHA_MAE_ENCRYPTION_KEY); } catch { throw new Error("key"); }
   if(raw.length!==32) throw new Error("key");
   const key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt"]);
   const iv=crypto.getRandomValues(new Uint8Array(12));
@@ -62,7 +73,11 @@ export async function handleFichasMae(request, env) {
   try {
     const user=await getUser(request,env), now=Math.floor(Date.now()/1000);
     await env.DB.prepare("DELETE FROM fichas_mae_temporarias WHERE usuario_id=? AND expires_at<=?").bind(user.id,now).run();
-    if(url.pathname==="/fichas-mae/session-end"&&request.method==="POST") {\n      await env.DB.prepare("DELETE FROM fichas_mae_temporarias WHERE usuario_id=?").bind(user.id).run();\n      return json({status:"sessao_encerrada_fichas_excluidas"},200,request);\n    }\n    if(url.pathname==="/fichas-mae"&&request.method==="GET") {
+    if(url.pathname==="/fichas-mae/session-end"&&request.method==="POST") {
+      await env.DB.prepare("DELETE FROM fichas_mae_temporarias WHERE usuario_id=?").bind(user.id).run();
+      return json({status:"sessao_encerrada_fichas_excluidas"},200,request);
+    }
+    if(url.pathname==="/fichas-mae"&&request.method==="GET") {
       const rows=await env.DB.prepare("SELECT id,slot,criada_em,expires_at FROM fichas_mae_temporarias WHERE usuario_id=? AND expires_at>? ORDER BY slot").bind(user.id,now).all();
       return json({status:"ok",fichas:(rows.results||[]).map(r=>({id:r.id,slot:Number(r.slot),rotulo:"Ficha "+r.slot,criada_em:Number(r.criada_em),expires_at:Number(r.expires_at)})),limite:MAX_FICHAS_FREE},200,request);
     }
@@ -92,7 +107,6 @@ export async function handleFichasMae(request, env) {
       if(Number(result.meta?.changes||0)===0) return json({detail:"Ficha não encontrada ou expirada."},404,request);
       return json({status:"excluida"},200,request);
     }
-    // No individual GET/decryption endpoint until SNCR authorization contract is validated.
     return json({detail:"Rota não encontrada."},404,request);
   }catch(error){
     if(error.message==="key") return json({detail:"Armazenamento temporário indisponível."},503,request);
