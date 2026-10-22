@@ -21,4 +21,4 @@ Usar dados fictícios e D1 isolada. Não implantar nem configurar segredo em pro
 - Conferir logs sem tokens, chaves, payload ou conteúdo clínico.
 
 ## Pendências antes da homologação completa
-O módulo precisa ser ligado ao roteador, instalado o secret no ambiente isolado, aplicada a migração na D1 de teste e executados testes automatizados reais. A regra de retenção está limitada à expiração do JWT; logout com revogação imediata e limpeza física global ainda dependem de integração adicional. A descriptografia para preencher receita fica bloqueada até validar o manual/Worker SNCR.
+O módulo já está ligado ao roteador nesta branch. Ainda é necessário instalar o secret no ambiente isolado, aplicar a migração na D1 de teste e executar testes automatizados reais. A regra de retenção está limitada à expiração do JWT; logout com revogação imediata e limpeza física global ainda dependem de integração adicional. A descriptografia para preencher receita fica bloqueada até validar o manual/Worker SNCR.
