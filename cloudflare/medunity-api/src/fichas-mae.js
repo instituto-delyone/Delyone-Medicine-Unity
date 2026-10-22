@@ -58,11 +58,11 @@ function validPayload(value) {
 export async function handleFichasMae(request, env) {
   const url=new URL(request.url);
   if(!url.pathname.startsWith("/fichas-mae")) return null;
-  if(request.method==="OPTIONS") return new Response(null,{status:204,headers:{"Cache-Control":"no-store"}});
+  if(request.method==="OPTIONS") return new Response(null,{status:204,headers:{"Cache-Control":"no-store","Access-Control-Allow-Methods":"GET, POST, DELETE, OPTIONS","Access-Control-Allow-Headers":"Content-Type, Authorization","Vary":"Origin",...(ALLOWED_ORIGINS.has(request.headers.get("Origin")||"")?{"Access-Control-Allow-Origin":request.headers.get("Origin")}:{})}});
   try {
     const user=await getUser(request,env), now=Math.floor(Date.now()/1000);
     await env.DB.prepare("DELETE FROM fichas_mae_temporarias WHERE usuario_id=? AND expires_at<=?").bind(user.id,now).run();
-    if(url.pathname==="/fichas-mae"&&request.method==="GET") {
+    if(url.pathname==="/fichas-mae/session-end"&&request.method==="POST") {\n      await env.DB.prepare("DELETE FROM fichas_mae_temporarias WHERE usuario_id=?").bind(user.id).run();\n      return json({status:"sessao_encerrada_fichas_excluidas"},200,request);\n    }\n    if(url.pathname==="/fichas-mae"&&request.method==="GET") {
       const rows=await env.DB.prepare("SELECT id,slot,criada_em,expires_at FROM fichas_mae_temporarias WHERE usuario_id=? AND expires_at>? ORDER BY slot").bind(user.id,now).all();
       return json({status:"ok",fichas:(rows.results||[]).map(r=>({id:r.id,slot:Number(r.slot),rotulo:"Ficha "+r.slot,criada_em:Number(r.criada_em),expires_at:Number(r.expires_at)})),limite:MAX_FICHAS_FREE},200,request);
     }
