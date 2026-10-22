@@ -1,5 +1,6 @@
 import legacyWorker from "./index.js";
-import { handleGovbr } from "./govbr.js";\nimport { handleFichasMae } from "./fichas-mae.js";
+import { handleGovbr } from "./govbr.js";
+import { handleFichasMae } from "./fichas-mae.js";
 
 const FRONTEND_ORIGIN = "https://medunity.delyone.com";
 
@@ -43,7 +44,12 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/fichas-mae")) {\n      const response = await handleFichasMae(request, env);\n      if (response) return withCors(response);\n    }\n\n    if (url.pathname.startsWith("/auth/govbr")) {
+    if (url.pathname.startsWith("/fichas-mae")) {
+      const response = await handleFichasMae(request, env);
+      if (response) return withCors(response);
+    }
+
+    if (url.pathname.startsWith("/auth/govbr")) {
       if (request.method === "OPTIONS") {
         return new Response(null, { status: 204, headers: corsHeaders() });
       }
