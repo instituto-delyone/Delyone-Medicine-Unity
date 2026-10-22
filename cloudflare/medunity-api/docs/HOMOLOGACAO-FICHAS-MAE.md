@@ -17,8 +17,9 @@ Usar dados fictícios e D1 isolada. Não implantar nem configurar segredo em pro
 - Chave ausente/malformada: 503 sem conteúdo sensível.
 - Campo não permitido, estrutura inválida: 400; payload acima de 24 KiB: 413.
 - JWT expirado: ficha não criada; ficha expirada não aparece e é removida ao acessar a API.
+- POST autenticado em `/fichas-mae/session-end` exclui as fichas da conta; verificar integração no logout do frontend.
 - GET de ID individual/descriptografia: 404.
 - Conferir logs sem tokens, chaves, payload ou conteúdo clínico.
 
 ## Pendências antes da homologação completa
-O módulo já está ligado ao roteador nesta branch. Ainda é necessário instalar o secret no ambiente isolado, aplicar a migração na D1 de teste e executar testes automatizados reais. A regra de retenção está limitada à expiração do JWT; logout com revogação imediata e limpeza física global ainda dependem de integração adicional. A descriptografia para preencher receita fica bloqueada até validar o manual/Worker SNCR.
+O código está na branch principal, mas não deve ser considerado pronto para uso clínico ou produção. Ainda é necessário instalar o secret no ambiente isolado, aplicar a migração na D1 de teste e executar testes automatizados reais. O JWT atual dura 30 minutos e não tem revogação server-side; a exclusão no logout depende de o frontend chamar o endpoint de encerramento. A limpeza física global e a política de backups ainda precisam de solução. A descriptografia para preencher receita fica bloqueada até validar o manual/Worker SNCR.
