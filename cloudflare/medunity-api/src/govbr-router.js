@@ -1,5 +1,6 @@
 import legacyWorker from "./index.js";
 import { handleGovbr } from "./govbr.js";
+import { handleFichasMae } from "./fichas-mae.js";
 
 const FRONTEND_ORIGIN = "https://medunity.delyone.com";
 
@@ -7,8 +8,8 @@ function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": FRONTEND_ORIGIN,
     "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Vary": "Origin",
   };
 }
@@ -42,6 +43,11 @@ function errorResponse(error) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname.startsWith("/fichas-mae")) {
+      const response = await handleFichasMae(request, env);
+      if (response) return withCors(response);
+    }
 
     if (url.pathname.startsWith("/auth/govbr")) {
       if (request.method === "OPTIONS") {
